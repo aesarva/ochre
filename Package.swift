@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "StatusApp",
+    name: "Ochre",
     platforms: [.macOS(.v26)],
     targets: [
         .target(
@@ -21,7 +21,7 @@ let package = Package(
             ]
         ),
         .executableTarget(
-            name: "StatusApp",
+            name: "Ochre",
             dependencies: ["MetricsCore"]
         ),
         .testTarget(

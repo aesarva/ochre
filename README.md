@@ -25,7 +25,7 @@
 
 Выпуск версии: `scripts/release.sh 1.0.0` → `dist/Ochre-1.0.0.dmg` (сборка, подпись, нотаризация приложения и DMG, проверка Gatekeeper). Сертификат берётся из связки ключей автоматически; если их несколько — `SIGN_IDENTITY="Developer ID Application: …"`. Без сертификата `scripts/release.sh 1.0.0 --unsigned` проверяет всё, кроме подписи и нотаризации.
 
-Идентификатор приложения — `com.alexsarva.Ochre`; настройки сборок со старыми идентификаторами (`com.alexsarva.StatusApp`, `local.statusapp.StatusApp`) переносятся при первом запуске. Внутренние имена модулей SwiftPM (`StatusApp`, `MetricsCore`) не менялись.
+Идентификатор приложения — `com.alexsarva.Ochre`; настройки сборок со старыми идентификаторами (`com.alexsarva.StatusApp`, `local.statusapp.StatusApp`) переносятся при первом запуске.
 
 ## Сайт
 
