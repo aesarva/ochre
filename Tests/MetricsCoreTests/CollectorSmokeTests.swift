@@ -47,6 +47,12 @@ import Foundation
     @Test func battery() {
         if let b = BatteryCollector().sample() { #expect((0...100).contains(b.percent)) }
     }
+
+    @Test func sensors() throws {
+        let s = try #require(SensorCollector().sample())
+        if let cpu = s.cpuCelsius { #expect((10...120).contains(cpu)) }
+        #expect(s.temperatures.allSatisfy { $0.celsius > 0 && $0.celsius < 150 })
+    }
 }
 
 @Suite struct EffectiveLevelsTests {
