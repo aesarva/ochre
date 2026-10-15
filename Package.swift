@@ -20,6 +20,10 @@ let package = Package(
                 .linkedFramework("SystemConfiguration"),
             ]
         ),
+        .executableTarget(
+            name: "StatusApp",
+            dependencies: ["MetricsCore"]
+        ),
         .testTarget(
             name: "MetricsCoreTests",
             dependencies: ["MetricsCore"]
