@@ -8,7 +8,7 @@ struct SensorsTab: View {
     var body: some View {
         let snapshot = store.latest
         let sensors = snapshot?.sensors
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 14) {
             section("Температуры") {
                 if let temps = sensors?.temperatures, !temps.isEmpty {
                     let groups = SensorPresentation.group(temps)
@@ -80,10 +80,20 @@ struct SensorsTab: View {
         .buttonStyle(.plain)
     }
 
+    /// Группа как в системных настройках: заголовок над подложкой, строки на слегка выделенном фоне.
     private func section<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
-            content()
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .padding(.leading, 10)
+            VStack(alignment: .leading, spacing: 7) {
+                content()
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 9)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.primary.opacity(0.06), in: .rect(cornerRadius: 10, style: .continuous))
         }
     }
 }
