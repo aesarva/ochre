@@ -33,8 +33,11 @@ struct HistoryChart: View {
             .chartXAxis(.hidden)
             .chartYAxis {
                 if let yDomain {
+                    // На низком графике верхняя подпись упирается в значение над ним — оставляем 0 и середину.
+                    let mid = (yDomain.lowerBound + yDomain.upperBound) / 2
                     AxisMarks(position: .trailing,
-                              values: [yDomain.lowerBound, (yDomain.lowerBound + yDomain.upperBound) / 2, yDomain.upperBound]) {
+                              values: chartHeight < 60 ? [yDomain.lowerBound, mid]
+                                                       : [yDomain.lowerBound, mid, yDomain.upperBound]) {
                         label($0)
                     }
                 } else {

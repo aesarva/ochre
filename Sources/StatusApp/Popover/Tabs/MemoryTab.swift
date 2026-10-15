@@ -36,7 +36,7 @@ struct MemoryTab: View {
 
     private func pressureColor(_ pressure: MemoryPressure?) -> Color {
         switch pressure {
-        case .warning: HeatScale.amber.swiftUIColor
+        case .warning: HeatScale.amber.textColor
         case .critical: .heatHot
         default: .primary
         }

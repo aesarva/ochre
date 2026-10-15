@@ -61,7 +61,7 @@ struct SensorsTab: View {
     /// Температура окрашивается ступенчато по шкале нагрева; нейтральная — основным цветом.
     private static func tint(_ celsius: Double) -> Color {
         let level = HeatScale.temperatureLevel(celsius)
-        return level == .neutral ? .primary : level.color.swiftUIColor
+        return level == .neutral ? .primary : level.color.textColor
     }
 
     private func cpuRow(_ groups: SensorGroups) -> some View {
