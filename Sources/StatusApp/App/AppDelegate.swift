@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let notifier = UserNotificationNotifier()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        migrateLegacySettings()
         let settings = SettingsStore()
         let store = MetricsStore(settings: settings)
         // Debug args come only from the command line (argument domain), never from persisted defaults.
@@ -48,6 +49,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 store.isPopoverOpen = false
             }
         }
+    }
+
+    /// Настройки старых сборок лежат под прежним bundle id — забираем их при первом запуске.
+    private func migrateLegacySettings() {
+        let legacyID = SettingsMigration.legacyBundleIdentifier
+        guard Bundle.main.bundleIdentifier != legacyID, let legacy = UserDefaults(suiteName: legacyID) else { return }
+        SettingsMigration.migrate(key: SettingsStore.defaultsKey, from: legacy, to: .standard)
     }
 
     private static func flag(_ value: Any?) -> Bool {
