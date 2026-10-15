@@ -8,14 +8,14 @@ enum SnapshotExporter {
     static func export(to directory: String, store: MetricsStore, settings: SettingsStore) {
         let dir = URL(fileURLWithPath: directory, isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        // Стекло и меню рисует AppKit, поэтому снимаем настоящий hosting view на цветной «обоине».
         for tab in PopoverTab.allCases {
             let view = PopoverView(store: store, initialTab: tab, onOpenSettings: {})
-                .background(Color(nsColor: .windowBackgroundColor))
-            let renderer = ImageRenderer(content: view)
-            renderer.scale = 2
-            if let cg = renderer.cgImage {
-                write(cg, to: dir.appendingPathComponent("tab-\(tab.rawValue).png"))
-            }
+                .background(LinearGradient(colors: [Color(red: 0.97, green: 0.71, blue: 0.6),
+                                                    Color(red: 0.48, green: 0.61, blue: 1.0),
+                                                    Color(red: 0.6, green: 0.42, blue: 1.0)],
+                                           startPoint: .topLeading, endPoint: .bottomTrailing))
+            snapshot(view, to: dir.appendingPathComponent("tab-\(tab.rawValue).png"))
         }
         let tabs: [(String, AnyView)] = [
             ("general", AnyView(GeneralSettingsTab(settings: settings))),
@@ -52,8 +52,15 @@ enum SnapshotExporter {
         }
     }
 
-    private static func write(_ image: CGImage, to url: URL) {
-        let rep = NSBitmapImageRep(cgImage: image)
-        try? rep.representation(using: .png, properties: [:])?.write(to: url)
+    private static func snapshot<V: View>(_ view: V, to url: URL) {
+        let host = NSHostingView(rootView: view)
+        host.frame = NSRect(origin: .zero, size: host.fittingSize)
+        let window = NSWindow(contentRect: host.frame, styleMask: [.borderless], backing: .buffered, defer: false)
+        window.contentView = host
+        host.layoutSubtreeIfNeeded()
+        if let rep = host.bitmapImageRepForCachingDisplay(in: host.bounds) {
+            host.cacheDisplay(in: host.bounds, to: rep)
+            try? rep.representation(using: .png, properties: [:])?.write(to: url)
+        }
     }
 }

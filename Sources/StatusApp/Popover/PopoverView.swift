@@ -5,18 +5,6 @@ import SwiftUI
 enum PopoverTab: String, CaseIterable {
     case overview, cpu, memory, network, disk, sensors, processes
 
-    var symbol: String {
-        switch self {
-        case .overview: "square.grid.2x2"
-        case .cpu: "cpu"
-        case .memory: "memorychip"
-        case .network: "network"
-        case .disk: "internaldrive"
-        case .sensors: "thermometer.medium"
-        case .processes: "list.bullet"
-        }
-    }
-
     var title: String {
         switch self {
         case .overview: "Обзор"
@@ -42,34 +30,29 @@ struct PopoverView: View {
     }
 
     var body: some View {
-        VStack(spacing: 10) {
-            Picker("", selection: $tab) {
-                ForEach(PopoverTab.allCases, id: \.self) { item in
-                    Image(systemName: item.symbol).help(item.title).tag(item)
-                }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
+        VStack(spacing: 12) {
+            GlassTabBar(selection: $tab)
 
             content
 
-            Divider()
+            Divider().opacity(0.5)
             HStack {
-                Button("⚙ Настройки", action: onOpenSettings)
+                Button("Настройки", action: onOpenSettings)
                 Spacer()
                 Button("Выход") { NSApp.terminate(nil) }
             }
             .buttonStyle(.plain)
-            .font(.caption)
+            .font(.system(size: 12))
+            .foregroundStyle(.secondary)
         }
-        .padding(12)
-        .frame(width: 360)
+        .padding(14)
+        .frame(width: 340)
     }
 
     @ViewBuilder
     private var content: some View {
         switch tab {
-        case .overview: OverviewTab(store: store)
+        case .overview: OverviewTab(store: store) { tab = .cpu }
         case .cpu: CPUTab(store: store)
         case .memory: MemoryTab(store: store)
         case .network: NetworkTab(store: store)
