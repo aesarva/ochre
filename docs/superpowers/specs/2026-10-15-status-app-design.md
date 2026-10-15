@@ -73,11 +73,11 @@ protocol MetricCollector {
 
 | Сборщик | Значение | Источник |
 |---|---|---|
-| `CPUCollector` | общая загрузка %, P-кластер %, E-кластер %, загрузка по каждому ядру | `host_processor_info(PROCESSOR_CPU_LOAD_INFO)`; число P/E ядер — `sysctl hw.perflevel0.logicalcpu` / `hw.perflevel1.logicalcpu` (P-ядра идут первыми) |
+| `CPUCollector` | общая загрузка %, загрузка по каждому кластеру (perflevel) с его именем, загрузка по каждому ядру | `host_processor_info(PROCESSOR_CPU_LOAD_INFO)`; кластеры — `sysctl hw.nperflevels`, `hw.perflevelN.name`, `hw.perflevelN.logicalcpu`. Имена не фиксированы: на M1–M4 это «Performance»/«Efficiency», на этой машине (Mac17,9) — «Super» (6 ядер) и «Performance» (12 ядер). Логические CPU идут от старшего индекса perflevel к младшему: cpu 0…11 → perflevel1, 12…17 → perflevel0 (проверено по IODeviceTree `cluster-type`) |
 | `MemoryCollector` | всего, использовано, app/wired/compressed/cached, давление (normal/warning/critical), swap used/total | `host_statistics64(HOST_VM_INFO64)`, `sysctl hw.memsize`, `sysctl vm.swapusage`, `sysctl kern.memorystatus_vm_pressure_level` |
-| `SensorCollector` | список температурных датчиков (имя, °C), агрегаты «CPU» и «GPU» (максимум по группе), обороты вентиляторов, мощность системы (Вт) | `IOHIDEventSystemClient` с фильтром PrimaryUsagePage 0xff00 / Usage 5 (температуры); AppleSMC: ключи `FNum`, `F{n}Ac` (вентиляторы), `PSTR` (мощность) |
+| `SensorCollector` | список температурных датчиков (имя, °C), агрегаты «CPU» и «GPU» (максимум по группе), обороты вентиляторов, мощность системы (Вт) | `IOHIDEventSystemClient` с фильтром PrimaryUsagePage 0xff00 / Usage 5 (температуры); AppleSMC: ключи `FNum` (`ui8`), `F{n}Ac` (`flt`), `PSTR` (`flt`). Проверено на этой машине: датчики «PMU tdie1…14» (кристалл, ~44 °C), «PMU tdev1…8» отдают мусор (≈ −9201), имена повторяются по 3–6 раз, датчиков GPU нет. Правила: значения вне (0, 150) °C отбрасываются; одинаковые имена схлопываются в максимум; CPU = максимум по именам с «tdie», «pACC», «eACC»; GPU = максимум по именам с «GPU» (здесь — нет → «—») |
 | `GPUCollector` | загрузка GPU % | IORegistry, класс `IOAccelerator`, словарь `PerformanceStatistics` → `Device Utilization %` |
-| `NetworkCollector` | скорость ↓/↑ (байт/с), суммарно с запуска, имя активного интерфейса | `getifaddrs` + `if_data` (`ifi_ibytes`/`ifi_obytes`), исключая `lo0`; основной интерфейс — по наибольшему трафику / `SCDynamicStore` |
+| `NetworkCollector` | скорость ↓/↑ (байт/с), суммарно с запуска, имя активного интерфейса | `sysctl NET_RT_IFLIST2` → `if_msghdr2.ifm_data` (64-битные счётчики; 32-битные из `getifaddrs` переполняются на 4 ГБ). Считается только основной интерфейс из `SCDynamicStore` (`State:/Network/Global/IPv4` → `PrimaryInterface`); если его нет — сумма по интерфейсам `en*`. VPN-туннели не суммируются, чтобы не считать трафик дважды |
 | `DiskCollector` | чтение/запись (байт/с), список томов со свободным/общим местом | IORegistry `IOBlockStorageDriver` → `Statistics` (`Bytes (Read)`/`Bytes (Write)`); тома — `FileManager.mountedVolumeURLs` + `volumeAvailableCapacityForImportantUsage` |
 | `BatteryCollector` | заряд %, заряжается/от сети, циклы, здоровье % (MaxCapacity/DesignCapacity), мощность Вт (Voltage × Amperage) | `IOPSCopyPowerSourcesInfo`, IORegistry `AppleSmartBattery`; на десктопе — `nil` |
 | `ProcessCollector` | список процессов: pid, имя, CPU %, память (phys footprint) | `proc_listallpids` + `proc_pid_rusage(RUSAGE_INFO_V4)`; время CPU в mach-тиках переводится через `mach_timebase_info`; процессы, которые не удалось прочитать, пропускаются |
@@ -109,7 +109,7 @@ Timer (интервал из настроек) → Sampler (actor, фоновы�
 
 - `Sampler` опрашивает сборщики последовательно; каждый вызов сборщика обёрнут так, что ошибка даёт `nil`, не прерывая остальных.
 - Пока панель открыта, интервал сокращается до 1 с и включается `ProcessCollector`; при закрытии — возврат к интервалу из настроек, процессы не опрашиваются.
-- `MetricsStore` хранит `RingBuffer<Double>` для каждой графической серии: CPU total, P, E, по ядрам, память used, температура CPU, GPU, сеть ↓/↑, диск R/W. Ёмкость = 600 с / интервал (300 точек при 2 с). При смене интервала буферы пересоздаются (история сбрасывается — допустимо).
+- `MetricsStore` хранит историю (`MetricsHistory`): для каждой графической серии — кольцевой буфер точек «(время, значение)» на 600 точек: CPU total, каждый кластер, каждое ядро, память used, температура CPU, GPU, сеть ↓/↑, диск R/W. Графики показывают точки за последние 600 с по времени, поэтому переключение интервала (в том числе 1 с при открытой панели) историю не сбрасывает.
 - Последний полный `Snapshot` хранится для отображения текущих значений.
 
 ## 4. Интерфейс
@@ -134,7 +134,7 @@ Timer (интервал из настроек) → Sampler (actor, фоновы�
 | Вкладка | Содержимое |
 |---|---|
 | **Обзор** | сетка плиток 2×N: CPU, Память, Температура, GPU, Сеть, Диск — у каждой крупное значение и мини-график за 10 минут; плитка Батарея на всю ширину (если есть батарея); ниже топ-5 процессов по CPU |
-| **CPU** | график общей загрузки, графики P- и E-кластеров, столбики по каждому ядру (P и E разным цветом) |
+| **CPU** | график общей загрузки, график каждого кластера (подписан именем из `hw.perflevelN.name`), столбики по каждому ядру (кластеры разным цветом) |
 | **Память** | график использования, разбивка app/wired/compressed/cached, давление памяти, swap |
 | **Сеть** | графики ↓ и ↑, суммарный трафик с запуска, активный интерфейс |
 | **Диск** | графики чтения/записи, список томов со шкалой заполненности |
