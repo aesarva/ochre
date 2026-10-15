@@ -29,9 +29,10 @@ public enum HeatScale {
     public static let ember = HeatColor.rgb(red: 204 / 255, green: 143 / 255, blue: 37 / 255)
     public static let hot = HeatColor.rgb(red: 180 / 255, green: 70 / 255, blue: 42 / 255)
 
-    /// Плитка табло: на графите (холодно) и на «жаре» цифры светлые, на янтаре и углях — тёмные.
+    /// Плитка табло: на графите (холодно) и ближе к «жару» цифры светлые, на янтаре и углях — тёмные.
+    /// С 83 % смесь углей и жара темнеет настолько, что светлые цифры контрастнее тёмных.
     public static func tileInk(forLoad load: Double) -> TileInk {
-        guard load.isFinite, load >= 20, load < 90 else { return .light }
+        guard load.isFinite, load >= 20, load < 83 else { return .light }
         return .dark
     }
 

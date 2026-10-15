@@ -39,10 +39,12 @@ import Testing
 }
 
 @Suite struct TileInkTests {
-    // Цифры на плитке табло: светлые на графите и на «жаре», тёмные на янтаре и углях.
+    // Цифры на плитке табло: светлые на графите и ближе к «жару», тёмные на янтаре и углях.
+    // Граница 83 % — там, где светлые цифры становятся контрастнее тёмных на смеси углей и жара.
     @Test func lightOnColdAndHot() {
         #expect(HeatScale.tileInk(forLoad: 0) == .light)
         #expect(HeatScale.tileInk(forLoad: 19.9) == .light)
+        #expect(HeatScale.tileInk(forLoad: 83) == .light)
         #expect(HeatScale.tileInk(forLoad: 90) == .light)
         #expect(HeatScale.tileInk(forLoad: 142) == .light)
         #expect(HeatScale.tileInk(forLoad: .nan) == .light)
@@ -50,7 +52,7 @@ import Testing
     @Test func darkOnAmberAndEmber() {
         #expect(HeatScale.tileInk(forLoad: 20) == .dark)
         #expect(HeatScale.tileInk(forLoad: 60) == .dark)
-        #expect(HeatScale.tileInk(forLoad: 89.9) == .dark)
+        #expect(HeatScale.tileInk(forLoad: 82.9) == .dark)
     }
 }
 
