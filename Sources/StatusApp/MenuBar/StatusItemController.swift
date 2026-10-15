@@ -48,5 +48,6 @@ final class StatusItemController {
             active: store.activeAlerts
         )
         statusItem.button?.attributedTitle = MenuBarRenderer.attributedTitle(segments)
+        statusItem.button?.setAccessibilityLabel(MenuBarContent.spokenLabel(segments))
     }
 }

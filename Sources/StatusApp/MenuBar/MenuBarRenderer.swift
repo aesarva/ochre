@@ -29,9 +29,25 @@ enum MenuBarRenderer {
                 let attachment = NSTextAttachment()
                 attachment.image = graphImage(values)
                 result.append(NSAttributedString(attachment: attachment))
-            case .text(let text, let highlighted):
+            case .text(let text, let highlighted, let template):
                 let color: NSColor = highlighted ? heatHot : .labelColor
-                result.append(NSAttributedString(string: text, attributes: [.font: font, .foregroundColor: color]))
+                let attributes: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: color]
+                guard let template else {
+                    result.append(NSAttributedString(string: text, attributes: attributes))
+                    continue
+                }
+                // Поле шириной в самое длинное значение, число прижато вправо: значок не «дышит».
+                let width = ceil((template as NSString).size(withAttributes: [.font: font]).width)
+                let size = NSSize(width: width, height: ceil(font.ascender - font.descender))
+                let image = NSImage(size: size, flipped: false) { rect in
+                    let string = NSAttributedString(string: text, attributes: attributes)
+                    string.draw(at: NSPoint(x: rect.width - string.size().width, y: -font.descender))
+                    return true
+                }
+                let attachment = NSTextAttachment()
+                attachment.image = image
+                attachment.bounds = NSRect(x: 0, y: font.descender, width: size.width, height: size.height)
+                result.append(NSAttributedString(attachment: attachment))
             }
         }
         return result

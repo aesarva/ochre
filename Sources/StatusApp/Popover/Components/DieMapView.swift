@@ -1,7 +1,7 @@
 import MetricsCore
 import SwiftUI
 
-/// Карта кристалла: кластеры ядер CPU и полоса GPU в стеклянной линзе, цвет — по нагрузке.
+/// Карта кристалла: графитовое табло в стеклянной линзе — ядра CPU флажками с загрузкой и полоса GPU.
 struct DieMapView: View {
     enum Size { case compact, large }
 
@@ -27,7 +27,7 @@ struct DieMapView: View {
 
     private var lens: some View {
         GlassEffectContainer {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 ForEach(Array(clusters.enumerated()), id: \.element.cluster.level) { position, item in
                     clusterView(item.cluster, cores: item.cores, isFirst: position == 0)
                 }
@@ -35,7 +35,9 @@ struct DieMapView: View {
             }
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .glassEffect(.regular, in: .rect(cornerRadius: 16))
+            .background(BoardPalette.board, in: .rect(cornerRadius: 13, style: .continuous))
+            .padding(5)
+            .glassEffect(.regular, in: .rect(cornerRadius: 18))
         }
         .contentShape(Rectangle())
     }
@@ -49,48 +51,41 @@ struct DieMapView: View {
 
     private func clusterView(_ cluster: ClusterLoad, cores: [CoreLoad], isFirst: Bool) -> some View {
         VStack(alignment: .leading, spacing: 5) {
-            HStack {
-                Text(cluster.name).font(.system(size: 11)).foregroundStyle(.secondary)
+            HStack(alignment: .firstTextBaseline) {
+                Text(cluster.name.uppercased()).font(BoardPalette.font(11)).tracking(0.8)
+                    .foregroundStyle(BoardPalette.inkDim)
                 Spacer()
                 if isFirst {
                     Text(Format.celsius(cpuCelsius))
-                        .font(.system(size: 13, weight: .semibold, design: .rounded).monospacedDigit())
-                        .foregroundStyle(temperatureHighlighted ? Color.heatHot : .primary)
+                        .font(BoardPalette.font(15))
+                        .foregroundStyle(temperatureHighlighted ? Color.heatHot : BoardPalette.ink)
                 }
             }
             // Большие кластеры (Ultra) переносятся на несколько рядов по ≤ 12 ячеек.
             ForEach(DieMapRows.split(count: cores.count), id: \.lowerBound) { range in
                 HStack(spacing: 3) {
                     ForEach(cores[range], id: \.index) { core in
-                        coreCell(core, clusterName: cluster.name, height: cellHeight(level: cluster.level))
+                        coreCell(core, clusterName: cluster.name, level: cluster.level)
                     }
                 }
             }
         }
     }
 
-    private func cellHeight(level: Int) -> CGFloat {
-        switch size {
-        case .large: 28
-        case .compact: level == 0 ? 22 : 16
+    /// Высота флажка и кегль цифры: старший кластер крупнее, на вкладке CPU всё крупнее.
+    private func cellMetrics(level: Int) -> (height: CGFloat, font: CGFloat) {
+        switch (size, level == 0) {
+        case (.large, true): (40, 19)
+        case (.large, false): (32, 14)
+        case (.compact, true): (34, 16)
+        case (.compact, false): (26, 12)
         }
     }
 
-    private func coreCell(_ core: CoreLoad, clusterName: String, height: CGFloat) -> some View {
-        RoundedRectangle(cornerRadius: 5, style: .continuous)
-            .fill(HeatScale.color(forLoad: core.percent).swiftUIColor)
-            .overlay {
-                RoundedRectangle(cornerRadius: 5, style: .continuous).strokeBorder(Color.primary.opacity(0.1))
-            }
-            .overlay {
-                if size == .large {
-                    Text(Format.integer(core.percent))
-                        .font(.system(size: 9, weight: .medium, design: .rounded).monospacedDigit())
-                        .foregroundStyle(.primary.opacity(0.8))
-                }
-            }
-            .frame(height: height)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.6), value: core.percent)
+    private func coreCell(_ core: CoreLoad, clusterName: String, level: Int) -> some View {
+        let metrics = cellMetrics(level: level)
+        return FlapTile(value: Format.integer(core.percent), load: core.percent, fontSize: metrics.font)
+            .frame(height: metrics.height)
             .help("Ядро \(core.index + 1) · \(clusterName) · \(Format.percent(core.percent))")
     }
 
@@ -100,18 +95,18 @@ struct DieMapView: View {
         // Горящие полоски при малой загрузке не «холодные», а просто светлее фона — иначе их не видно.
         let litColor = gpu.utilizationPercent >= 20
             ? HeatScale.color(forLoad: gpu.utilizationPercent).swiftUIColor
-            : Color.primary.opacity(0.5)
+            : BoardPalette.inkDim
         return VStack(alignment: .leading, spacing: 5) {
             HStack {
-                Text("GPU").font(.system(size: 11)).foregroundStyle(.secondary)
+                Text("GPU").font(BoardPalette.font(11)).tracking(0.8).foregroundStyle(BoardPalette.inkDim)
                 Spacer()
                 Text(Format.percent(gpu.utilizationPercent))
-                    .font(.system(size: 11).monospacedDigit()).foregroundStyle(.secondary)
+                    .font(BoardPalette.font(11)).foregroundStyle(BoardPalette.inkDim)
             }
             HStack(spacing: 2) {
                 ForEach(0..<total, id: \.self) { i in
                     RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .fill(i < lit ? litColor : HeatColor.cold.swiftUIColor)
+                        .fill(i < lit ? litColor : BoardPalette.flap)
                         .frame(height: 9)
                 }
             }

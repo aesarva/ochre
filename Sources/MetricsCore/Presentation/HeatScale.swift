@@ -20,11 +20,20 @@ public enum HeatLevel: Int, Sendable, Comparable {
     public static func < (a: HeatLevel, b: HeatLevel) -> Bool { a.rawValue < b.rawValue }
 }
 
-/// Единственная хроматическая палитра интерфейса: цвет означает нагрев.
+/// Цвет цифр на плитке табло.
+public enum TileInk: Sendable { case light, dark }
+
+/// Единственная хроматическая палитра интерфейса: цвет означает нагрев. Горчичная, как на сайте.
 public enum HeatScale {
-    public static let amber = HeatColor.rgb(red: 255 / 255, green: 196 / 255, blue: 107 / 255)
-    public static let ember = HeatColor.rgb(red: 255 / 255, green: 138 / 255, blue: 92 / 255)
-    public static let hot = HeatColor.rgb(red: 255 / 255, green: 90 / 255, blue: 78 / 255)
+    public static let amber = HeatColor.rgb(red: 227 / 255, green: 191 / 255, blue: 92 / 255)
+    public static let ember = HeatColor.rgb(red: 204 / 255, green: 143 / 255, blue: 37 / 255)
+    public static let hot = HeatColor.rgb(red: 180 / 255, green: 70 / 255, blue: 42 / 255)
+
+    /// Плитка табло: на графите (холодно) и на «жаре» цифры светлые, на янтаре и углях — тёмные.
+    public static func tileInk(forLoad load: Double) -> TileInk {
+        guard load.isFinite, load >= 20, load < 90 else { return .light }
+        return .dark
+    }
 
     /// Загрузка 0…100 %: < 20 — холодное стекло, 20→60 Янтарь→Угли, 60→90 Угли→Жар, ≥ 90 — Жар.
     public static func color(forLoad load: Double) -> HeatColor {
