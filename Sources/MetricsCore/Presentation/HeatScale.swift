@@ -38,6 +38,12 @@ public enum HeatScale {
         }
     }
 
+    /// Доля 0…1 для полосок (100 % = одно ядро); вне диапазона и NaN обрезаются.
+    public static func fraction(_ load: Double) -> Double {
+        guard load.isFinite else { return 0 }
+        return min(max(load, 0), 100) / 100
+    }
+
     /// Температура: < 60° нейтрально, 60–80° янтарь, 80–95° угли, ≥ 95° жар.
     public static func temperatureLevel(_ celsius: Double) -> HeatLevel {
         switch celsius {

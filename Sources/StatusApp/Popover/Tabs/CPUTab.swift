@@ -9,8 +9,10 @@ struct CPUTab: View {
         let now = snapshot?.uptime ?? MonotonicClock.now()
         let h = store.history
         VStack(alignment: .leading, spacing: 12) {
-            DieMapView(cpu: snapshot?.cpu, gpu: snapshot?.gpu, cpuCelsius: snapshot?.sensors?.cpuCelsius,
-                       size: .large, temperatureHighlighted: store.activeAlerts.contains(.cpuTemperature))
+            if snapshot?.cpu != nil || snapshot?.gpu != nil {
+                DieMapView(cpu: snapshot?.cpu, gpu: snapshot?.gpu, cpuCelsius: snapshot?.sensors?.cpuCelsius,
+                           size: .large, temperatureHighlighted: store.activeAlerts.contains(.cpuTemperature))
+            }
             HistoryChart(title: "Всего", value: Format.percent(snapshot?.cpu?.totalPercent),
                          points: h.points(.cpuTotal, now: now), yDomain: 0...100,
                          valueLabel: { Format.percent($0) }, highlighted: store.activeAlerts.contains(.cpuLoad))

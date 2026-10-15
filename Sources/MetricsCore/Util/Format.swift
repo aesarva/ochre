@@ -7,12 +7,18 @@ public enum Format {
     private static let compactUnits = ["K", "M", "G"]
 
     public static func percent(_ value: Double?) -> String {
-        guard let value else { return missing }
+        guard let value, value.isFinite else { return missing }
         return String(format: "%.0f%%", value)
     }
 
+    /// Целое число без единиц — например, процент внутри ячейки ядра.
+    public static func integer(_ value: Double?) -> String {
+        guard let value, value.isFinite else { return missing }
+        return String(format: "%.0f", value)
+    }
+
     public static func celsius(_ value: Double?) -> String {
-        guard let value else { return missing }
+        guard let value, value.isFinite else { return missing }
         return String(format: "%.0f°", value)
     }
 
@@ -22,25 +28,25 @@ public enum Format {
     }
 
     public static func rate(_ bytesPerSecond: Double?) -> String {
-        guard let bytesPerSecond else { return missing }
+        guard let bytesPerSecond, bytesPerSecond.isFinite else { return missing }
         return sizeText(bytesPerSecond) + "/с"
     }
 
     /// Short form for the menu bar: K/M/G without a space; anything under 1 KB shows as "0K".
     public static func compactRate(_ bytesPerSecond: Double?) -> String {
-        guard let bytesPerSecond else { return missing }
+        guard let bytesPerSecond, bytesPerSecond.isFinite else { return missing }
         guard bytesPerSecond >= 1024 else { return "0K" }
         let (value, index) = scale(bytesPerSecond, maxIndex: compactUnits.count - 1)
         return number(value) + compactUnits[index]
     }
 
     public static func watts(_ value: Double?) -> String {
-        guard let value else { return missing }
+        guard let value, value.isFinite else { return missing }
         return String(format: "%.1f Вт", value)
     }
 
     public static func rpm(_ value: Double?) -> String {
-        guard let value else { return missing }
+        guard let value, value.isFinite else { return missing }
         return String(format: "%.0f об/мин", value)
     }
 

@@ -30,12 +30,18 @@ enum MenuBarRenderer {
                 attachment.image = graphImage(values)
                 result.append(NSAttributedString(attachment: attachment))
             case .text(let text, let highlighted):
-                let color: NSColor = highlighted ? .systemRed : .labelColor
+                let color: NSColor = highlighted ? heatHot : .labelColor
                 result.append(NSAttributedString(string: text, attributes: [.font: font, .foregroundColor: color]))
             }
         }
         return result
     }
+
+    /// «Жар» шкалы нагрева — тот же цвет, что у оповещений в панели.
+    @MainActor private static let heatHot: NSColor = {
+        guard case let .rgb(r, g, b) = HeatScale.hot else { return .systemRed }
+        return NSColor(srgbRed: r, green: g, blue: b, alpha: 1)
+    }()
 
     /// Значок строки меню как картинка (прозрачный фон) — для предпросмотра в настройках и снимков.
     @MainActor

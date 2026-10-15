@@ -5,13 +5,6 @@ import SwiftUI
 struct SparklineView: View {
     let points: [HistoryPoint]
     let color: Color
-    let yDomain: ClosedRange<Double>?
-
-    init(points: [HistoryPoint], color: Color, yDomain: ClosedRange<Double>? = nil) {
-        self.points = points
-        self.color = color
-        self.yDomain = yDomain
-    }
 
     var body: some View {
         Chart(points, id: \.t) { point in
@@ -23,7 +16,7 @@ struct SparklineView: View {
         .chartXAxis(.hidden)
         .chartYAxis(.hidden)
         .chartLegend(.hidden)
-        .modifier(OptionalYDomain(domain: yDomain))
+        .chartYScale(domain: .automatic(includesZero: false))
         .frame(height: 20)
     }
 }

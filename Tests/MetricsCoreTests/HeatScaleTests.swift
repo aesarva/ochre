@@ -36,3 +36,12 @@ import Testing
         #expect(HeatLevel.neutral.color == .cold); #expect(HeatLevel.hot.color == HeatScale.hot)
     }
 }
+
+@Suite struct HeatFractionTests {
+    @Test func clampsToUnitRange() {
+        #expect(HeatScale.fraction(50) == 0.5)
+        #expect(HeatScale.fraction(142) == 1)
+        #expect(HeatScale.fraction(-5) == 0)
+        #expect(HeatScale.fraction(.nan) == 0)
+    }
+}

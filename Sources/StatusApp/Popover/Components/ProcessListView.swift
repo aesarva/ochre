@@ -29,7 +29,7 @@ struct ProcessListView: View {
         return GeometryReader { geo in
             Capsule()
                 .fill(HeatScale.color(forLoad: load).swiftUIColor)
-                .frame(width: geo.size.width * min(max(load, 0), 100) / 100, height: 2)
+                .frame(width: geo.size.width * HeatScale.fraction(load), height: 2)
                 .frame(maxHeight: .infinity, alignment: .bottom)
         }
         .frame(height: 2)

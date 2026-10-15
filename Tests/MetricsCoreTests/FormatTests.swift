@@ -32,3 +32,17 @@ import Testing
         #expect(Format.compactRate(1024) == "1.0K")
     }
 }
+
+@Suite struct NonFiniteFormatTests {
+    @Test func nonFiniteRendersAsDash() {
+        #expect(Format.percent(.nan) == "—")
+        #expect(Format.percent(.infinity) == "—")
+        #expect(Format.celsius(.nan) == "—")
+        #expect(Format.watts(.infinity) == "—")
+    }
+    @Test func integer() {
+        #expect(Format.integer(34.6) == "35")
+        #expect(Format.integer(.nan) == "—")
+        #expect(Format.integer(nil) == "—")
+    }
+}

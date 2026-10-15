@@ -11,7 +11,7 @@ public struct HistoryPoint: Sendable, Equatable {
 }
 
 public enum Series: Hashable, Sendable {
-    case cpuTotal, cluster(Int), core(Int), memoryUsed, cpuTemperature, gpu
+    case cpuTotal, cluster(Int), memoryUsed
     case networkDown, networkUp, diskRead, diskWrite
 }
 
@@ -35,11 +35,8 @@ public struct MetricsHistory: Sendable {
         if let cpu = snapshot.cpu {
             add(.cpuTotal, cpu.totalPercent)
             for c in cpu.clusters { add(.cluster(c.level), c.percent) }
-            for c in cpu.cores { add(.core(c.index), c.percent) }
         }
         add(.memoryUsed, snapshot.memory?.usedPercent)
-        add(.cpuTemperature, snapshot.sensors?.cpuCelsius)
-        add(.gpu, snapshot.gpu?.utilizationPercent)
         add(.networkDown, snapshot.network?.downPerSecond)
         add(.networkUp, snapshot.network?.upPerSecond)
         add(.diskRead, snapshot.disk?.readPerSecond)

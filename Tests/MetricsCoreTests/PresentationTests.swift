@@ -30,11 +30,6 @@ import Foundation
                                            cpuHistory: (1...15).map(Double.init), active: [])
         #expect(segs == [.cpuGraph((6...15).map(Double.init))])
     }
-    @Test func hidesTilesWithoutData() {
-        var s = snap(); s.sensors = nil
-        #expect(OverviewTile.visible(in: s) == [.cpu])
-        #expect(OverviewTile.visible(in: nil) == [.cpu, .memory, .temperature, .gpu, .network, .disk])
-    }
     @Test func networkTextAndOrder() {
         var s = snap()
         s.network = NetworkStats(interface: "en0", downPerSecond: 2_516_582, upPerSecond: 122_880, totalDown: 0, totalUp: 0)

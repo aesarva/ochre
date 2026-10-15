@@ -51,7 +51,7 @@ struct GeneralSettingsTab: View {
                     launchAtLogin = LaunchAtLogin.isEnabled
                 }))
             if let launchError {
-                Text(launchError).font(.caption).foregroundStyle(.red)
+                Label(launchError, systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)

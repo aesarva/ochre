@@ -15,6 +15,17 @@ struct DieMapView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        if let onTap {
+            Button(action: onTap) { lens }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Карта кристалла")
+                .accessibilityHint("Открывает вкладку CPU")
+        } else {
+            lens
+        }
+    }
+
+    private var lens: some View {
         GlassEffectContainer {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(Array(clusters.enumerated()), id: \.element.cluster.level) { position, item in
@@ -27,7 +38,6 @@ struct DieMapView: View {
             .glassEffect(.regular, in: .rect(cornerRadius: 16))
         }
         .contentShape(Rectangle())
-        .onTapGesture { onTap?() }
     }
 
     private var clusters: [(cluster: ClusterLoad, cores: [CoreLoad])] {
@@ -44,7 +54,7 @@ struct DieMapView: View {
                 Spacer()
                 if isFirst {
                     Text(Format.celsius(cpuCelsius))
-                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .font(.system(size: 13, weight: .semibold, design: .rounded).monospacedDigit())
                         .foregroundStyle(temperatureHighlighted ? Color.heatHot : .primary)
                 }
             }
@@ -74,7 +84,7 @@ struct DieMapView: View {
             }
             .overlay {
                 if size == .large {
-                    Text("\(Int(core.percent.rounded()))")
+                    Text(Format.integer(core.percent))
                         .font(.system(size: 9, weight: .medium, design: .rounded).monospacedDigit())
                         .foregroundStyle(.primary.opacity(0.8))
                 }
