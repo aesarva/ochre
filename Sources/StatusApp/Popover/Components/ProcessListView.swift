@@ -4,9 +4,17 @@ import SwiftUI
 struct ProcessListView: View {
     let rows: [ProcessRow]
     let limit: Int
+    var placeholderRows = 0
 
     var body: some View {
         VStack(spacing: 3) {
+            ForEach(0..<(rows.isEmpty ? placeholderRows : 0), id: \.self) { _ in
+                Text("—")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.tertiary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 3)
+            }
             ForEach(rows.prefix(limit)) { row in
                 HStack {
                     Text(row.name).lineLimit(1).truncationMode(.tail)

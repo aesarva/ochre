@@ -21,6 +21,8 @@ enum PopoverTab: String, CaseIterable {
 struct PopoverView: View {
     let store: MetricsStore
     let onOpenSettings: () -> Void
+    /// Сообщает естественный размер содержимого — контроллер сам ставит его панели.
+    var onSizeChange: (CGSize) -> Void = { _ in }
     @State private var tab: PopoverTab
 
     init(store: MetricsStore, initialTab: PopoverTab, onOpenSettings: @escaping () -> Void) {
@@ -47,6 +49,10 @@ struct PopoverView: View {
         }
         .padding(14)
         .frame(width: 340)
+        .fixedSize(horizontal: false, vertical: true)
+        .onGeometryChange(for: CGSize.self) { $0.size } action: { onSizeChange($0) }
+        // Пока окно анимирует высоту, содержимое прибито к верху — вкладки не съезжают.
+        .frame(maxHeight: .infinity, alignment: .top)
     }
 
     @ViewBuilder

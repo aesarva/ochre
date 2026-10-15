@@ -56,9 +56,15 @@ private struct SegmentLabel: ViewModifier {
     let namespace: Namespace.ID
 
     func body(content: Content) -> some View {
+        // Ширина резервируется под полужирное начертание, чтобы выбор вкладки не сдвигал соседние.
         content
-            .font(.system(size: 12, weight: selected ? .semibold : .regular))
-            .foregroundStyle(selected ? .primary : .secondary)
+            .font(.system(size: 12, weight: .semibold))
+            .hidden()
+            .overlay {
+                content
+                    .font(.system(size: 12, weight: selected ? .semibold : .regular))
+                    .foregroundStyle(selected ? .primary : .secondary)
+            }
             .lineLimit(1)
             .fixedSize()
             .padding(.horizontal, 8)

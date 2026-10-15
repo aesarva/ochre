@@ -28,8 +28,18 @@ final class PopoverController: NSObject, NSPopoverDelegate {
             let popover = NSPopover()
             popover.behavior = .transient
             popover.delegate = self
-            popover.contentViewController = NSHostingController(
-                rootView: PopoverView(store: store, initialTab: initialTab, onOpenSettings: onOpenSettings))
+            var view = PopoverView(store: store, initialTab: initialTab, onOpenSettings: onOpenSettings)
+            // Размер панели задаём сами через contentSize: так NSPopover меняет его, держась за стрелку у значка.
+            // Автоматический режим (preferredContentSize) сначала растит окно от нижнего края, а потом
+            // сдвигает его обратно — панель с вкладками прыгает; без размера окно ставится под 320×320.
+            view.onSizeChange = { [weak popover] size in
+                guard let popover, size.height > 0, popover.contentSize != size else { return }
+                popover.contentSize = size
+            }
+            let host = NSHostingController(rootView: view)
+            host.sizingOptions = []
+            popover.contentViewController = host
+            popover.contentSize = host.view.fittingSize
             self.popover = popover
             NSApp.activate()
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)

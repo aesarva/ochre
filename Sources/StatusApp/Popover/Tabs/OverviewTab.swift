@@ -35,9 +35,12 @@ struct OverviewTab: View {
                               points: h.points(.diskRead, now: now), highlighted: alerts.contains(.diskSpace))
                 }
             }
+            Divider().opacity(0.5)
             if let rows = snapshot?.processes, !rows.isEmpty {
-                Divider().opacity(0.5)
                 ProcessListView(rows: rows, limit: 3)
+            } else {
+                // Место под топ-3 держится заранее: процессы приходят через секунду после открытия панели.
+                ProcessListView(rows: [], limit: 3, placeholderRows: 3)
             }
         }
     }
