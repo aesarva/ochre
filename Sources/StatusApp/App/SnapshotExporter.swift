@@ -17,6 +17,24 @@ enum SnapshotExporter {
                 write(cg, to: dir.appendingPathComponent("tab-\(tab.rawValue).png"))
             }
         }
+        let tabs: [(String, AnyView)] = [
+            ("general", AnyView(GeneralSettingsTab(settings: settings))),
+            ("menubar", AnyView(MenuBarSettingsTab(settings: settings))),
+            ("alerts", AnyView(AlertSettingsTab(settings: settings))),
+        ]
+        // Form/Stepper are AppKit-backed, so ImageRenderer draws them blank; snapshot a real hosting view instead.
+        for (name, content) in tabs {
+            let host = NSHostingView(rootView: content.frame(width: 420, height: 420))
+            host.frame = NSRect(x: 0, y: 0, width: 420, height: 420)
+            let window = NSWindow(contentRect: host.frame, styleMask: [.titled], backing: .buffered, defer: false)
+            window.contentView = host
+            host.layoutSubtreeIfNeeded()
+            if let rep = host.bitmapImageRepForCachingDisplay(in: host.bounds) {
+                host.cacheDisplay(in: host.bounds, to: rep)
+                try? rep.representation(using: .png, properties: [:])?
+                    .write(to: dir.appendingPathComponent("settings-\(name).png"))
+            }
+        }
         let cpu = store.latest.map { store.history.points(.cpuTotal, now: $0.uptime).map(\.value) } ?? []
         let segments = MenuBarContent.segments(items: settings.settings.menuBarItems, snapshot: store.latest,
                                                cpuHistory: cpu, active: store.activeAlerts)

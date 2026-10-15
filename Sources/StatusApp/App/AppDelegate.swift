@@ -6,13 +6,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var metricsStore: MetricsStore?
     private var popoverController: PopoverController?
     private var statusItemController: StatusItemController?
+    private var settingsWindow: SettingsWindowController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let settings = SettingsStore()
         let store = MetricsStore(settings: settings)
         let defaults = UserDefaults.standard
         let tab = defaults.string(forKey: "PopoverTab").flatMap(PopoverTab.init(rawValue:)) ?? .overview
-        let popover = PopoverController(store: store, initialTab: tab)
+        let settingsWindow = SettingsWindowController(settings: settings)
+        var popoverRef: PopoverController?
+        let popover = PopoverController(store: store, initialTab: tab) {
+            popoverRef?.close()
+            settingsWindow.show()
+        }
+        popoverRef = popover
+        self.settingsWindow = settingsWindow
         let statusItem = StatusItemController(store: store, settings: settings) { [popover] button in
             popover.toggle(relativeTo: button)
         }

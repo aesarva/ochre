@@ -27,6 +27,20 @@ final class MetricsStore {
 
     func start() {
         restartLoop()
+        observeRefreshInterval()
+    }
+
+    /// Restarts the sampling loop as soon as the user picks another refresh interval.
+    private func observeRefreshInterval() {
+        withObservationTracking {
+            _ = settings.settings.refreshInterval
+        } onChange: { [weak self] in
+            Task { @MainActor in
+                guard let self else { return }
+                self.restartLoop()
+                self.observeRefreshInterval()
+            }
+        }
     }
 
     private func restartLoop() {

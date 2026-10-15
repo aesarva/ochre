@@ -30,6 +30,10 @@ final class PopoverController: NSObject, NSPopoverDelegate {
         }
     }
 
+    func close() {
+        popover?.performClose(nil)
+    }
+
     func popoverDidClose(_ notification: Notification) {
         store.isPopoverOpen = false
         popover?.contentViewController = nil
