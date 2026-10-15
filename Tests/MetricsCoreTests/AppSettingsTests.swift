@@ -30,4 +30,19 @@ import Foundation
         #expect(s.menuBarItems == [.cpuPercent, .temperature])
         #expect(s.refreshInterval == 1)
     }
+    @Test func hugeAlertValuesAreClamped() throws {
+        let json = #"{"enabled":true,"threshold":1e300,"duration":-5}"#
+        let rule = try JSONDecoder().decode(AlertRuleConfig.self, from: Data(json.utf8))
+        #expect(rule.threshold == 1000)
+        #expect(rule.duration == 0)
+        let long = try JSONDecoder().decode(AlertRuleConfig.self, from: Data(#"{"enabled":false,"threshold":-1,"duration":99999}"#.utf8))
+        #expect(long.threshold == 0 && long.duration == 3600)
+    }
+    @Test func settingsWithHugeAlertValuesDecode() {
+        let json = #"{"refreshInterval":5,"alerts":{"rules":{"cpuLoad":{"enabled":true,"threshold":1e300,"duration":1e300}}}}"#
+        let s = AppSettings.decode(Data(json.utf8))
+        #expect(s.refreshInterval == 5)
+        #expect(s.alerts.rule(.cpuLoad).threshold == 1000)
+        #expect(s.alerts.rule(.cpuLoad).duration == 3600)
+    }
 }

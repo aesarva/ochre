@@ -14,6 +14,22 @@ public struct AlertRuleConfig: Codable, Sendable, Equatable {
         self.threshold = threshold
         self.duration = duration
     }
+
+    private enum CodingKeys: String, CodingKey { case enabled, threshold, duration }
+
+    /// Lenient decoding: non-finite values are rejected, huge/negative ones are clamped
+    /// (threshold 0…1000, duration 0…3600) so the UI never sees values it cannot format.
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        enabled = try c.decode(Bool.self, forKey: .enabled)
+        let t = try c.decode(Double.self, forKey: .threshold)
+        let d = try c.decode(Double.self, forKey: .duration)
+        guard t.isFinite, d.isFinite else {
+            throw DecodingError.dataCorruptedError(forKey: .threshold, in: c, debugDescription: "non-finite value")
+        }
+        threshold = min(max(t, 0), 1000)
+        duration = min(max(d, 0), 3600)
+    }
 }
 
 public struct AlertConfig: Codable, Sendable, Equatable {

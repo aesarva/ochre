@@ -111,12 +111,12 @@ struct AlertSettingsTab: View {
                     Toggle(spec.title, isOn: rule.enabled)
                     if let range = spec.range {
                         Stepper(value: rule.threshold, in: range, step: spec.step) {
-                            Text("Порог: \(Int(rule.wrappedValue.threshold)) \(spec.unit)")
+                            Text("Порог: \(String(format: "%.0f", rule.wrappedValue.threshold)) \(spec.unit)")
                         }
                     }
                     if spec.hasDuration {
                         Stepper(value: rule.duration, in: 0...600, step: 10) {
-                            Text("Длительность: \(Int(rule.wrappedValue.duration)) с")
+                            Text("Длительность: \(String(format: "%.0f", rule.wrappedValue.duration)) с")
                         }
                     }
                 }
