@@ -22,3 +22,25 @@ import Foundation
         #expect(m.pressure != nil)
     }
 }
+
+@Suite struct EffectiveLevelsTests {
+    @Test func matchingPassesThrough() {
+        let levels = [PerfLevel(index: 0, name: "Super", coreCount: 6),
+                      PerfLevel(index: 1, name: "Performance", coreCount: 12)]
+        let r = CPUCollector.effectiveLevels(levels, coreCount: 18)
+        #expect(r.map(\.name) == ["Super", "Performance"])
+        #expect(r.map(\.coreCount) == [6, 12])
+    }
+
+    @Test func mismatchFallsBackToCPU() {
+        let levels = [PerfLevel(index: 0, name: "Super", coreCount: 0),
+                      PerfLevel(index: 1, name: "Performance", coreCount: 12)]
+        let r = CPUCollector.effectiveLevels(levels, coreCount: 18)
+        #expect(r.count == 1 && r[0].name == "CPU" && r[0].index == 0 && r[0].coreCount == 18)
+    }
+
+    @Test func emptyFallsBackToCPU() {
+        let r = CPUCollector.effectiveLevels([], coreCount: 8)
+        #expect(r.count == 1 && r[0].name == "CPU" && r[0].coreCount == 8)
+    }
+}

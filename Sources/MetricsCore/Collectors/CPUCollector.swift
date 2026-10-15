@@ -13,9 +13,8 @@ public struct CPUCollector {
         guard let prev = previous, prev.count == current.count else { return nil }
         guard let total = CPULoad.percent(from: prev, to: current) else { return nil }
 
-        let levels = Self.readLevels()
+        let levels = Self.effectiveLevels(Self.readLevels(), coreCount: current.count)
         let coreLevels = CoreTopology.levelForEachCore(levels: levels, totalCores: current.count)
-        guard coreLevels.count == current.count else { return nil }
 
         var cores: [CoreLoad] = []
         for i in current.indices {
@@ -34,7 +33,16 @@ public struct CPUCollector {
         return CPUStats(totalPercent: total, clusters: clusters, cores: cores)
     }
 
-    private static func readLevels() -> [PerfLevel] {
+    /// Levels pass through only if their core counts add up to `coreCount`;
+    /// otherwise a single "CPU" level covering all cores is used.
+    static func effectiveLevels(_ levels: [PerfLevel], coreCount: Int) -> [PerfLevel] {
+        if !levels.isEmpty, levels.reduce(0, { $0 + $1.coreCount }) == coreCount {
+            return levels
+        }
+        return [PerfLevel(index: 0, name: "CPU", coreCount: coreCount)]
+    }
+
+    private static func readLevels()-> [PerfLevel] {
         guard let count = Sysctl.int("hw.nperflevels"), count > 0 else {
             let cores = Sysctl.int("hw.ncpu") ?? 0
             return [PerfLevel(index: 0, name: "CPU", coreCount: cores)]
