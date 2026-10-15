@@ -53,6 +53,17 @@ import Foundation
         if let cpu = s.cpuCelsius { #expect((10...120).contains(cpu)) }
         #expect(s.temperatures.allSatisfy { $0.celsius > 0 && $0.celsius < 150 })
     }
+
+    @Test func processes() async throws {
+        var p = ProcessCollector()
+        _ = p.sample(now: MonotonicClock.now())
+        try await Task.sleep(for: .milliseconds(300))
+        let second = p.sample(now: MonotonicClock.now())
+        let rows = try #require(second)
+        #expect(rows.count > 10)
+        #expect(rows.contains { $0.pid == getpid() })
+        #expect(rows.allSatisfy { !$0.name.isEmpty })
+    }
 }
 
 @Suite struct EffectiveLevelsTests {
