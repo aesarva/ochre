@@ -1,5 +1,5 @@
 #!/bin/bash
-# Собирает build/StatusApp.app.
+# Собирает build/Ochre.app (исполняемый модуль SwiftPM по-прежнему называется StatusApp).
 #   ARCHS          архитектуры (по умолчанию "arm64 x86_64" — universal)
 #   VERSION        версия для CFBundleShortVersionString (по умолчанию — из Resources/Info.plist)
 #   SIGN_IDENTITY  сертификат подписи, например "Developer ID Application: Имя (TEAMID)";
@@ -20,10 +20,10 @@ for arch in $ARCHS; do ARCH_FLAGS+=(--arch "$arch"); done
 swift build -c release "${ARCH_FLAGS[@]}"
 BIN_DIR="$(swift build -c release "${ARCH_FLAGS[@]}" --show-bin-path)"
 
-APP=build/StatusApp.app
+APP=build/Ochre.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN_DIR/StatusApp" "$APP/Contents/MacOS/StatusApp"
+cp "$BIN_DIR/StatusApp" "$APP/Contents/MacOS/Ochre"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 
 PLIST="$APP/Contents/Info.plist"

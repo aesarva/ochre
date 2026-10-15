@@ -6,14 +6,14 @@
 #
 # Однократная подготовка — см. раздел «Релиз» в README.md:
 #   SIGN_IDENTITY   "Developer ID Application: Имя (TEAMID)" (по умолчанию ищется в связке ключей)
-#   NOTARY_PROFILE  имя профиля из `xcrun notarytool store-credentials` (по умолчанию StatusApp)
+#   NOTARY_PROFILE  имя профиля из `xcrun notarytool store-credentials` (по умолчанию Ochre)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 VERSION="${1:?Использование: scripts/release.sh <версия> [--unsigned]}"
 UNSIGNED=false
 [ "${2:-}" = "--unsigned" ] && UNSIGNED=true
-NOTARY_PROFILE="${NOTARY_PROFILE:-StatusApp}"
+NOTARY_PROFILE="${NOTARY_PROFILE:-Ochre}"
 
 if [ -z "${DEVELOPER_DIR:-}" ] && [ -d /Applications/Xcode.app ]; then
     export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
@@ -39,12 +39,12 @@ notarize() {
 
 echo "==> Сборка $VERSION"
 VERSION="$VERSION" SIGN_IDENTITY="$SIGN_IDENTITY" scripts/build-app.sh
-APP=build/StatusApp.app
+APP=build/Ochre.app
 
 if ! $UNSIGNED; then
     # Приложение нотаризуем отдельно, чтобы скрепить билет с ним самим: тогда оно
     # открывается без сети, даже если пользователь скопирует его куда-то из DMG.
-    ZIP="$(mktemp -d)/StatusApp.zip"
+    ZIP="$(mktemp -d)/Ochre.zip"
     ditto -c -k --keepParent "$APP" "$ZIP"
     notarize "$ZIP"
     xcrun stapler staple "$APP"
@@ -52,12 +52,12 @@ if ! $UNSIGNED; then
 fi
 
 mkdir -p dist
-DMG="dist/StatusApp-$VERSION.dmg"
+DMG="dist/Ochre-$VERSION.dmg"
 STAGING="$(mktemp -d)"
 cp -R "$APP" "$STAGING/"
 ln -s /Applications "$STAGING/Applications"
 rm -f "$DMG"
-hdiutil create -volname "StatusApp $VERSION" -srcfolder "$STAGING" -fs HFS+ -format UDZO -ov "$DMG" >/dev/null
+hdiutil create -volname "Ochre $VERSION" -srcfolder "$STAGING" -fs HFS+ -format UDZO -ov "$DMG" >/dev/null
 rm -rf "$STAGING"
 
 if ! $UNSIGNED; then
@@ -70,7 +70,7 @@ if ! $UNSIGNED; then
 fi
 
 # Копия без версии — на неё ведут кнопки «Скачать» на сайте (site/), кладётся рядом с index.html.
-cp "$DMG" dist/StatusApp.dmg
+cp "$DMG" dist/Ochre.dmg
 
-echo "==> Готово: $(pwd)/$DMG (и dist/StatusApp.dmg для сайта)"
+echo "==> Готово: $(pwd)/$DMG (и dist/Ochre.dmg для сайта)"
 shasum -a 256 "$DMG"

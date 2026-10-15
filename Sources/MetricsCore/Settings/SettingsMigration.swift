@@ -3,8 +3,9 @@ import Foundation
 /// Переносит настройки со старого идентификатора приложения: UserDefaults привязаны к bundle id,
 /// и без переноса смена идентификатора сбросила бы настройки пользователя.
 public enum SettingsMigration {
-    /// Идентификатор, под которым приложение жило до подписи Developer ID.
-    public static let legacyBundleIdentifier = "local.statusapp.StatusApp"
+    /// Прежние идентификаторы приложения, от новых к старым: до переименования в Ochre
+    /// и до подписи Developer ID.
+    public static let legacyBundleIdentifiers = ["com.alexsarva.StatusApp", "local.statusapp.StatusApp"]
 
     /// Копирует значение `key` из `legacy` в `current`, только если в `current` его ещё нет.
     /// Возвращает `true`, если что-то скопировано.
@@ -13,5 +14,11 @@ public enum SettingsMigration {
         guard current.object(forKey: key) == nil, let value = legacy.object(forKey: key) else { return false }
         current.set(value, forKey: key)
         return true
+    }
+
+    /// Берёт значение из первого (самого нового) старого хранилища, где оно есть.
+    @discardableResult
+    public static func migrate(key: String, fromFirstOf legacies: [UserDefaults], to current: UserDefaults) -> Bool {
+        legacies.contains { migrate(key: key, from: $0, to: current) }
     }
 }

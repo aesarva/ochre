@@ -5,9 +5,9 @@ primary_target: "site/index.html"
 related_targets: []
 ---
 
-# Surface brief: StatusApp landing (site/index.html)
+# Surface brief: Ochre landing (site/index.html)
 
-Scope: public landing page for StatusApp. Mode: Persuade. Bilingual RU/EN with a switcher; desktop, tablet, phone.
+Scope: public landing page for Ochre. Mode: Persuade. Bilingual RU/EN with a switcher; desktop, tablet, phone.
 Audience: Apple Silicon Mac owners, technical and everyday. Action: download the free notarized DMG (macOS 26+). Proof: the die map itself (simulated, labeled), real popover renders from the app, measured footprint (0.7% CPU, 13 MB, M5 Pro, popover closed). No testimonials, counts, prices beyond "free", or source links.
 Constraints: gray-mustard palette pinned by the user; colour still means load/heat; static HTML/CSS/JS, relative URLs, no build step; DMG is served beside the page.
 Memorable moment: the board flips — core cells flip as load changes every 2 s, and switching language flips every board label.

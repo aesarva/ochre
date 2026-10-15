@@ -53,9 +53,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// Настройки старых сборок лежат под прежним bundle id — забираем их при первом запуске.
     private func migrateLegacySettings() {
-        let legacyID = SettingsMigration.legacyBundleIdentifier
-        guard Bundle.main.bundleIdentifier != legacyID, let legacy = UserDefaults(suiteName: legacyID) else { return }
-        SettingsMigration.migrate(key: SettingsStore.defaultsKey, from: legacy, to: .standard)
+        let legacies = SettingsMigration.legacyBundleIdentifiers
+            .filter { $0 != Bundle.main.bundleIdentifier }
+            .compactMap(UserDefaults.init(suiteName:))
+        SettingsMigration.migrate(key: SettingsStore.defaultsKey, fromFirstOf: legacies, to: .standard)
     }
 
     private static func flag(_ value: Any?) -> Bool {

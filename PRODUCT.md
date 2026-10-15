@@ -16,7 +16,7 @@ Mac owners on Apple Silicon, from technical users (developers, people who know w
 
 ## Product Purpose
 
-StatusApp is a macOS menu-bar system monitor: CPU, memory, disk, network, GPU, battery, sensors (temperatures, fans, system power) and processes, shown in a popover from the menu bar. Success: a glance at the menu bar or the Overview tab tells which cores are loaded and whether the Mac is overheating.
+Ochre is a macOS menu-bar system monitor: CPU, memory, disk, network, GPU, battery, sensors (temperatures, fans, system power) and processes, shown in a popover from the menu bar. Success: a glance at the menu bar or the Overview tab tells which cores are loaded and whether the Mac is overheating.
 
 ## Positioning
 
@@ -36,7 +36,7 @@ Lives only in the menu bar (no Dock icon). Popover tabs: Overview, CPU, Memory, 
 
 ## Brand Commitments
 
-- Name: StatusApp.
+- Name: Ochre (renamed from StatusApp on 2026-10-16; the name is the colour of the heat palette). Bundle id `com.alexsarva.Ochre`.
 - App icon: `Resources/AppIcon.icon` (die map with heat-lit cores on graphite).
 - Price: free. Source code is closed: no GitHub/source links on public surfaces.
 - The landing page is bilingual, Russian and English, with a switcher.

@@ -1,5 +1,5 @@
 ---
-name: StatusApp
+name: Ochre
 description: A station departure board for your Mac's chip, where cores, processes and labels are split-flap tiles that flip with load.
 colors:
   mustard: "#D6A92E"
@@ -131,7 +131,7 @@ components:
     textColor: "{colors.ink-on-heat}"
 ---
 
-# Design System: StatusApp
+# Design System: Ochre
 
 ## Overview
 

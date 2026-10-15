@@ -50,7 +50,7 @@ public enum MenuBarContent {
 
     /// Подпись значка для VoiceOver: текст сегментов рисуется картинками фиксированной ширины.
     public static func spokenLabel(_ segments: [MenuBarSegment]) -> String {
-        (["StatusApp"] + segments.compactMap { if case let .text(text, _, _) = $0 { text } else { nil } })
+        (["Ochre"] + segments.compactMap { if case let .text(text, _, _) = $0 { text } else { nil } })
             .joined(separator: ", ")
     }
 

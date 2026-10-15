@@ -50,7 +50,7 @@ public struct NetworkCollector {
     }
 
     static func primaryInterface() -> String? {
-        guard let store = SCDynamicStoreCreate(nil, "local.statusapp" as CFString, nil, nil),
+        guard let store = SCDynamicStoreCreate(nil, "com.alexsarva.Ochre" as CFString, nil, nil),
               let dict = SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv4" as CFString) as? [String: Any]
         else { return nil }
         return dict["PrimaryInterface"] as? String

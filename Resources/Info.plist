@@ -3,19 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>StatusApp</string>
+	<string>Ochre</string>
 	<key>CFBundleExecutable</key>
-	<string>StatusApp</string>
+	<string>Ochre</string>
 	<key>CFBundleIconFile</key>
 	<string>AppIcon</string>
 	<key>CFBundleIconName</key>
 	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.alexsarva.StatusApp</string>
+	<string>com.alexsarva.Ochre</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>StatusApp</string>
+	<string>Ochre</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

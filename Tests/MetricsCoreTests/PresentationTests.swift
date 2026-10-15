@@ -60,6 +60,6 @@ import Foundation
     @Test func spokenLabelJoinsVisibleValues() {
         let segs: [MenuBarSegment] = [.miniDie([]), .cpuGraph([1]), .text("CPU 23%", highlighted: false, widthTemplate: "CPU 00%"),
                                       .text("91°", highlighted: true, widthTemplate: "00°")]
-        #expect(MenuBarContent.spokenLabel(segs) == "StatusApp, CPU 23%, 91°")
+        #expect(MenuBarContent.spokenLabel(segs) == "Ochre, CPU 23%, 91°")
     }
 }

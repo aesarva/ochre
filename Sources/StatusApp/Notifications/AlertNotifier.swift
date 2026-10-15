@@ -10,7 +10,7 @@ protocol AlertNotifier {
 
 @MainActor
 final class UserNotificationNotifier: AlertNotifier {
-    private let logger = Logger(subsystem: "local.statusapp", category: "notifications")
+    private let logger = Logger(subsystem: "com.alexsarva.Ochre", category: "notifications")
     private var authorizationRequested = false
     private var loggedNoBundle = false
 

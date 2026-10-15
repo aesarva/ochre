@@ -12,7 +12,7 @@ public actor Sampler {
     private let sensors = SensorCollector()
     private var processes = ProcessCollector()
 
-    private let logger = Logger(subsystem: "local.statusapp", category: "sampler")
+    private let logger = Logger(subsystem: "com.alexsarva.Ochre", category: "sampler")
     /// Collectors currently known to be unavailable (already logged).
     private var unavailable: Set<String> = []
     /// Collectors that legitimately return nil on their first call.

@@ -18,7 +18,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             let host = NSHostingController(rootView: SettingsView(settings: settings, store: store))
             host.sizingOptions = [.preferredContentSize]
             let window = NSWindow(contentViewController: host)
-            window.title = "Настройки StatusApp"
+            window.title = "Настройки Ochre"
             window.styleMask = [.titled, .closable]
             window.isReleasedWhenClosed = false
             window.delegate = self
