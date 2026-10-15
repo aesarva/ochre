@@ -20,12 +20,15 @@ final class MetricsStore {
     @ObservationIgnored private let sampler = Sampler()
     @ObservationIgnored private var engine = AlertEngine()
     @ObservationIgnored private var loop: Task<Void, Never>?
+    @ObservationIgnored private var observedInterval: Double?
 
     init(settings: SettingsStore) {
         self.settings = settings
     }
 
     func start() {
+        guard loop == nil else { return }
+        observedInterval = settings.settings.refreshInterval
         restartLoop()
         observeRefreshInterval()
     }
@@ -37,7 +40,11 @@ final class MetricsStore {
         } onChange: { [weak self] in
             Task { @MainActor in
                 guard let self else { return }
-                self.restartLoop()
+                let interval = self.settings.settings.refreshInterval
+                if interval != self.observedInterval {
+                    self.observedInterval = interval
+                    self.restartLoop()
+                }
                 self.observeRefreshInterval()
             }
         }
