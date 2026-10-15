@@ -7,6 +7,7 @@ final class PopoverController: NSObject, NSPopoverDelegate {
     private let initialTab: PopoverTab
     private let onOpenSettings: () -> Void
     private var popover: NSPopover?
+    private var clickMonitor: Any?
 
     init(store: MetricsStore, initialTab: PopoverTab = .overview, onOpenSettings: @escaping () -> Void = {}) {
         self.store = store
@@ -33,6 +34,11 @@ final class PopoverController: NSObject, NSPopoverDelegate {
             NSApp.activate()
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             store.isPopoverOpen = true
+            // Safety net: clicks in other apps close the popover even if activation was refused
+            // (a transient popover in an inactive LSUIElement app otherwise stays open).
+            clickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+                MainActor.assumeIsolated { self?.close() }
+            }
         }
     }
 
@@ -42,6 +48,8 @@ final class PopoverController: NSObject, NSPopoverDelegate {
 
     func popoverDidClose(_ notification: Notification) {
         store.isPopoverOpen = false
+        if let clickMonitor { NSEvent.removeMonitor(clickMonitor) }
+        clickMonitor = nil
         popover?.contentViewController = nil
         popover = nil
     }
