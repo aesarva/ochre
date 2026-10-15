@@ -16,12 +16,12 @@ struct SensorsTab: View {
                         cpuRow(groups)
                         if cpuExpanded {
                             ForEach(Array(groups.cpu.enumerated()), id: \.offset) { _, r in
-                                DetailRow(label: r.name, value: Format.celsius(r.celsius)).padding(.leading, 14)
+                                DetailRow(label: r.name, value: Format.celsius(r.celsius), valueColor: Self.tint(r.celsius)).padding(.leading, 14)
                             }
                         }
                     }
                     ForEach(Array(groups.other.enumerated()), id: \.offset) { _, r in
-                        DetailRow(label: r.name, value: Format.celsius(r.celsius))
+                        DetailRow(label: r.name, value: Format.celsius(r.celsius), valueColor: Self.tint(r.celsius))
                     }
                 } else {
                     DetailRow(label: "—", value: "—")
@@ -58,6 +58,12 @@ struct SensorsTab: View {
         }
     }
 
+    /// Температура окрашивается ступенчато по шкале нагрева; нейтральная — основным цветом.
+    private static func tint(_ celsius: Double) -> Color {
+        let level = HeatScale.temperatureLevel(celsius)
+        return level == .neutral ? .primary : level.color.swiftUIColor
+    }
+
     private func cpuRow(_ groups: SensorGroups) -> some View {
         Button { cpuExpanded.toggle() } label: {
             HStack(spacing: 4) {
@@ -66,7 +72,8 @@ struct SensorsTab: View {
                     .foregroundStyle(.secondary)
                     .frame(width: 10)
                 DetailRow(label: "CPU (\(groups.cpu.count) датч.)",
-                          value: "макс \(Format.celsius(groups.cpuMax)) · сред. \(Format.celsius(groups.cpuAverage))")
+                          value: "макс \(Format.celsius(groups.cpuMax)) · сред. \(Format.celsius(groups.cpuAverage))",
+                          valueColor: groups.cpuMax.map(Self.tint) ?? .primary)
             }
             .contentShape(Rectangle())
         }

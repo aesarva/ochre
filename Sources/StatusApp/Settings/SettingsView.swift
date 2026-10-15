@@ -3,17 +3,28 @@ import SwiftUI
 
 struct SettingsView: View {
     let settings: SettingsStore
+    let store: MetricsStore?
 
     var body: some View {
         TabView {
             GeneralSettingsTab(settings: settings)
+                .fittedForm()
                 .tabItem { Text("Общие") }
-            MenuBarSettingsTab(settings: settings)
+            MenuBarSettingsTab(settings: settings, store: store)
+                .fittedForm()
                 .tabItem { Text("Строка меню") }
             AlertSettingsTab(settings: settings)
+                .fittedForm()
                 .tabItem { Text("Оповещения") }
         }
-        .frame(width: 420, height: 420)
+        .frame(width: 420)
+    }
+}
+
+extension View {
+    /// Форма высотой по содержимому — окно подстраивается под вкладку без пустого места.
+    func fittedForm() -> some View {
+        scrollDisabled(true).fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -49,6 +60,7 @@ struct GeneralSettingsTab: View {
 
 struct MenuBarSettingsTab: View {
     let settings: SettingsStore
+    let store: MetricsStore?
 
     private static func title(_ item: MenuBarItem) -> String {
         switch item {
@@ -61,8 +73,23 @@ struct MenuBarSettingsTab: View {
         }
     }
 
+    private var preview: NSImage {
+        let latest = store?.latest
+        let cpu = latest.map { store?.history.points(.cpuTotal, now: $0.uptime).map(\.value) ?? [] } ?? []
+        return MenuBarRenderer.image(MenuBarContent.segments(items: settings.settings.menuBarItems, snapshot: latest,
+                                                             cpuHistory: cpu, active: store?.activeAlerts ?? []))
+    }
+
     var body: some View {
         Form {
+            Section("Предпросмотр") {
+                HStack {
+                    Spacer()
+                    Image(nsImage: preview)
+                    Spacer()
+                }
+                .padding(.vertical, 4)
+            }
             ForEach(MenuBarItem.allCases, id: \.self) { item in
                 Toggle(Self.title(item), isOn: Binding(
                     get: { settings.settings.menuBarItems.contains(item) },

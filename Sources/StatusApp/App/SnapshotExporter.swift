@@ -19,31 +19,21 @@ enum SnapshotExporter {
         }
         let tabs: [(String, AnyView)] = [
             ("general", AnyView(GeneralSettingsTab(settings: settings))),
-            ("menubar", AnyView(MenuBarSettingsTab(settings: settings))),
+            ("menubar", AnyView(MenuBarSettingsTab(settings: settings, store: store))),
             ("alerts", AnyView(AlertSettingsTab(settings: settings))),
         ]
-        // Form/Stepper are AppKit-backed, so ImageRenderer draws them blank; snapshot a real hosting view instead.
         for (name, content) in tabs {
-            let host = NSHostingView(rootView: content.frame(width: 420, height: 420))
-            host.frame = NSRect(x: 0, y: 0, width: 420, height: 420)
-            let window = NSWindow(contentRect: host.frame, styleMask: [.titled], backing: .buffered, defer: false)
-            window.contentView = host
-            host.layoutSubtreeIfNeeded()
-            if let rep = host.bitmapImageRepForCachingDisplay(in: host.bounds) {
-                host.cacheDisplay(in: host.bounds, to: rep)
-                try? rep.representation(using: .png, properties: [:])?
-                    .write(to: dir.appendingPathComponent("settings-\(name).png"))
-            }
+            snapshot(content.fittedForm().frame(width: 420).background(Color(nsColor: .windowBackgroundColor)),
+                     to: dir.appendingPathComponent("settings-\(name).png"))
         }
         let cpu = store.latest.map { store.history.points(.cpuTotal, now: $0.uptime).map(\.value) } ?? []
         let segments = MenuBarContent.segments(items: settings.settings.menuBarItems, snapshot: store.latest,
                                                cpuHistory: cpu, active: store.activeAlerts)
-        let title = MenuBarRenderer.attributedTitle(segments)
-        let size = title.size()
-        let image = NSImage(size: NSSize(width: ceil(size.width) + 16, height: 28), flipped: false) { rect in
+        let icon = MenuBarRenderer.image(segments)
+        let image = NSImage(size: NSSize(width: icon.size.width + 16, height: 28), flipped: false) { rect in
             NSColor.windowBackgroundColor.setFill()
             rect.fill()
-            title.draw(at: NSPoint(x: 8, y: (rect.height - size.height) / 2))
+            icon.draw(at: NSPoint(x: 8, y: (rect.height - icon.size.height) / 2), from: .zero, operation: .sourceOver, fraction: 1)
             return true
         }
         if let tiff = image.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff),

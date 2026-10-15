@@ -16,7 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Debug args come only from the command line (argument domain), never from persisted defaults.
         let defaults = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
         let tab = (defaults["PopoverTab"] as? String).flatMap(PopoverTab.init(rawValue:)) ?? .overview
-        let settingsWindow = SettingsWindowController(settings: settings)
+        let settingsWindow = SettingsWindowController(settings: settings, store: store)
         var popoverRef: PopoverController?
         let popover = PopoverController(store: store, initialTab: tab) {
             popoverRef?.close()

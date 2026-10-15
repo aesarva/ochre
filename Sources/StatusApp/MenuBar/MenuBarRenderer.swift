@@ -37,6 +37,17 @@ enum MenuBarRenderer {
         return result
     }
 
+    /// Значок строки меню как картинка (прозрачный фон) — для предпросмотра в настройках и снимков.
+    @MainActor
+    static func image(_ segments: [MenuBarSegment]) -> NSImage {
+        let title = attributedTitle(segments)
+        let size = title.size()
+        return NSImage(size: NSSize(width: ceil(size.width), height: max(ceil(size.height), 16)), flipped: false) { rect in
+            title.draw(at: NSPoint(x: 0, y: (rect.height - size.height) / 2))
+            return true
+        }
+    }
+
     /// Сетка ядер 4×4 pt с промежутком 1.5 pt; холодные ячейки — системным цветом текста, нагретые — шкалой.
     @MainActor
     private static func miniDieImage(_ cells: [MiniDieCell]) -> NSImage {
