@@ -19,7 +19,7 @@ struct ProcessesTab: View {
             .labelsHidden()
             if let rows = store.latest?.processes, !rows.isEmpty {
                 ScrollView {
-                    ProcessListView(rows: sorted(rows), limit: 50)
+                    ProcessListView(rows: sorted(rows), limit: 50, copiesPID: true)
                 }
                 .frame(maxHeight: 360)
             } else {
