@@ -28,8 +28,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         if let dir = defaults.string(forKey: "SnapshotDir") {
+            store.isPopoverOpen = true // sample processes and 2 s sensors before rendering
             Task { @MainActor in
-                try? await Task.sleep(for: .seconds(6))
+                try? await Task.sleep(for: .seconds(8))
                 SnapshotExporter.export(to: dir, store: store, settings: settings)
             }
         }

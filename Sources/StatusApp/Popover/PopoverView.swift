@@ -70,7 +70,12 @@ struct PopoverView: View {
     private var content: some View {
         switch tab {
         case .overview: OverviewTab(store: store)
-        default: Text("Скоро").foregroundStyle(.secondary).frame(maxWidth: .infinity, minHeight: 120)
+        case .cpu: CPUTab(store: store)
+        case .memory: MemoryTab(store: store)
+        case .network: NetworkTab(store: store)
+        case .disk: DiskTab(store: store)
+        case .sensors: SensorsTab(store: store)
+        case .processes: ProcessesTab(store: store)
         }
     }
 }
