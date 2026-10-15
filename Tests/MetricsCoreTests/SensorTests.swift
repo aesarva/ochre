@@ -25,6 +25,13 @@ import Foundation
         #expect(SMCDecoder.decode(type: "zzzz", bytes: [1, 2, 3, 4]) == nil)
     }
     @Test func noFansWhenFNumZero() {
+        #expect(SensorCollector.fanCount(from: .nan) == 0)
+        #expect(SensorCollector.fanCount(from: .infinity) == 0)
+        #expect(SensorCollector.fanCount(from: 4e9) == 8)
+        #expect(SensorCollector.fanCount(from: 1e300) == 8)
+        #expect(SensorCollector.fanCount(from: -3) == 0)
+        #expect(SensorCollector.fanCount(from: 2) == 2)
+        #expect(SensorCollector.fanCount(from: nil) == 0)
         #expect(SensorCollector.fans(count: 0, read: { _ in 1000 }).isEmpty)
         #expect(SensorCollector.fans(count: 2, read: { $0 == 0 ? 2315 : nil }) == [.init(index: 0, rpm: 2315)])
     }

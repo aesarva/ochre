@@ -43,12 +43,19 @@ public final class SensorCollector {
             temperaturesReadAt = now
         }
         let agg = SensorAggregator.aggregate(lastTemperatures)
-        let fanCount = smcValue("FNum").map { Int($0) } ?? 0
+        let fanCount = Self.fanCount(from: smcValue("FNum"))
         let fans = Self.fans(count: fanCount) { smcValue("F\($0)Ac") }
         let power = smcValue("PSTR")
         if agg.readings.isEmpty && fans.isEmpty && power == nil { return nil }
         return SensorStats(temperatures: agg.readings, cpuCelsius: agg.cpu, gpuCelsius: agg.gpu,
                            fans: fans, systemPowerWatts: power)
+    }
+
+    /// Безопасно переводит значение SMC `FNum` в число вентиляторов: нечисло/бесконечность → 0, максимум 8.
+    static func fanCount(from value: Double?) -> Int {
+        guard let value, value.isFinite else { return 0 }
+        if value >= 8 { return 8 }
+        return max(Int(value.rounded()), 0)
     }
 
     /// Собирает список вентиляторов, пропуская нечитаемые.
