@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "site/index.html"
+        ],
+        "createdAt": "2026-10-15T19:58:56.036Z",
+        "reason": "finish reviewer confirmed false positive from screenshots: detector does not evaluate clamp(); board padding 20-44px, step 28px; .menubar is a deliberate 30px macOS menu bar replica"
+      }
+    ]
+  }
+}

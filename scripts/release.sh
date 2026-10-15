@@ -69,5 +69,8 @@ if ! $UNSIGNED; then
     spctl --assess --type open --context context:primary-signature --verbose "$DMG"
 fi
 
-echo "==> Готово: $(pwd)/$DMG"
+# Копия без версии — на неё ведут кнопки «Скачать» на сайте (site/), кладётся рядом с index.html.
+cp "$DMG" dist/StatusApp.dmg
+
+echo "==> Готово: $(pwd)/$DMG (и dist/StatusApp.dmg для сайта)"
 shasum -a 256 "$DMG"

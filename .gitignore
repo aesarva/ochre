@@ -5,3 +5,9 @@ build/
 .swiftpm/
 .claude/
 dist/
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/hook.cache.json
+.impeccable/config.local.json
+.impeccable/questions/*.log
+.playwright-mcp/

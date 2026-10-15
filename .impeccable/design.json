@@ -1,0 +1,496 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-15T20:09:30+00:00",
+  "title": "Design System: StatusApp",
+  "extensions": {
+    "colorMeta": {
+      "mustard": {
+        "role": "primary",
+        "displayName": "Station Mustard",
+        "canonical": "#D6A92E",
+        "tonalRamp": [
+          "#220000",
+          "#411900",
+          "#613800",
+          "#835900",
+          "#A67B00",
+          "#CB9E1C",
+          "#F0C34E",
+          "#FFEA8D"
+        ]
+      },
+      "mustard-bright": {
+        "role": "primary",
+        "displayName": "Lit Mustard",
+        "canonical": "#E3B83C",
+        "tonalRamp": [
+          "#210000",
+          "#401900",
+          "#603900",
+          "#825A00",
+          "#A57C00",
+          "#C99F13",
+          "#EFC44A",
+          "#FFEB8D"
+        ]
+      },
+      "heat-amber": {
+        "role": "secondary",
+        "displayName": "Amber",
+        "canonical": "#E3BF5C",
+        "tonalRamp": [
+          "#1E0100",
+          "#3C1D00",
+          "#5C3B00",
+          "#7D5C00",
+          "#A07D00",
+          "#C4A13B",
+          "#E9C562",
+          "#FFEB8D"
+        ]
+      },
+      "heat-ember": {
+        "role": "secondary",
+        "displayName": "Ember",
+        "canonical": "#CC8F25",
+        "tonalRamp": [
+          "#270000",
+          "#471100",
+          "#693200",
+          "#8C5300",
+          "#B07400",
+          "#D59831",
+          "#FCBC5B",
+          "#FFE390"
+        ]
+      },
+      "heat-red": {
+        "role": "secondary",
+        "displayName": "Heat Red",
+        "canonical": "#B4462A",
+        "tonalRamp": [
+          "#340000",
+          "#590000",
+          "#7E0D00",
+          "#A4381B",
+          "#CB5B3F",
+          "#F37F61",
+          "#FFA384",
+          "#FFD2B7"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Station Ground",
+        "canonical": "#18191B",
+        "tonalRamp": [
+          "#0A0B0D",
+          "#242527",
+          "#414244",
+          "#606164",
+          "#818285",
+          "#A4A5A8",
+          "#C8C9CC",
+          "#EDEEF1"
+        ]
+      },
+      "board": {
+        "role": "neutral",
+        "displayName": "Board Graphite",
+        "canonical": "#2A2B2E",
+        "tonalRamp": [
+          "#0A0B0E",
+          "#242528",
+          "#414245",
+          "#606164",
+          "#818286",
+          "#A4A5A9",
+          "#C8C9CD",
+          "#EDEEF2"
+        ]
+      },
+      "flap": {
+        "role": "neutral",
+        "displayName": "Flap Charcoal",
+        "canonical": "#36373B",
+        "tonalRamp": [
+          "#0A0B0E",
+          "#242529",
+          "#414246",
+          "#606165",
+          "#818287",
+          "#A3A5AA",
+          "#C8C9CE",
+          "#EDEEF3"
+        ]
+      },
+      "flap-lit": {
+        "role": "neutral",
+        "displayName": "Flap Lit",
+        "canonical": "#3E3F43",
+        "tonalRamp": [
+          "#0A0B0E",
+          "#242528",
+          "#414246",
+          "#606165",
+          "#818287",
+          "#A3A5A9",
+          "#C8C9CE",
+          "#EDEEF3"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule Grey",
+        "canonical": "#3A3B3F",
+        "tonalRamp": [
+          "#0A0B0E",
+          "#242529",
+          "#414246",
+          "#606165",
+          "#818287",
+          "#A3A5A9",
+          "#C8C9CE",
+          "#EDEEF3"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Paper Ink",
+        "canonical": "#ECE7DA",
+        "tonalRamp": [
+          "#0E0B04",
+          "#29251B",
+          "#464237",
+          "#656156",
+          "#878276",
+          "#A9A598",
+          "#CEC9BC",
+          "#F3EEE1"
+        ]
+      },
+      "ink-dim": {
+        "role": "neutral",
+        "displayName": "Dim Ink",
+        "canonical": "#B6B0A3",
+        "tonalRamp": [
+          "#0F0B03",
+          "#29251A",
+          "#474136",
+          "#666155",
+          "#878275",
+          "#AAA498",
+          "#CFC9BB",
+          "#F4EEE0"
+        ]
+      },
+      "ink-faint": {
+        "role": "neutral",
+        "displayName": "Faint Ink",
+        "canonical": "#9C9689",
+        "tonalRamp": [
+          "#0F0B03",
+          "#29241A",
+          "#474136",
+          "#666155",
+          "#888275",
+          "#ABA497",
+          "#CFC9BB",
+          "#F4EEE0"
+        ]
+      },
+      "ink-on-warm": {
+        "role": "neutral",
+        "displayName": "Ink on Warm",
+        "canonical": "#1A1B1D",
+        "tonalRamp": [
+          "#0A0B0D",
+          "#242527",
+          "#414244",
+          "#606164",
+          "#818285",
+          "#A4A5A8",
+          "#C8C9CC",
+          "#EDEEF1"
+        ]
+      },
+      "ink-on-heat": {
+        "role": "neutral",
+        "displayName": "Ink on Heat",
+        "canonical": "#FBF3E6",
+        "tonalRamp": [
+          "#0F0A03",
+          "#2A241A",
+          "#474137",
+          "#676055",
+          "#888176",
+          "#ABA498",
+          "#D0C8BC",
+          "#F5EDE0"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The one hero headline."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Top-ranked departure row and heat-strip step names."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "Hero subhead in Dim Ink."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading text, max 36em."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Notes, captions, footnotes, footer in Faint Ink."
+      },
+      "flap": {
+        "displayName": "Flap",
+        "purpose": "Every split-flap glyph; sized by its row."
+      },
+      "label": {
+        "displayName": "Board Label",
+        "purpose": "Column heads, tab titles, chips, ranges."
+      }
+    },
+    "shadows": [
+      {
+        "name": "board-housing",
+        "value": "inset 0 0 0 1px #3A3B3F, 0 1px 0 #ffffff08 inset, 0 24px 60px -30px #000",
+        "purpose": "Every board housing."
+      },
+      {
+        "name": "primary-glow",
+        "value": "0 1px 0 #ffffff40 inset, 0 8px 20px -10px #d6a92e88",
+        "purpose": "The primary download button only."
+      },
+      {
+        "name": "framed-capture",
+        "value": "0 0 0 1px #ffffff14, 0 30px 60px -28px #000",
+        "purpose": "Real app screenshots."
+      },
+      {
+        "name": "flap-seam",
+        "value": "1px line at 50%, rgb(0 0 0 / .32); lower leaf color-mix(in srgb, tile 92%, #000)",
+        "purpose": "Tile depth; label flaps use 18% seam and no darker leaf."
+      }
+    ],
+    "motion": [
+      {
+        "name": "flap-half",
+        "value": "110ms",
+        "purpose": "Duration of each half of a flip."
+      },
+      {
+        "name": "flap-fall",
+        "value": "cubic-bezier(.5,0,1,.6), brightness to .7",
+        "purpose": "Old upper leaf falling."
+      },
+      {
+        "name": "flap-land",
+        "value": "cubic-bezier(0,.4,.5,1), from brightness 1.25",
+        "purpose": "New lower leaf landing."
+      },
+      {
+        "name": "flap-stagger",
+        "value": "38ms per letter (22ms per core cell, 60ms temperature, 34ms language labels)",
+        "purpose": "Left-to-right ripple across a row."
+      },
+      {
+        "name": "brand-scramble",
+        "value": "250ms delay, random letters, settle after 420ms",
+        "purpose": "Once on load; skipped under reduced motion."
+      },
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(.16, 1, .3, 1)",
+        "purpose": "State transitions (button, tabs, capture swap), 0.2s."
+      },
+      {
+        "name": "heat-fill",
+        "value": ".6s ease-in-out",
+        "purpose": "GPU bars and menu-bar mini cells changing heat."
+      },
+      {
+        "name": "copy-swap",
+        "value": "opacity .18s ease-out",
+        "purpose": "Set text cross-fade on language switch."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "instant value swap",
+        "purpose": "No flips, fades or smooth scroll under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "xs",
+        "value": "400px"
+      },
+      {
+        "name": "tables-stack",
+        "value": "560px"
+      },
+      {
+        "name": "phone",
+        "value": "720px"
+      },
+      {
+        "name": "tabs-wrap",
+        "value": "760px"
+      },
+      {
+        "name": "split-stack",
+        "value": "900px"
+      },
+      {
+        "name": "tablet",
+        "value": "1080px"
+      }
+    ],
+    "crossSurface": {
+      "note": "The macOS app reuses this world: Sources/StatusApp/Popover/Components/FlapTile.swift (BoardPalette board/flap/ink/inkDim/inkOnWarm match the web tokens) and Sources/MetricsCore/Presentation/HeatScale.swift (same amber/ember/hot stops, 20/60/90 load blend, 83% light-ink switch). site/index.html is the authority for this file."
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single mustard download action; one per board.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\"><svg viewBox=\"0 0 20 20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 3v10m0 0-4-4m4 4 4-4M4 16h12\"/></svg><span>Download for macOS 26</span></a>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:10px;background:#D6A92E;color:#1A1B1D;font:600 1.0625rem/1 'Golos Text',-apple-system,sans-serif;padding:17px 24px;border-radius:6px;text-decoration:none;box-shadow:0 1px 0 #ffffff40 inset,0 8px 20px -10px #d6a92e88;transition:background .2s cubic-bezier(.16,1,.3,1),transform .2s cubic-bezier(.16,1,.3,1)}.ds-btn-primary svg{width:18px;height:18px;flex:none}.ds-btn-primary:hover{background:#E3B83C}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:2px solid #D6A92E;outline-offset:3px}"
+    },
+    {
+      "name": "Split-flap Row",
+      "kind": "custom",
+      "refersTo": "flap-tile",
+      "description": "Figure flaps: matte tiles with a hairline seam and darker lower leaf; values flip on change.",
+      "html": "<span class=\"ds-flaprow\" style=\"font-size:2.4rem\"><span class=\"ds-flap\"><span class=\"ds-half ds-top\"><i>4</i></span><span class=\"ds-half ds-bot\"><i>4</i></span></span><span class=\"ds-flap\"><span class=\"ds-half ds-top\"><i>4</i></span><span class=\"ds-half ds-bot\"><i>4</i></span></span><span class=\"ds-flap\"><span class=\"ds-half ds-top\"><i>°</i></span><span class=\"ds-half ds-bot\"><i>°</i></span></span></span>",
+      "css": ".ds-flaprow{display:inline-flex;gap:3px;padding:16px;background:#2A2B2E}.ds-flap{position:relative;display:inline-block;width:.78em;height:1.5em;font:600 1em/1 var(--f-flap,'Fira Sans Condensed','Arial Narrow',sans-serif);font-variant-numeric:tabular-nums;color:#ECE7DA}.ds-flap .ds-half{position:absolute;left:0;right:0;height:50%;overflow:hidden;background:#36373B}.ds-flap .ds-half i{display:block;height:1.5em;line-height:1.5em;text-align:center;font-style:normal}.ds-flap .ds-top{top:0;border-radius:3px 3px 0 0}.ds-flap .ds-bot{bottom:0;border-radius:0 0 3px 3px;background:color-mix(in srgb,#36373B 92%,#000)}.ds-flap .ds-bot i{transform:translateY(-50%)}.ds-flap::after{content:'';position:absolute;left:0;right:0;top:calc(50% - .5px);height:1px;background:rgb(0 0 0 / .32)}"
+    },
+    {
+      "name": "Heat-tinted Core Cells",
+      "kind": "custom",
+      "refersTo": "flap-tile",
+      "description": "Core cells coloured by load: graphite under 20%, amber to ember to heat red, light digits from 83%.",
+      "html": "<div class=\"ds-cells\"><span class=\"ds-flap\"><span class=\"ds-half ds-top\"><i>8</i></span><span class=\"ds-half ds-bot\"><i>8</i></span></span><span class=\"ds-flap ds-a\"><span class=\"ds-half ds-top\"><i>31</i></span><span class=\"ds-half ds-bot\"><i>31</i></span></span><span class=\"ds-flap ds-e\"><span class=\"ds-half ds-top\"><i>64</i></span><span class=\"ds-half ds-bot\"><i>64</i></span></span><span class=\"ds-flap ds-h\"><span class=\"ds-half ds-top\"><i>92</i></span><span class=\"ds-half ds-bot\"><i>92</i></span></span></div>",
+      "css": ".ds-cells{display:grid;grid-template-columns:repeat(4,56px);gap:5px;padding:16px;background:#2A2B2E;font-size:1.4rem}.ds-cells .ds-flap{width:100%}.ds-flap{position:relative;display:inline-block;width:.78em;height:1.5em;font:600 1em/1 var(--f-flap,'Fira Sans Condensed','Arial Narrow',sans-serif);font-variant-numeric:tabular-nums;color:#ECE7DA}.ds-flap .ds-half{position:absolute;left:0;right:0;height:50%;overflow:hidden;background:#36373B}.ds-flap .ds-half i{display:block;height:1.5em;line-height:1.5em;text-align:center;font-style:normal}.ds-flap .ds-top{top:0;border-radius:3px 3px 0 0}.ds-flap .ds-bot{bottom:0;border-radius:0 0 3px 3px;background:color-mix(in srgb,#36373B 92%,#000)}.ds-flap .ds-bot i{transform:translateY(-50%)}.ds-flap::after{content:'';position:absolute;left:0;right:0;top:calc(50% - .5px);height:1px;background:rgb(0 0 0 / .32)}.ds-a .ds-half{background:#DDB24D;color:#1A1B1D}.ds-a .ds-bot{background:color-mix(in srgb,#DDB24D 92%,#000)}.ds-e .ds-half{background:#C98526;color:#1A1B1D}.ds-e .ds-bot{background:color-mix(in srgb,#C98526 92%,#000)}.ds-h .ds-half{background:#B4462A;color:#FBF3E6}.ds-h .ds-bot{background:color-mix(in srgb,#B4462A 92%,#000)}"
+    },
+    {
+      "name": "Departure Board",
+      "kind": "card",
+      "refersTo": "board",
+      "description": "Graphite housing with a label-flap column head and rows ranked by type size.",
+      "html": "<div class=\"ds-board\"><p class=\"ds-colhead\"><span>PROCESS</span><span>CPU</span><span>MEMORY</span></p><div class=\"ds-row ds-r1\"><span>Xcode</span><span class=\"ds-cpu\">142%</span><span>3.1 GB</span></div><div class=\"ds-row ds-r2\"><span>Safari</span><span class=\"ds-cpu\">18%</span><span>1.2 GB</span></div><div class=\"ds-row ds-r4\"><span>StatusApp</span><span>0.7%</span><span>13 MB</span></div></div>",
+      "css": ".ds-board{background:#2A2B2E;border-radius:14px;box-shadow:inset 0 0 0 1px #3A3B3F,0 1px 0 #ffffff08 inset,0 24px 60px -30px #000;padding:32px;color:#ECE7DA;font:400 1.0625rem/1.55 'Golos Text',sans-serif}.ds-colhead,.ds-row{display:grid;grid-template-columns:minmax(0,1fr) 5.4rem 5.8rem;gap:8px}.ds-colhead{margin:0;padding-bottom:10px;border-bottom:2px solid #3A3B3F;font:600 .8125rem/1 'Fira Sans Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#B6B0A3}.ds-row{align-items:baseline;padding:13px 0;border-bottom:1px solid #3A3B3F;font-variant-numeric:tabular-nums}.ds-row span:nth-child(n+2),.ds-colhead span:nth-child(n+2){text-align:right}.ds-r1{font:600 1.75rem/1.1 'Golos Text',sans-serif;letter-spacing:-.01em}.ds-r2{font-size:1.25rem}.ds-r4{font-size:.9375rem;color:#B6B0A3}.ds-cpu{color:#D6A92E}"
+    },
+    {
+      "name": "Heat Test Strip",
+      "kind": "custom",
+      "refersTo": "heat-step-amber",
+      "description": "The heat scale as four stepped bands with load and temperature ranges.",
+      "html": "<div class=\"ds-strip\"><div class=\"ds-step ds-s0\"><b>Cool</b><span>0–20 %</span></div><div class=\"ds-step ds-s1\"><b>Amber</b><span>20–60 %</span></div><div class=\"ds-step ds-s2\"><b>Embers</b><span>60–90 %</span></div><div class=\"ds-step ds-s3\"><b>Heat</b><span>&gt; 90 %</span></div></div>",
+      "css": ".ds-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-radius:10px;overflow:hidden;box-shadow:inset 0 0 0 1px #3A3B3F}.ds-step{padding:22px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;color:#1A1B1D}.ds-step b{font:600 1.5rem/1.1 'Golos Text',sans-serif;letter-spacing:-.01em}.ds-step span{font:600 1.125rem/1.3 'Fira Sans Condensed',sans-serif;font-variant-numeric:tabular-nums}.ds-s0{background:#36373B;color:#ECE7DA}.ds-s1{background:#E3BF5C}.ds-s2{background:#CC8F25}.ds-s3{background:#B4462A;color:#FBF3E6}"
+    },
+    {
+      "name": "Tab List",
+      "kind": "nav",
+      "refersTo": "tab",
+      "description": "Ruled vertical tabs; the selected title turns mustard.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button class=\"ds-tab\" role=\"tab\" aria-selected=\"true\"><span class=\"ds-t\">Overview</span><span class=\"ds-d\">Die map, four metrics, three busiest processes.</span></button><button class=\"ds-tab\" role=\"tab\" aria-selected=\"false\"><span class=\"ds-t\">CPU</span><span class=\"ds-d\">Load inside every core.</span></button></div>",
+      "css": ".ds-tabs{display:flex;flex-direction:column;border-top:2px solid #3A3B3F;background:#18191B}.ds-tab{all:unset;cursor:pointer;display:grid;grid-template-columns:8.5em minmax(0,1fr);gap:16px;align-items:baseline;padding:16px 4px;border-bottom:1px solid #3A3B3F;color:#B6B0A3;font:400 .9375rem/1.55 'Golos Text',sans-serif;transition:color .2s cubic-bezier(.16,1,.3,1),background .2s cubic-bezier(.16,1,.3,1)}.ds-t{font:600 1.25rem/1.2 'Fira Sans Condensed',sans-serif;letter-spacing:.02em;text-transform:uppercase;color:#ECE7DA}.ds-tab:hover{background:#ffffff06}.ds-tab[aria-selected=true]{color:#ECE7DA}.ds-tab[aria-selected=true] .ds-t{color:#D6A92E}.ds-tab:focus-visible{outline:2px solid #D6A92E;outline-offset:-2px}"
+    },
+    {
+      "name": "Option Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Static condensed label on a flap-charcoal chip.",
+      "html": "<ul class=\"ds-chips\"><li>Mini die</li><li>CPU %</li><li>Temperature</li></ul>",
+      "css": ".ds-chips{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}.ds-chips li{font:500 .9375rem/1 'Fira Sans Condensed',sans-serif;letter-spacing:.02em;padding:9px 12px;border-radius:4px;background:#36373B;color:#ECE7DA}"
+    },
+    {
+      "name": "Language Switch",
+      "kind": "nav",
+      "refersTo": "flap-label",
+      "description": "RU/EN as flap buttons; the pressed language carries mustard ink.",
+      "html": "<div class=\"ds-lang\"><button aria-pressed=\"true\"><span class=\"ds-flap\"><span class=\"ds-half ds-top\"><i>R</i></span><span class=\"ds-half ds-bot\"><i>R</i></span></span><span class=\"ds-flap\"><span class=\"ds-half ds-top\"><i>U</i></span><span class=\"ds-half ds-bot\"><i>U</i></span></span></button><button aria-pressed=\"false\"><span class=\"ds-flap\"><span class=\"ds-half ds-top\"><i>E</i></span><span class=\"ds-half ds-bot\"><i>E</i></span></span><span class=\"ds-flap\"><span class=\"ds-half ds-top\"><i>N</i></span><span class=\"ds-half ds-bot\"><i>N</i></span></span></button></div>",
+      "css": ".ds-lang{display:inline-flex;gap:10px;font-size:1.25rem}.ds-lang button{all:unset;cursor:pointer;min-width:44px;min-height:44px;display:inline-grid;grid-auto-flow:column;gap:3px;place-content:center;border-radius:4px}.ds-flap{position:relative;display:inline-block;width:.78em;height:1.5em;font:600 1em/1 var(--f-flap,'Fira Sans Condensed','Arial Narrow',sans-serif);font-variant-numeric:tabular-nums;color:#ECE7DA}.ds-flap .ds-half{position:absolute;left:0;right:0;height:50%;overflow:hidden;background:#36373B}.ds-flap .ds-half i{display:block;height:1.5em;line-height:1.5em;text-align:center;font-style:normal}.ds-flap .ds-top{top:0;border-radius:3px 3px 0 0}.ds-flap .ds-bot{bottom:0;border-radius:0 0 3px 3px;background:color-mix(in srgb,#36373B 92%,#000)}.ds-flap .ds-bot i{transform:translateY(-50%)}.ds-flap::after{content:'';position:absolute;left:0;right:0;top:calc(50% - .5px);height:1px;background:rgb(0 0 0 / .32)}.ds-lang button[aria-pressed=true] .ds-half{color:#D6A92E}.ds-lang button[aria-pressed=false] .ds-half{color:#B6B0A3}.ds-lang button:hover .ds-half{color:#ECE7DA}.ds-lang button:focus-visible{outline:2px solid #D6A92E;outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Departure Board",
+    "overview": "The system is a Solari split-flap board read in a dim station hall. Graphite board housings sit on a darker ground; inside them, matte flap tiles split by a hairline carry warm off-white condensed glyphs. Cores, column heads, the brand mark, the language switch and the big temperature readout are all flaps, and they flip when their value changes. The board is the interface: information is arranged as departures, columns and ranked rows, never as a grid of feature cards.\n\nGreys carry everything. The one chroma is mustard, and it is a measurement before it is a brand: warm colour means load or heat, rising from amber through ember to heat red. Outside the heat scale mustard is reserved for the primary action and for marking the current or focused thing. Empty flaps are active space, not filler; a label row is padded with blank tiles to the width of its longest language so switching languages flips letters in place rather than reflowing.\n\nThe system is a single committed dark theme (`color-scheme: dark`); there is no light variant. Real app captures appear framed inside it as light-mode evidence, not as a second theme.",
+    "keyCharacteristics": [
+      "Split-flap tiles as the signature unit: hairline seam, slightly darker lower leaf, tabular condensed glyphs.",
+      "Graphite tonal layering instead of cards; boards are framed housings with column-head strips and ruled rows.",
+      "One chroma, mustard, meaning load, heat, the primary action, or the current selection.",
+      "Rank shown by type size alone (the busiest process row is the largest).",
+      "Motion is mechanical: flaps fall and land; nothing fades in for decoration."
+    ],
+    "rules": [
+      {
+        "name": "The Colour Is a Measurement Rule",
+        "body": "A warm tone always means load, temperature, the primary action, or \"this one is selected\". Never use mustard or the heat colours as decoration, illustration fill, or section tint.",
+        "section": "colors"
+      },
+      {
+        "name": "The Light Digits at 83 Rule",
+        "body": "A heat-tinted tile switches its glyphs from Ink on Warm to Ink on Heat at 83% load. Below 20% (graphite) the glyphs are Paper Ink.",
+        "section": "colors"
+      },
+      {
+        "name": "The Graphite Steps Rule",
+        "body": "Depth is tonal: ground, then board, then flap, each one step lighter. Do not introduce a new grey between them; reuse the three steps.",
+        "section": "colors"
+      },
+      {
+        "name": "The Board Lettering Rule",
+        "body": "Fira Sans Condensed is board lettering: flaps, column heads, tab titles, ranges, chips. Headlines and reading text stay in Golos Text.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Every changing number uses tabular figures so a flipping value never shifts its neighbours.",
+        "section": "typography"
+      },
+      {
+        "name": "The Rank by Size Rule",
+        "body": "Departure rows are ranked by type size alone (Title, then 1.25rem, 1.0625rem, 0.9375rem in Dim Ink); no badges, bars or numbering.",
+        "section": "typography"
+      },
+      {
+        "name": "The Seam Not Shadow Rule",
+        "body": "A tile's depth comes from its seam and darker lower leaf, never from a drop shadow on the tile.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** build new data displays as boards: graphite housing, column-head strip of label flaps, ruled rows.",
+      "**Do** colour load and temperature only through the heat scale (20/60/90 load stops; 60/80/95° temperature steps) and switch tile ink at 83% load.",
+      "**Do** pad flap rows to the longest language's width so a language switch flips in place.",
+      "**Do** use tabular figures for every live number.",
+      "**Do** honour reduced motion by swapping values without flipping.",
+      "**Do** keep mustard to load, heat, the primary action, and the current or focused item."
+    ],
+    "donts": [
+      "**Don't** use feature-card grids, glass panels, or gradient surfaces; boards are the only containers.",
+      "**Don't** place uppercase kicker or eyebrow labels above headlines; uppercase condensed lettering belongs to column heads and flaps.",
+      "**Don't** use any chroma other than the mustard family, and don't use mustard or heat colours decoratively.",
+      "**Don't** give tiles drop shadows; depth is the seam and the darker lower leaf.",
+      "**Don't** add a light theme to the page; light-mode app captures are framed evidence inside the dark board.",
+      "**Don't** set headlines or body copy in the condensed flap face."
+    ]
+  }
+}
