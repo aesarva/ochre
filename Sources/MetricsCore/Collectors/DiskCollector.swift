@@ -5,6 +5,11 @@ public struct DiskCollector {
     private var readRate = CounterRate()
     private var writeRate = CounterRate()
 
+    private var volumes: [VolumeInfo] = []
+    private var volumesReadAt: TimeInterval = -.infinity
+    /// Ёмкость томов меняется медленно, а её чтение стоит ~14 мс.
+    private static let volumesMaxAge: TimeInterval = 30
+
     public init() {}
 
     public mutating func sample(now: TimeInterval) -> DiskStats? {
@@ -15,7 +20,10 @@ public struct DiskCollector {
             read &+= (stats["Bytes (Read)"] as? NSNumber)?.uint64Value ?? 0
             write &+= (stats["Bytes (Write)"] as? NSNumber)?.uint64Value ?? 0
         }
-        let volumes = Self.mountedVolumes()
+        if now - volumesReadAt >= Self.volumesMaxAge {
+            volumes = Self.mountedVolumes()
+            volumesReadAt = now
+        }
         let system = volumes.first { $0.path == "/" }?.available
         return DiskStats(readPerSecond: readRate.update(read, at: now),
                          writePerSecond: writeRate.update(write, at: now),

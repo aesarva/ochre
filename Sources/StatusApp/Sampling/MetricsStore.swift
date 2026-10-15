@@ -33,8 +33,7 @@ final class MetricsStore {
         loop?.cancel()
         loop = Task { [weak self] in
             while !Task.isCancelled {
-                guard let self else { return }
-                let delay = await self.tick()
+                guard let delay = await self?.tick() else { return }
                 try? await Task.sleep(for: .seconds(delay))
             }
         }
