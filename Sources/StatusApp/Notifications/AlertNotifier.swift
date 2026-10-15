@@ -12,10 +12,21 @@ protocol AlertNotifier {
 final class UserNotificationNotifier: AlertNotifier {
     private let logger = Logger(subsystem: "local.statusapp", category: "notifications")
     private var authorizationRequested = false
+    private var loggedNoBundle = false
+
+    /// `UNUserNotificationCenter.current()` raises an NSException without a bundle identifier (bare binary / `swift run`).
+    private func notificationsAvailable() -> Bool {
+        if Bundle.main.bundleIdentifier != nil { return true }
+        if !loggedNoBundle {
+            loggedNoBundle = true
+            logger.warning("No bundle identifier (not running from an .app); notifications disabled")
+        }
+        return false
+    }
 
     /// Asks for permission when it has not been decided yet. Denied/unavailable: one warning, no crash.
     func requestAuthorizationIfNeeded() {
-        guard !authorizationRequested else { return }
+        guard notificationsAvailable(), !authorizationRequested else { return }
         authorizationRequested = true
         let logger = logger
         Task {
@@ -36,6 +47,7 @@ final class UserNotificationNotifier: AlertNotifier {
     }
 
     func notify(_ event: AlertEvent) {
+        guard notificationsAvailable() else { return }
         requestAuthorizationIfNeeded()
         let content = UNMutableNotificationContent()
         content.title = event.title
