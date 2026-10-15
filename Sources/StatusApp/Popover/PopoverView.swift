@@ -51,8 +51,9 @@ struct PopoverView: View {
         .frame(width: 340)
         .fixedSize(horizontal: false, vertical: true)
         .onGeometryChange(for: CGSize.self) { $0.size } action: { onSizeChange($0) }
-        // Пока окно анимирует высоту, содержимое прибито к верху — вкладки не съезжают.
-        .frame(maxHeight: .infinity, alignment: .top)
+        // Содержимое прибито к верху, пока окно догоняет новую высоту. minHeight: 0 обязателен: без него
+        // рамка растёт до высоты содержимого, и NSHostingView центрирует переполнение — вкладки прыгают вверх.
+        .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
     }
 
     @ViewBuilder
