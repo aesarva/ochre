@@ -24,8 +24,8 @@ struct ProcessListView: View {
                 if copiesPID {
                     Button { copy(row.pid) } label: { rowView(row) }
                         .buttonStyle(.plain)
-                        .help("Скопировать PID \(row.pid)")
-                        .accessibilityHint("Копирует PID \(row.pid)")
+                        .help(Text(verbatim: "Скопировать PID \(row.pid)"))
+                        .accessibilityHint(Text(verbatim: "Копирует PID \(row.pid)"))
                         .onHover { inside in
                             if inside { NSCursor.pointingHand.push() } else { NSCursor.pop() }
                         }
@@ -40,7 +40,8 @@ struct ProcessListView: View {
         HStack {
             // После копирования на секунду вместо имени — подтверждение с номером.
             if copiedPID == row.pid {
-                Text("PID \(row.pid) скопирован").lineLimit(1)
+                // verbatim: иначе SwiftUI вставит разделитель тысяч («51,126»).
+                Text(verbatim: "PID \(row.pid) скопирован").lineLimit(1)
             } else {
                 Text(row.name).lineLimit(1).truncationMode(.tail)
             }
