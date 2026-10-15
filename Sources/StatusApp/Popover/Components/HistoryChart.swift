@@ -10,6 +10,7 @@ struct HistoryChart: View {
     let yDomain: ClosedRange<Double>?
     let valueLabel: (Double) -> String
     var highlighted = false
+    var chartHeight: CGFloat = 70
 
     var body: some View {
         let tint = highlighted ? Color.heatHot : Color.primary
@@ -41,7 +42,7 @@ struct HistoryChart: View {
                 }
             }
             .modifier(OptionalYDomain(domain: yDomain))
-            .frame(height: 70)
+            .frame(height: chartHeight)
         }
     }
 

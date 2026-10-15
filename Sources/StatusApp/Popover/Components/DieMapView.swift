@@ -3,12 +3,9 @@ import SwiftUI
 
 /// Карта кристалла: графитовое табло в стеклянной линзе — ядра CPU флажками с загрузкой и полоса GPU.
 struct DieMapView: View {
-    enum Size { case compact, large }
-
     let cpu: CPUStats?
     let gpu: GPUStats?
     let cpuCelsius: Double?
-    let size: Size
     var temperatureHighlighted = false
     var onTap: (() -> Void)?
 
@@ -72,14 +69,10 @@ struct DieMapView: View {
         }
     }
 
-    /// Высота флажка и кегль цифры: старший кластер крупнее, на вкладке CPU всё крупнее.
+    /// Высота флажка и кегль цифры: старший кластер крупнее. Одинаково на «Обзоре» и CPU —
+    /// иначе блок меняет высоту при переключении вкладок.
     private func cellMetrics(level: Int) -> (height: CGFloat, font: CGFloat) {
-        switch (size, level == 0) {
-        case (.large, true): (40, 19)
-        case (.large, false): (32, 14)
-        case (.compact, true): (34, 16)
-        case (.compact, false): (26, 12)
-        }
+        level == 0 ? (34, 16) : (26, 12)
     }
 
     private func coreCell(_ core: CoreLoad, clusterName: String, level: Int) -> some View {

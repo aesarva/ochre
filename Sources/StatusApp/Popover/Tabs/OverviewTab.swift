@@ -13,7 +13,7 @@ struct OverviewTab: View {
         VStack(alignment: .leading, spacing: 12) {
             if snapshot?.cpu != nil || snapshot?.gpu != nil {
                 DieMapView(cpu: snapshot?.cpu, gpu: snapshot?.gpu, cpuCelsius: snapshot?.sensors?.cpuCelsius,
-                           size: .compact, temperatureHighlighted: alerts.contains(.cpuTemperature),
+                           temperatureHighlighted: alerts.contains(.cpuTemperature),
                            onTap: onOpenCPU)
             }
             VStack(spacing: 9) {
