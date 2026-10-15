@@ -39,6 +39,14 @@ import Foundation
         #expect(s.volumes.contains { $0.path == "/" })
         #expect((s.systemVolumeAvailable ?? 0) > 0)
     }
+
+    @Test func gpu() {
+        if let g = GPUCollector().sample() { #expect((0...100).contains(g.utilizationPercent)) }
+    }
+
+    @Test func battery() {
+        if let b = BatteryCollector().sample() { #expect((0...100).contains(b.percent)) }
+    }
 }
 
 @Suite struct EffectiveLevelsTests {
