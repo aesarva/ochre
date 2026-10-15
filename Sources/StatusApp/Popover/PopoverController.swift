@@ -13,6 +13,11 @@ final class PopoverController: NSObject, NSPopoverDelegate {
         self.initialTab = initialTab
         self.onOpenSettings = onOpenSettings
         super.init()
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didResignActiveNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated { if self?.popover?.isShown == true { self?.close() } }
+        }
     }
 
     func toggle(relativeTo button: NSStatusBarButton) {
@@ -25,6 +30,7 @@ final class PopoverController: NSObject, NSPopoverDelegate {
             popover.contentViewController = NSHostingController(
                 rootView: PopoverView(store: store, initialTab: initialTab, onOpenSettings: onOpenSettings))
             self.popover = popover
+            NSApp.activate()
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             store.isPopoverOpen = true
         }
