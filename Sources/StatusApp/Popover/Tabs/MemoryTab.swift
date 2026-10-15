@@ -8,17 +8,18 @@ struct MemoryTab: View {
         let snapshot = store.latest
         let now = snapshot?.uptime ?? MonotonicClock.now()
         let m = snapshot?.memory
-        VStack(alignment: .leading, spacing: 10) {
-            HistoryChart(title: "Использовано: " + Format.percent(m?.usedPercent),
-                         points: store.history.points(.memoryUsed, now: now), color: .purple,
-                         yDomain: 0...100, valueLabel: { Format.percent($0) })
+        VStack(alignment: .leading, spacing: 12) {
+            if let m {
+                StackedBar(segments: [("Приложения", Double(m.app)), ("Wired", Double(m.wired)),
+                                      ("Сжатая", Double(m.compressed)), ("Кэш", Double(m.cached))],
+                           total: Double(m.total))
+            }
+            HistoryChart(title: "Использовано", value: Format.percent(m?.usedPercent),
+                         points: store.history.points(.memoryUsed, now: now), yDomain: 0...100,
+                         valueLabel: { Format.percent($0) },
+                         highlighted: store.activeAlerts.contains(.memoryPressure))
             VStack(spacing: 4) {
-                DetailRow(label: "Приложения", value: Format.bytes(m?.app))
-                DetailRow(label: "Wired", value: Format.bytes(m?.wired))
-                DetailRow(label: "Сжатая", value: Format.bytes(m?.compressed))
-                DetailRow(label: "Кэш", value: Format.bytes(m?.cached))
-                DetailRow(label: "Давление", value: pressureText(m?.pressure),
-                          valueColor: m?.pressure == .critical ? .red : .primary)
+                DetailRow(label: "Давление", value: pressureText(m?.pressure), valueColor: pressureColor(m?.pressure))
                 DetailRow(label: "Swap", value: swapText(m))
             }
         }
@@ -30,6 +31,14 @@ struct MemoryTab: View {
         case .warning: "Повышенное"
         case .critical: "Критическое"
         case nil: "—"
+        }
+    }
+
+    private func pressureColor(_ pressure: MemoryPressure?) -> Color {
+        switch pressure {
+        case .warning: HeatScale.amber.swiftUIColor
+        case .critical: .heatHot
+        default: .primary
         }
     }
 

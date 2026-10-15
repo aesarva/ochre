@@ -9,17 +9,14 @@ struct NetworkTab: View {
         let now = snapshot?.uptime ?? MonotonicClock.now()
         let n = snapshot?.network
         let h = store.history
-        VStack(alignment: .leading, spacing: 10) {
-            HistoryChart(title: "Приём ↓ " + Format.rate(n?.downPerSecond),
-                         points: h.points(.networkDown, now: now), color: .cyan,
-                         yDomain: nil, valueLabel: { Format.rate($0) })
-            HistoryChart(title: "Отдача ↑ " + Format.rate(n?.upPerSecond),
-                         points: h.points(.networkUp, now: now), color: .orange,
-                         yDomain: nil, valueLabel: { Format.rate($0) })
+        VStack(alignment: .leading, spacing: 12) {
+            MirroredChart(up: h.points(.networkDown, now: now), down: h.points(.networkUp, now: now),
+                          upLabel: "Приём", downLabel: "Отдача",
+                          upCurrent: n?.downPerSecond, downCurrent: n?.upPerSecond, format: Format.rate)
             VStack(spacing: 4) {
                 DetailRow(label: "Интерфейс", value: n == nil ? "—" : (n?.interface ?? "en*"))
-                DetailRow(label: "Всего с запуска ↓", value: Format.bytes(n?.totalDown))
-                DetailRow(label: "Всего с запуска ↑", value: Format.bytes(n?.totalUp))
+                DetailRow(label: "Принято с запуска", value: Format.bytes(n?.totalDown))
+                DetailRow(label: "Отдано с запуска", value: Format.bytes(n?.totalUp))
             }
         }
     }

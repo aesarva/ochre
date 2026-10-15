@@ -2,46 +2,54 @@ import Charts
 import MetricsCore
 import SwiftUI
 
+/// Монохромный график за 10 минут: линия с мягкой заливкой, без сетки, подписи оси справа.
 struct HistoryChart: View {
     let title: String
+    let value: String
     let points: [HistoryPoint]
-    let color: Color
     let yDomain: ClosedRange<Double>?
     let valueLabel: (Double) -> String
-
-    init(title: String, points: [HistoryPoint], color: Color, yDomain: ClosedRange<Double>?,
-         valueLabel: @escaping (Double) -> String) {
-        self.title = title
-        self.points = points
-        self.color = color
-        self.yDomain = yDomain
-        self.valueLabel = valueLabel
-    }
+    var highlighted = false
 
     var body: some View {
+        let tint = highlighted ? Color.heatHot : Color.primary
         VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
+            HStack {
+                Text(title).foregroundStyle(.secondary)
+                Spacer()
+                Text(value).foregroundStyle(highlighted ? Color.heatHot : .primary)
+            }
+            .font(.system(size: 12).monospacedDigit())
             Chart(points, id: \.t) { point in
                 AreaMark(x: .value("t", point.t), y: .value("v", point.value))
-                    .foregroundStyle(color.opacity(0.18))
+                    .foregroundStyle(LinearGradient(colors: [tint.opacity(0.25), tint.opacity(0)],
+                                                    startPoint: .top, endPoint: .bottom))
                 LineMark(x: .value("t", point.t), y: .value("v", point.value))
-                    .foregroundStyle(color)
-                    .lineStyle(StrokeStyle(lineWidth: 1.5, lineJoin: .round))
+                    .foregroundStyle(tint.opacity(0.85))
+                    .lineStyle(StrokeStyle(lineWidth: 1.4, lineJoin: .round))
             }
             .chartXScale(domain: .automatic(includesZero: false))
             .chartXAxis(.hidden)
             .chartYAxis {
-                AxisMarks(position: .leading, values: .automatic(desiredCount: 3)) { value in
-                    AxisGridLine()
-                    AxisValueLabel {
-                        if let v = value.as(Double.self) {
-                            Text(valueLabel(v)).font(.system(size: 9))
-                        }
+                if let yDomain {
+                    AxisMarks(position: .trailing,
+                              values: [yDomain.lowerBound, (yDomain.lowerBound + yDomain.upperBound) / 2, yDomain.upperBound]) {
+                        label($0)
                     }
+                } else {
+                    AxisMarks(position: .trailing, values: .automatic(desiredCount: 3)) { label($0) }
                 }
             }
             .modifier(OptionalYDomain(domain: yDomain))
-            .frame(height: 80)
+            .frame(height: 70)
+        }
+    }
+
+    private func label(_ value: AxisValue) -> some AxisMark {
+        AxisValueLabel {
+            if let v = value.as(Double.self) {
+                Text(valueLabel(v)).font(.system(size: 9).monospacedDigit()).foregroundStyle(.tertiary)
+            }
         }
     }
 }
