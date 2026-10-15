@@ -21,6 +21,24 @@ import Foundation
         #expect(m.used > 0 && m.used <= m.total)
         #expect(m.pressure != nil)
     }
+
+    @Test func network() async throws {
+        var n = NetworkCollector()
+        _ = n.sample(now: MonotonicClock.now())
+        try await Task.sleep(for: .milliseconds(300))
+        let second = n.sample(now: MonotonicClock.now())
+        let s = try #require(second)
+        #expect((s.downPerSecond ?? 0) >= 0 && (s.upPerSecond ?? 0) >= 0)
+    }
+
+    @Test func disk() throws {
+        var d = DiskCollector()
+        let first = d.sample(now: MonotonicClock.now())
+        let s = try #require(first)
+        #expect(s.readPerSecond == nil)          // первый замер
+        #expect(s.volumes.contains { $0.path == "/" })
+        #expect((s.systemVolumeAvailable ?? 0) > 0)
+    }
 }
 
 @Suite struct EffectiveLevelsTests {
