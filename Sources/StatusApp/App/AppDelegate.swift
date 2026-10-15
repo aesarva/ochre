@@ -13,8 +13,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         let settings = SettingsStore()
         let store = MetricsStore(settings: settings)
-        let defaults = UserDefaults.standard
-        let tab = defaults.string(forKey: "PopoverTab").flatMap(PopoverTab.init(rawValue:)) ?? .overview
+        // Debug args come only from the command line (argument domain), never from persisted defaults.
+        let defaults = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
+        let tab = (defaults["PopoverTab"] as? String).flatMap(PopoverTab.init(rawValue:)) ?? .overview
         let settingsWindow = SettingsWindowController(settings: settings)
         var popoverRef: PopoverController?
         let popover = PopoverController(store: store, initialTab: tab) {
@@ -33,18 +34,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         store.onAlertEvents = { [notifier] events in events.forEach(notifier.notify) }
         requestAuthorizationWhileAlertsEnabled(settings)
         store.start()
-        if defaults.bool(forKey: "OpenPopoverOnLaunch") {
+        if Self.flag(defaults["OpenPopoverOnLaunch"]) {
             Task { @MainActor [popover, statusItem] in
                 try? await Task.sleep(for: .seconds(1))
                 if let button = statusItem.button { popover.toggle(relativeTo: button) }
             }
         }
-        if let dir = defaults.string(forKey: "SnapshotDir") {
+        if let dir = defaults["SnapshotDir"] as? String {
             store.isPopoverOpen = true // sample processes and 2 s sensors before rendering
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(8))
                 SnapshotExporter.export(to: dir, store: store, settings: settings)
+                store.isPopoverOpen = false
             }
+        }
+    }
+
+    private static func flag(_ value: Any?) -> Bool {
+        switch value {
+        case let b as Bool: b
+        case let s as String: ["YES", "TRUE", "1"].contains(s.uppercased())
+        default: false
         }
     }
 

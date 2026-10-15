@@ -23,11 +23,15 @@ struct SensorsTab: View {
                     }
                 }
             }
-            section("GPU") {
-                DetailRow(label: "Загрузка", value: Format.percent(snapshot?.gpu?.utilizationPercent))
+            if let gpu = snapshot?.gpu?.utilizationPercent {
+                section("GPU") {
+                    DetailRow(label: "Загрузка", value: Format.percent(gpu))
+                }
             }
-            section("Мощность системы") {
-                DetailRow(label: "Потребление", value: Format.watts(sensors?.systemPowerWatts))
+            if let watts = sensors?.systemPowerWatts {
+                section("Мощность системы") {
+                    DetailRow(label: "Потребление", value: Format.watts(watts))
+                }
             }
             if let b = snapshot?.battery {
                 section("Батарея") {
