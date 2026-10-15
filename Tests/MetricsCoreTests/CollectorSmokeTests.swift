@@ -22,6 +22,20 @@ import Foundation
         #expect(m.pressure != nil)
     }
 
+    @Test func sampler() async throws {
+        let s = Sampler()
+        _ = await s.sample(includeProcesses: true)
+        try await Task.sleep(for: .milliseconds(300))
+        let clock = ContinuousClock()
+        var snap = Snapshot(uptime: 0)
+        let withProcesses = await clock.measure { snap = await s.sample(includeProcesses: true) }
+        #expect(snap.cpu != nil); #expect(snap.memory != nil); #expect(snap.processes != nil)
+        var light = Snapshot(uptime: 0)
+        let without = await clock.measure { light = await s.sample(includeProcesses: false) }
+        #expect(light.processes == nil)
+        print("sampler timing: includeProcesses=true \(withProcesses), false \(without)")
+    }
+
     @Test func network() async throws {
         var n = NetworkCollector()
         _ = n.sample(now: MonotonicClock.now())
