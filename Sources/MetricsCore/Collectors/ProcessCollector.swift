@@ -55,26 +55,35 @@ public struct ProcessCollector {
         return whole &* numer &+ rem &* numer / denom
     }
 
-    private static func allPids() -> [Int32] {
-        let bytes = proc_listallpids(nil, 0)
-        guard bytes > 0 else { return [] }
-        var buffer = [Int32](repeating: 0, count: Int(bytes) / MemoryLayout<Int32>.size + 64)
-        let size = Int32(buffer.count * MemoryLayout<Int32>.size)
-        let filled = buffer.withUnsafeMutableBytes { proc_listallpids($0.baseAddress, size) }
-        guard filled > 0 else { return [] }
-        // Return value is the number of pids on modern macOS (bytes in older docs); clamp either way.
-        return Array(buffer.prefix(min(Int(filled), buffer.count)))
+    static func allPids() -> [Int32] {
+        // proc_listallpids(nil, 0) returns a pid count on this macOS; add headroom for new processes.
+        let estimate = proc_listallpids(nil, 0)
+        guard estimate > 0 else { return [] }
+        var capacity = Int(estimate) + 64
+        for _ in 0..<2 {
+            var buffer = [Int32](repeating: 0, count: capacity)
+            let size = Int32(capacity * MemoryLayout<Int32>.size)
+            let filled = Int(buffer.withUnsafeMutableBytes { proc_listallpids($0.baseAddress, size) })
+            guard filled > 0 else { return [] }
+            if filled < capacity { return Array(buffer.prefix(filled)) }
+            capacity *= 2  // possibly clipped: retry once with a larger buffer
+        }
+        return []
+    }
+
+    private static func string(_ buf: [CChar]) -> String {
+        String(decoding: buf.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self)
     }
 
     private static func name(of pid: Int32) -> String {
         var path = [CChar](repeating: 0, count: 4096)
         if proc_pidpath(pid, &path, UInt32(path.count)) > 0 {
-            let last = (String(cString: path) as NSString).lastPathComponent
+            let last = (Self.string(path) as NSString).lastPathComponent
             if !last.isEmpty { return last }
         }
         var short = [CChar](repeating: 0, count: 256)
         if proc_name(pid, &short, UInt32(short.count)) > 0 {
-            let s = String(cString: short)
+            let s = Self.string(short)
             if !s.isEmpty { return s }
         }
         return "pid \(pid)"

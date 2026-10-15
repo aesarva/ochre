@@ -60,7 +60,8 @@ import Foundation
         try await Task.sleep(for: .milliseconds(300))
         let second = p.sample(now: MonotonicClock.now())
         let rows = try #require(second)
-        #expect(rows.count > 10)
+        #expect(rows.count >= 50)
+        #expect(Double(ProcessCollector.allPids().count) >= Double(proc_listallpids(nil, 0)) * 0.9)
         #expect(rows.contains { $0.pid == getpid() })
         #expect(rows.allSatisfy { !$0.name.isEmpty })
     }
