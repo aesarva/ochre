@@ -30,6 +30,8 @@ import Foundation
         #expect(SensorCollector.fanCount(from: 4e9) == 8)
         #expect(SensorCollector.fanCount(from: 1e300) == 8)
         #expect(SensorCollector.fanCount(from: -3) == 0)
+        #expect(SensorCollector.fanCount(from: -1e300) == 0)
+        #expect(SensorCollector.fanCount(from: -.infinity) == 0)
         #expect(SensorCollector.fanCount(from: 2) == 2)
         #expect(SensorCollector.fanCount(from: nil) == 0)
         #expect(SensorCollector.fans(count: 0, read: { _ in 1000 }).isEmpty)

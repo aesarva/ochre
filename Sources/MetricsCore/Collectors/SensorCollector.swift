@@ -54,6 +54,7 @@ public final class SensorCollector {
     /// Безопасно переводит значение SMC `FNum` в число вентиляторов: нечисло/бесконечность → 0, максимум 8.
     static func fanCount(from value: Double?) -> Int {
         guard let value, value.isFinite else { return 0 }
+        if value <= 0 { return 0 }
         if value >= 8 { return 8 }
         return max(Int(value.rounded()), 0)
     }
