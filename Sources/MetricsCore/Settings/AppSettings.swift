@@ -12,7 +12,7 @@ public struct AppSettings: Codable, Sendable, Equatable {
 
     public static let allowedIntervals: [Double] = [1, 2, 5]
     static let defaultInterval: Double = 2
-    static let defaultItems: Set<MenuBarItem> = [.cpuPercent, .temperature]
+    static let defaultItems: Set<MenuBarItem> = [.icon, .temperature]
 
     public static let `default` = AppSettings(
         refreshInterval: defaultInterval, menuBarItems: defaultItems, alerts: .default)

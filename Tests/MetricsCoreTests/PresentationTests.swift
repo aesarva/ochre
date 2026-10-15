@@ -15,7 +15,7 @@ import Foundation
         #expect(segs == [.text("CPU 23%", highlighted: false), .text("91°", highlighted: true)])
     }
     @Test func emptyItemsShowIcon() {
-        #expect(MenuBarContent.segments(items: [], snapshot: nil, cpuHistory: [], active: []) == [.icon])
+        #expect(MenuBarContent.segments(items: [], snapshot: nil, cpuHistory: [], active: []) == [.miniDie([])])
     }
     @Test func missingValuesShowDash() {
         #expect(MenuBarContent.segments(items: [.memoryPercent], snapshot: snap(), cpuHistory: [], active: [])
@@ -39,11 +39,22 @@ import Foundation
         var s = snap()
         s.network = NetworkStats(interface: "en0", downPerSecond: 2_516_582, upPerSecond: 122_880, totalDown: 0, totalUp: 0)
         let segs = MenuBarContent.segments(items: [.network, .icon, .cpuPercent], snapshot: s, cpuHistory: [], active: [])
-        #expect(segs == [.icon, .text("CPU 23%", highlighted: false), .text("↓2.4M ↑120K", highlighted: false)])
+        #expect(segs == [.miniDie([]), .text("CPU 23%", highlighted: false), .text("↓2.4M ↑120K", highlighted: false)])
+    }
+    @Test func storedIconItemRendersMiniDie() {
+        var s = Snapshot(uptime: 0)
+        s.cpu = CPUStats(totalPercent: 10, clusters: [ClusterLoad(level: 0, name: "Super", percent: 10)],
+                         cores: [CoreLoad(index: 0, level: 0, percent: 10), CoreLoad(index: 1, level: 0, percent: 80)])
+        let segs = MenuBarContent.segments(items: [.icon], snapshot: s, cpuHistory: [], active: [])
+        // 2 ядра, 1 кластер: наименьшее c с ≤ 3 рядами — c = 1, т.е. столбик
+        #expect(segs == [.miniDie([MiniDieCell(row: 0, column: 0, load: 10), MiniDieCell(row: 1, column: 0, load: 80)])])
+    }
+    @Test func miniDieWithoutCPUFallsBackToEmptyGrid() {
+        #expect(MenuBarContent.segments(items: [], snapshot: nil, cpuHistory: [], active: []) == [.miniDie([])])
     }
     @Test func emptyItemsWithHiddenAlertShowsIconAndWarning() {
         let segs = MenuBarContent.segments(items: [], snapshot: nil, cpuHistory: [], active: [.diskSpace])
-        #expect(segs == [.icon, .text("⚠", highlighted: true)])
+        #expect(segs == [.miniDie([]), .text("⚠", highlighted: true)])
     }
     @Test func highlightedVisibleSegmentSuppressesWarning() {
         let segs = MenuBarContent.segments(items: [.memoryPercent], snapshot: nil, cpuHistory: [], active: [.memoryPressure])

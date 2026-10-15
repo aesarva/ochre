@@ -1,7 +1,8 @@
 import Foundation
 
 public enum MenuBarSegment: Equatable, Sendable {
-    case icon
+    /// Мини-кристалл: ячейки ядер; пустой массив — данных CPU ещё нет.
+    case miniDie([MiniDieCell])
     case cpuGraph([Double])
     case text(String, highlighted: Bool)
 }
@@ -17,7 +18,7 @@ public enum MenuBarContent {
         for item in MenuBarItem.allCases where items.contains(item) {
             switch item {
             case .icon:
-                result.append(.icon)
+                result.append(miniDie(snapshot))
             case .cpuGraph:
                 result.append(.cpuGraph(Array(cpuHistory.suffix(graphSamples))))
             case .cpuPercent:
@@ -36,11 +37,15 @@ public enum MenuBarContent {
             }
         }
 
-        if result.isEmpty { result = [.icon] }
+        if result.isEmpty { result = [miniDie(snapshot)] }
         if !active.isSubset(of: highlightedKinds) {
             result.append(.text("⚠", highlighted: true))
         }
         return result
+    }
+
+    private static func miniDie(_ snapshot: Snapshot?) -> MenuBarSegment {
+        .miniDie(snapshot?.cpu.map(MiniDieLayout.cells) ?? [])
     }
 
     private static func text(_ string: String, kind: AlertKind, active: Set<AlertKind>,

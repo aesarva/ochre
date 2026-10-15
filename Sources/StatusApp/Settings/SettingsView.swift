@@ -52,7 +52,7 @@ struct MenuBarSettingsTab: View {
 
     private static func title(_ item: MenuBarItem) -> String {
         switch item {
-        case .icon: "Иконка"
+        case .icon: "Мини-кристалл"
         case .cpuGraph: "Мини-график CPU"
         case .cpuPercent: "Загрузка CPU"
         case .memoryPercent: "Память"

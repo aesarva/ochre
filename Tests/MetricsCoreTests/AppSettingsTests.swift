@@ -13,7 +13,7 @@ import Foundation
     }
     @Test func partialDecodeKeepsKnownFields() {
         let s = AppSettings.decode(Data(#"{"refreshInterval":5}"#.utf8))
-        #expect(s.refreshInterval == 5); #expect(s.menuBarItems == [.cpuPercent, .temperature])
+        #expect(s.refreshInterval == 5); #expect(s.menuBarItems == [.icon, .temperature])
         #expect(s.alerts == .default)
     }
     @Test func invalidIntervalFallsBackTo2() {
@@ -27,7 +27,7 @@ import Foundation
     }
     @Test func unknownMenuBarItemFallsBackToDefaultItems() {
         let s = AppSettings.decode(Data(#"{"menuBarItems":["bogus"],"refreshInterval":1}"#.utf8))
-        #expect(s.menuBarItems == [.cpuPercent, .temperature])
+        #expect(s.menuBarItems == [.icon, .temperature])
         #expect(s.refreshInterval == 1)
     }
     @Test func hugeAlertValuesAreClamped() throws {

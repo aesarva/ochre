@@ -11,11 +11,19 @@ enum MenuBarRenderer {
                 result.append(NSAttributedString(string: "  ", attributes: [.font: font]))
             }
             switch segment {
-            case .icon:
+            case .miniDie(let cells):
                 let attachment = NSTextAttachment()
-                let image = NSImage(systemSymbolName: "gauge.medium", accessibilityDescription: nil)
-                image?.isTemplate = true
-                attachment.image = image
+                if cells.isEmpty {
+                    let image = NSImage(systemSymbolName: "cpu", accessibilityDescription: nil)
+                    image?.isTemplate = true
+                    attachment.image = image
+                } else {
+                    let image = miniDieImage(cells)
+                    attachment.image = image
+                    // Центрируем сетку относительно строки текста.
+                    attachment.bounds = NSRect(x: 0, y: (font.capHeight - image.size.height) / 2,
+                                               width: image.size.width, height: image.size.height)
+                }
                 result.append(NSAttributedString(attachment: attachment))
             case .cpuGraph(let values):
                 let attachment = NSTextAttachment()
@@ -27,6 +35,27 @@ enum MenuBarRenderer {
             }
         }
         return result
+    }
+
+    /// Сетка ядер 4×4 pt с промежутком 1.5 pt; холодные ячейки — системным цветом текста, нагретые — шкалой.
+    @MainActor
+    private static func miniDieImage(_ cells: [MiniDieCell]) -> NSImage {
+        let cell: CGFloat = 4, gap: CGFloat = 1.5
+        let rows = (cells.map(\.row).max() ?? 0) + 1
+        let columns = (cells.map(\.column).max() ?? 0) + 1
+        let size = NSSize(width: CGFloat(columns) * (cell + gap) - gap, height: CGFloat(rows) * (cell + gap) - gap)
+        return NSImage(size: size, flipped: true) { _ in
+            for c in cells {
+                switch HeatScale.color(forLoad: c.load) {
+                case .cold: NSColor.labelColor.withAlphaComponent(0.35).setFill()
+                case let .rgb(r, g, b): NSColor(srgbRed: r, green: g, blue: b, alpha: 1).setFill()
+                }
+                let rect = NSRect(x: CGFloat(c.column) * (cell + gap), y: CGFloat(c.row) * (cell + gap),
+                                  width: cell, height: cell)
+                NSBezierPath(roundedRect: rect, xRadius: 1, yRadius: 1).fill()
+            }
+            return true
+        }
     }
 
     @MainActor
