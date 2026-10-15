@@ -1,4 +1,5 @@
 import AppKit
+import MetricsCore
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -7,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var popoverController: PopoverController?
     private var statusItemController: StatusItemController?
     private var settingsWindow: SettingsWindowController?
+    private let notifier = UserNotificationNotifier()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let settings = SettingsStore()
@@ -28,6 +30,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         metricsStore = store
         popoverController = popover
         statusItemController = statusItem
+        store.onAlertEvents = { [notifier] events in events.forEach(notifier.notify) }
+        requestAuthorizationWhileAlertsEnabled(settings)
         store.start()
         if defaults.bool(forKey: "OpenPopoverOnLaunch") {
             Task { @MainActor [popover, statusItem] in
@@ -40,6 +44,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(8))
                 SnapshotExporter.export(to: dir, store: store, settings: settings)
+            }
+        }
+    }
+
+    /// Requests notification permission at launch and whenever settings change with a rule enabled.
+    private func requestAuthorizationWhileAlertsEnabled(_ settings: SettingsStore) {
+        if settings.settings.alerts.rules.values.contains(where: \.enabled) {
+            notifier.requestAuthorizationIfNeeded()
+        }
+        withObservationTracking {
+            _ = settings.settings
+        } onChange: { [weak self] in
+            Task { @MainActor in
+                self?.requestAuthorizationWhileAlertsEnabled(settings)
             }
         }
     }
