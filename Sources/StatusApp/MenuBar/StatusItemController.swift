@@ -8,6 +8,7 @@ final class StatusItemController {
     private let settings: SettingsStore
     private let onClick: (NSStatusBarButton) -> Void
     private let statusItem: NSStatusItem
+    var button: NSStatusBarButton? { statusItem.button }
 
     init(store: MetricsStore, settings: SettingsStore, onClick: @escaping (NSStatusBarButton) -> Void) {
         self.store = store

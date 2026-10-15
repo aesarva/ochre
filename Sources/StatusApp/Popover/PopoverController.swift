@@ -4,10 +4,14 @@ import SwiftUI
 @MainActor
 final class PopoverController: NSObject, NSPopoverDelegate {
     private let store: MetricsStore
+    private let initialTab: PopoverTab
+    private let onOpenSettings: () -> Void
     private var popover: NSPopover?
 
-    init(store: MetricsStore) {
+    init(store: MetricsStore, initialTab: PopoverTab = .overview, onOpenSettings: @escaping () -> Void = {}) {
         self.store = store
+        self.initialTab = initialTab
+        self.onOpenSettings = onOpenSettings
         super.init()
     }
 
@@ -18,7 +22,8 @@ final class PopoverController: NSObject, NSPopoverDelegate {
             let popover = NSPopover()
             popover.behavior = .transient
             popover.delegate = self
-            popover.contentViewController = NSHostingController(rootView: Text("StatusApp").padding())
+            popover.contentViewController = NSHostingController(
+                rootView: PopoverView(store: store, initialTab: initialTab, onOpenSettings: onOpenSettings))
             self.popover = popover
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             store.isPopoverOpen = true
