@@ -12,15 +12,15 @@ import Foundation
     @Test func defaultSegmentsWithHighlight() {
         let segs = MenuBarContent.segments(items: [.cpuPercent, .temperature], snapshot: snap(),
                                            cpuHistory: [], active: [.cpuTemperature])
-        #expect(segs == [.text("CPU 23%", highlighted: false, widthTemplate: "CPU 100%"),
-                         .text("91°", highlighted: true, widthTemplate: "100°")])
+        #expect(segs == [.text("CPU 23%", highlighted: false, widthTemplate: "CPU 00%"),
+                         .text("91°", highlighted: true, widthTemplate: "00°")])
     }
     @Test func emptyItemsShowIcon() {
         #expect(MenuBarContent.segments(items: [], snapshot: nil, cpuHistory: [], active: []) == [.miniDie([])])
     }
     @Test func missingValuesShowDash() {
         #expect(MenuBarContent.segments(items: [.memoryPercent], snapshot: snap(), cpuHistory: [], active: [])
-                == [.text("RAM —", highlighted: false, widthTemplate: "RAM 100%")])
+                == [.text("RAM —", highlighted: false, widthTemplate: "RAM 00%")])
     }
     @Test func hiddenAlertAddsWarning() {
         let segs = MenuBarContent.segments(items: [.cpuPercent], snapshot: snap(), cpuHistory: [], active: [.diskSpace])
@@ -35,8 +35,8 @@ import Foundation
         var s = snap()
         s.network = NetworkStats(interface: "en0", downPerSecond: 2_516_582, upPerSecond: 122_880, totalDown: 0, totalUp: 0)
         let segs = MenuBarContent.segments(items: [.network, .icon, .cpuPercent], snapshot: s, cpuHistory: [], active: [])
-        #expect(segs == [.miniDie([]), .text("CPU 23%", highlighted: false, widthTemplate: "CPU 100%"),
-                         .text("↓2.4M ↑120K", highlighted: false, widthTemplate: "↓1023M ↑1023M")])
+        #expect(segs == [.miniDie([]), .text("CPU 23%", highlighted: false, widthTemplate: "CPU 00%"),
+                         .text("↓2.4M ↑120K", highlighted: false, widthTemplate: "↓99.9M ↑99.9M")])
     }
     @Test func storedIconItemRendersMiniDie() {
         var s = Snapshot(uptime: 0)
@@ -55,11 +55,11 @@ import Foundation
     }
     @Test func highlightedVisibleSegmentSuppressesWarning() {
         let segs = MenuBarContent.segments(items: [.memoryPercent], snapshot: nil, cpuHistory: [], active: [.memoryPressure])
-        #expect(segs == [.text("RAM —", highlighted: true, widthTemplate: "RAM 100%")])
+        #expect(segs == [.text("RAM —", highlighted: true, widthTemplate: "RAM 00%")])
     }
     @Test func spokenLabelJoinsVisibleValues() {
-        let segs: [MenuBarSegment] = [.miniDie([]), .cpuGraph([1]), .text("CPU 23%", highlighted: false, widthTemplate: "CPU 100%"),
-                                      .text("91°", highlighted: true, widthTemplate: "100°")]
+        let segs: [MenuBarSegment] = [.miniDie([]), .cpuGraph([1]), .text("CPU 23%", highlighted: false, widthTemplate: "CPU 00%"),
+                                      .text("91°", highlighted: true, widthTemplate: "00°")]
         #expect(MenuBarContent.spokenLabel(segs) == "StatusApp, CPU 23%, 91°")
     }
 }

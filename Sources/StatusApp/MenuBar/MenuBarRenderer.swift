@@ -8,7 +8,7 @@ enum MenuBarRenderer {
         let result = NSMutableAttributedString()
         for (index, segment) in segments.enumerated() {
             if index > 0 {
-                result.append(NSAttributedString(string: "  ", attributes: [.font: font]))
+                result.append(NSAttributedString(string: " ", attributes: [.font: font, .kern: 2]))
             }
             switch segment {
             case .miniDie(let cells):
@@ -32,22 +32,19 @@ enum MenuBarRenderer {
             case .text(let text, let highlighted, let template):
                 let color: NSColor = highlighted ? heatHot : .labelColor
                 let attributes: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: color]
-                guard let template else {
-                    result.append(NSAttributedString(string: text, attributes: attributes))
-                    continue
+                // Недостающую до шаблона ширину добираем невидимым отступом перед числом: текст остаётся
+                // текстом (система сама центрирует его по вертикали), а единицы «%»/«°» стоят на месте.
+                if let template {
+                    let deficit = (template as NSString).size(withAttributes: [.font: font]).width
+                        - (text as NSString).size(withAttributes: [.font: font]).width
+                    if deficit > 0.5 {
+                        let hairSpace = "\u{200A}"
+                        let hairWidth = (hairSpace as NSString).size(withAttributes: [.font: font]).width
+                        result.append(NSAttributedString(string: hairSpace,
+                                                         attributes: [.font: font, .kern: deficit - hairWidth]))
+                    }
                 }
-                // Поле шириной в самое длинное значение, число прижато вправо: значок не «дышит».
-                let width = ceil((template as NSString).size(withAttributes: [.font: font]).width)
-                let size = NSSize(width: width, height: ceil(font.ascender - font.descender))
-                let image = NSImage(size: size, flipped: false) { rect in
-                    let string = NSAttributedString(string: text, attributes: attributes)
-                    string.draw(at: NSPoint(x: rect.width - string.size().width, y: -font.descender))
-                    return true
-                }
-                let attachment = NSTextAttachment()
-                attachment.image = image
-                attachment.bounds = NSRect(x: 0, y: font.descender, width: size.width, height: size.height)
-                result.append(NSAttributedString(attachment: attachment))
+                result.append(NSAttributedString(string: text, attributes: attributes))
             }
         }
         return result

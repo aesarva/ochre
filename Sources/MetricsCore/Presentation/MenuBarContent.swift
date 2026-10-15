@@ -4,8 +4,9 @@ public enum MenuBarSegment: Equatable, Sendable {
     /// Мини-кристалл: ячейки ядер; пустой массив — данных CPU ещё нет.
     case miniDie([MiniDieCell])
     case cpuGraph([Double])
-    /// `widthTemplate` — самое широкое значение сегмента: под него резервируется место, чтобы значок
-    /// в строке меню не менял ширину вместе с числом (иначе открытая панель сдвигается вслед за ним).
+    /// `widthTemplate` — обычная наибольшая ширина значения (две цифры): под неё резервируется место,
+    /// чтобы значок не менял ширину на переходах вроде 9 → 10 (иначе открытая панель сдвигается за ним).
+    /// Редкие трёхзначные значения просто чуть шире шаблона.
     case text(String, highlighted: Bool, widthTemplate: String? = nil)
 }
 
@@ -24,19 +25,19 @@ public enum MenuBarContent {
             case .cpuGraph:
                 result.append(.cpuGraph(Array(cpuHistory.suffix(graphSamples))))
             case .cpuPercent:
-                result.append(text("CPU " + Format.percent(snapshot?.cpu?.totalPercent), template: "CPU 100%",
+                result.append(text("CPU " + Format.percent(snapshot?.cpu?.totalPercent), template: "CPU 00%",
                                    kind: .cpuLoad, active: active, shown: &highlightedKinds))
             case .memoryPercent:
-                result.append(text("RAM " + Format.percent(snapshot?.memory?.usedPercent), template: "RAM 100%",
+                result.append(text("RAM " + Format.percent(snapshot?.memory?.usedPercent), template: "RAM 00%",
                                    kind: .memoryPressure, active: active, shown: &highlightedKinds))
             case .temperature:
-                result.append(text(Format.celsius(snapshot?.sensors?.cpuCelsius), template: "100°",
+                result.append(text(Format.celsius(snapshot?.sensors?.cpuCelsius), template: "00°",
                                    kind: .cpuTemperature, active: active, shown: &highlightedKinds))
             case .network:
                 let net = snapshot?.network
                 result.append(.text("↓" + Format.compactRate(net?.downPerSecond)
                                     + " ↑" + Format.compactRate(net?.upPerSecond), highlighted: false,
-                                    widthTemplate: "↓1023M ↑1023M"))
+                                    widthTemplate: "↓99.9M ↑99.9M"))
             }
         }
 
