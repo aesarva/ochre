@@ -58,3 +58,19 @@ import Testing
         #expect(GPUCollector.parse([["PerformanceStatistics": ["Device Utilization %": 8]]])?.coreCount == nil)
     }
 }
+
+@Suite struct DieMapRowsTests {
+    @Test func wrapsLargeClustersIntoEvenRows() {
+        #expect(DieMapRows.split(count: 6) == [0..<6])
+        #expect(DieMapRows.split(count: 12) == [0..<12])
+        #expect(DieMapRows.split(count: 16) == [0..<8, 8..<16])      // M2 Ultra
+        #expect(DieMapRows.split(count: 24) == [0..<12, 12..<24])    // M3 Ultra
+        #expect(DieMapRows.split(count: 0) == [])
+    }
+    @Test func capsGPUBars() {
+        #expect(GPUBars.displayCount(coreCount: 20) == 20)
+        #expect(GPUBars.displayCount(coreCount: 80) == GPUBars.maxBars)
+        #expect(GPUBars.displayCount(coreCount: nil) == GPUBars.defaultCount)
+        #expect(GPUBars.displayCount(coreCount: 0) == GPUBars.defaultCount)
+    }
+}

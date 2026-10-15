@@ -28,7 +28,7 @@ struct GlassTabBar: View {
             }
         } label: {
             HStack(spacing: 3) {
-                Text(selectedMore ? selection.title : "Ещё")
+                Text("Ещё")
                 Image(systemName: "chevron.down").font(.system(size: 8, weight: .semibold))
             }
             .modifier(SegmentLabel(selected: selectedMore, namespace: highlight))

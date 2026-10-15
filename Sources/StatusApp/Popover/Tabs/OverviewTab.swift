@@ -27,7 +27,7 @@ struct OverviewTab: View {
                 }
                 if let net = snapshot?.network {
                     MetricRow(title: "Сеть",
-                              value: "↓\(Format.rate(net.downPerSecond)) ↑\(Format.rate(net.upPerSecond))",
+                              value: "↓\(Format.compactRate(net.downPerSecond)) ↑\(Format.compactRate(net.upPerSecond))",
                               points: h.points(.networkDown, now: now))
                 }
                 if let disk = snapshot?.disk, disk.systemVolumeAvailable != nil {

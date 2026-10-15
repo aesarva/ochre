@@ -9,3 +9,14 @@ public enum GPUBars {
         return max(1, Int((u / 100 * Double(total)).rounded()))
     }
 }
+
+extension GPUBars {
+    /// Больше полосок не помещается читаемо в ширину панели.
+    public static let maxBars = 40
+
+    /// Сколько полосок рисовать: по числу ядер GPU, но не больше `maxBars`.
+    public static func displayCount(coreCount: Int?) -> Int {
+        guard let coreCount, coreCount > 0 else { return defaultCount }
+        return min(coreCount, maxBars)
+    }
+}

@@ -48,9 +48,12 @@ struct DieMapView: View {
                         .foregroundStyle(temperatureHighlighted ? Color.heatHot : .primary)
                 }
             }
-            HStack(spacing: 3) {
-                ForEach(cores, id: \.index) { core in
-                    coreCell(core, clusterName: cluster.name, height: cellHeight(level: cluster.level))
+            // Большие кластеры (Ultra) переносятся на несколько рядов по ≤ 12 ячеек.
+            ForEach(DieMapRows.split(count: cores.count), id: \.lowerBound) { range in
+                HStack(spacing: 3) {
+                    ForEach(cores[range], id: \.index) { core in
+                        coreCell(core, clusterName: cluster.name, height: cellHeight(level: cluster.level))
+                    }
                 }
             }
         }
@@ -82,7 +85,7 @@ struct DieMapView: View {
     }
 
     private func gpuView(_ gpu: GPUStats) -> some View {
-        let total = gpu.coreCount ?? GPUBars.defaultCount
+        let total = GPUBars.displayCount(coreCount: gpu.coreCount)
         let lit = GPUBars.litCount(utilization: gpu.utilizationPercent, total: total)
         // Горящие полоски при малой загрузке не «холодные», а просто светлее фона — иначе их не видно.
         let litColor = gpu.utilizationPercent >= 20
@@ -103,7 +106,7 @@ struct DieMapView: View {
                 }
             }
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.6), value: lit)
-            .help("GPU · \(total) ядер · \(Format.percent(gpu.utilizationPercent))")
+            .help("GPU · \(gpu.coreCount ?? total) ядер · \(Format.percent(gpu.utilizationPercent))")
         }
     }
 }

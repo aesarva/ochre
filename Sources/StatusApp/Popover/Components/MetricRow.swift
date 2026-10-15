@@ -14,11 +14,12 @@ struct MetricRow: View {
                 .foregroundStyle(.secondary)
                 .frame(width: 72, alignment: .leading)
             SparklineView(points: points, color: highlighted ? .heatHot : Color.primary.opacity(0.55))
-                .frame(width: 90)
+                .frame(width: 60)
             Spacer(minLength: 6)
             Text(value)
                 .foregroundStyle(highlighted ? Color.heatHot : .primary)
                 .lineLimit(1)
+                .layoutPriority(1)
         }
         .font(.system(size: 12).monospacedDigit())
     }
