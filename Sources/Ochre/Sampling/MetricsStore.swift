@@ -69,6 +69,6 @@ final class MetricsStore {
         let result = engine.evaluate(snap, config: settings.settings.alerts, now: snap.uptime)
         activeAlerts = result.active
         if !result.events.isEmpty { onAlertEvents?(result.events) }
-        return isPopoverOpen ? 1 : settings.settings.refreshInterval
+        return SamplingCadence.interval(popoverOpen: isPopoverOpen, setting: settings.settings.refreshInterval)
     }
 }

@@ -4,6 +4,7 @@ import Darwin
 /// Lists processes with per-process CPU% (via `proc_pid_rusage`) and physical footprint.
 public struct ProcessCollector {
     private var tracker = ProcessCPUTracker()
+    private var names = ProcessNameCache()
     private let timebase: (numer: UInt64, denom: UInt64)
 
     public init() {
@@ -35,9 +36,11 @@ public struct ProcessCollector {
             let ticks = info.ri_user_time &+ info.ri_system_time
             let nanos = Self.toNanos(ticks, numer: timebase.numer, denom: timebase.denom)
             samples.append(ProcessCPUSample(pid: pid, startTime: info.ri_proc_start_abstime, cpuTimeNanos: nanos))
-            raws.append(Raw(pid: pid, name: Self.name(of: pid), memory: info.ri_phys_footprint))
+            let name = names.name(pid: pid, startTime: info.ri_proc_start_abstime, resolve: Self.name(of:))
+            raws.append(Raw(pid: pid, name: name, memory: info.ri_phys_footprint))
         }
         guard !raws.isEmpty else { return nil }
+        names.prune(keeping: Set(raws.map(\.pid)))
 
         let cpu = tracker.update(samples, at: now)
         return raws.map { ProcessRow(pid: $0.pid, name: $0.name, cpuPercent: cpu[$0.pid], memoryBytes: $0.memory) }

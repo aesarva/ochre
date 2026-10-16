@@ -76,6 +76,18 @@ private struct FlapLeaves: View {
     let fontSize: CGFloat
 
     var body: some View {
+        // В покое — одно лицо и шов: полный набор половинок с масками нужен только на время поворота.
+        if progress >= 1 {
+            ZStack {
+                face(new)
+                Rectangle().fill(.black.opacity(0.32)).frame(height: 1)
+            }
+        } else {
+            leaves
+        }
+    }
+
+    private var leaves: some View {
         ZStack {
             face(new).mask(TopHalf())
             face(progress < 1 ? old : new).mask(BottomHalf())
