@@ -43,6 +43,10 @@ final class PopoverController: NSObject, NSPopoverDelegate {
             self.popover = popover
             NSApp.activate()
             popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            // Фон панели — материал, который у неактивного окна темнеет. macOS 26 часто не отдаёт фокус
+            // приложению из строки меню при открытии, и панель была тёмной до первого клика по ней.
+            // Держим материал в активном виде всегда.
+            (popover.contentViewController?.view.window?.contentView?.superview as? NSVisualEffectView)?.state = .active
             store.isPopoverOpen = true
             // Safety net: clicks in other apps close the popover even if activation was refused
             // (a transient popover in an inactive LSUIElement app otherwise stays open).
