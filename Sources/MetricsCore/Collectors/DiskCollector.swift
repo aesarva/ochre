@@ -15,7 +15,7 @@ public struct DiskCollector {
     public mutating func sample(now: TimeInterval) -> DiskStats? {
         var read: UInt64 = 0
         var write: UInt64 = 0
-        for props in IORegistry.properties(ofClass: "IOBlockStorageDriver") {
+        for props in IORegistry.properties(ofClass: "IOBlockStorageDriver", keys: ["Statistics"]) {
             guard let stats = props["Statistics"] as? [String: Any] else { continue }
             read &+= (stats["Bytes (Read)"] as? NSNumber)?.uint64Value ?? 0
             write &+= (stats["Bytes (Write)"] as? NSNumber)?.uint64Value ?? 0
