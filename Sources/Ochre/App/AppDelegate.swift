@@ -18,7 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let defaults = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
         let tab = (defaults["PopoverTab"] as? String).flatMap(PopoverTab.init(rawValue:)) ?? .overview
         let settingsWindow = SettingsWindowController(settings: settings, store: store)
-        var popoverRef: PopoverController?
+        weak var popoverRef: PopoverController?
         let popover = PopoverController(store: store, initialTab: tab) {
             popoverRef?.close()
             settingsWindow.show()
