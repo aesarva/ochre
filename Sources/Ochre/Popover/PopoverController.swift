@@ -8,23 +8,32 @@ final class PopoverController: NSObject, NSPopoverDelegate {
     private let onOpenSettings: () -> Void
     private var popover: NSPopover?
     private var clickMonitor: Any?
+    private var resignObserver: (any NSObjectProtocol)?
 
     init(store: MetricsStore, initialTab: PopoverTab = .overview, onOpenSettings: @escaping () -> Void = {}) {
         self.store = store
         self.initialTab = initialTab
         self.onOpenSettings = onOpenSettings
         super.init()
-        NotificationCenter.default.addObserver(
+        resignObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didResignActiveNotification, object: nil, queue: .main
         ) { [weak self] _ in
             MainActor.assumeIsolated { if self?.popover?.isShown == true { self?.close() } }
         }
     }
 
+    isolated deinit {
+        if let resignObserver { NotificationCenter.default.removeObserver(resignObserver) }
+        removeClickMonitor()
+    }
+
     func toggle(relativeTo button: NSStatusBarButton) {
         if let popover, popover.isShown {
             popover.performClose(nil)
         } else {
+            // Прошлая панель может ещё доигрывать закрытие: её монитор и ссылку убираем сразу,
+            // иначе её запоздалый popoverDidClose погасит уже новую панель.
+            removeClickMonitor()
             let popover = NSPopover()
             popover.behavior = .transient
             popover.delegate = self
@@ -61,10 +70,16 @@ final class PopoverController: NSObject, NSPopoverDelegate {
     }
 
     func popoverDidClose(_ notification: Notification) {
+        let closed = notification.object as? NSPopover
+        closed?.contentViewController = nil
+        guard closed === popover else { return }
         store.isPopoverOpen = false
+        removeClickMonitor()
+        popover = nil
+    }
+
+    private func removeClickMonitor() {
         if let clickMonitor { NSEvent.removeMonitor(clickMonitor) }
         clickMonitor = nil
-        popover?.contentViewController = nil
-        popover = nil
     }
 }
