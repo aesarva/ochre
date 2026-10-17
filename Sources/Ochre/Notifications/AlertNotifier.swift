@@ -9,10 +9,25 @@ protocol AlertNotifier {
 }
 
 @MainActor
-final class UserNotificationNotifier: AlertNotifier {
+final class UserNotificationNotifier: NSObject, AlertNotifier, UNUserNotificationCenterDelegate {
     private let logger = Logger(subsystem: "com.alexsarva.Ochre", category: "notifications")
     private var authorizationRequested = false
     private var loggedNoBundle = false
+    private var isDelegate = false
+
+    /// Пока открыта панель или настройки, приложение активно, а без делегата система не показывает
+    /// уведомления активного приложения — оповещение терялось бы, хотя cooldown уже пошёл.
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                            willPresent notification: UNNotification) async
+        -> UNNotificationPresentationOptions {
+        [.banner, .list, .sound]
+    }
+
+    private func becomeDelegateIfNeeded() {
+        guard !isDelegate else { return }
+        isDelegate = true
+        UNUserNotificationCenter.current().delegate = self
+    }
 
     /// `UNUserNotificationCenter.current()` raises an NSException without a bundle identifier (bare binary / `swift run`).
     private func notificationsAvailable() -> Bool {
@@ -27,6 +42,7 @@ final class UserNotificationNotifier: AlertNotifier {
     /// Asks for permission when it has not been decided yet. Denied/unavailable: one warning, no crash.
     func requestAuthorizationIfNeeded() {
         guard notificationsAvailable(), !authorizationRequested else { return }
+        becomeDelegateIfNeeded()
         authorizationRequested = true
         let logger = logger
         Task {
