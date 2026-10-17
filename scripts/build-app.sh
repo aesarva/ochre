@@ -37,10 +37,10 @@ BUILD_NUMBER="$(git rev-list --count HEAD 2>/dev/null || echo 1)"
 # Иконка — документ Icon Composer: actool собирает Assets.car (маска и стекло macOS 26+)
 # и AppIcon.icns. Старая .icns без формата .icon попадает в серую подложку на мелких размерах.
 ICON_TMP="$(mktemp -d)"
+trap 'rm -rf "$ICON_TMP"' EXIT
 xcrun actool Resources/AppIcon.icon --compile "$APP/Contents/Resources" --platform macosx \
     --minimum-deployment-target 26.0 --app-icon AppIcon \
     --output-partial-info-plist "$ICON_TMP/partial.plist" >/dev/null
-rm -rf "$ICON_TMP"
 
 # Hardened runtime обязателен для нотаризации; включаем его и в ad-hoc сборке,
 # чтобы локально проверять то же поведение, что получат пользователи.

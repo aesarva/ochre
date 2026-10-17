@@ -32,6 +32,11 @@ elif [ -z "${SIGN_IDENTITY:-}" ]; then
 fi
 echo "==> Подпись: $SIGN_IDENTITY"
 
+# Временные каталоги удаляются и при сбое любого шага (set -e обрывает скрипт до rm -rf).
+TMP_DIRS=()
+cleanup() { if [ ${#TMP_DIRS[@]} -gt 0 ]; then rm -rf "${TMP_DIRS[@]}"; fi; }
+trap cleanup EXIT
+
 notarize() {
     echo "==> Нотаризация $(basename "$1")…"
     xcrun notarytool submit "$1" --keychain-profile "$NOTARY_PROFILE" --wait
@@ -44,21 +49,20 @@ APP=build/Ochre.app
 if ! $UNSIGNED; then
     # Приложение нотаризуем отдельно, чтобы скрепить билет с ним самим: тогда оно
     # открывается без сети, даже если пользователь скопирует его куда-то из DMG.
-    ZIP="$(mktemp -d)/Ochre.zip"
+    ZIP_DIR="$(mktemp -d)"; TMP_DIRS+=("$ZIP_DIR")
+    ZIP="$ZIP_DIR/Ochre.zip"
     ditto -c -k --keepParent "$APP" "$ZIP"
     notarize "$ZIP"
     xcrun stapler staple "$APP"
-    rm -rf "$(dirname "$ZIP")"
 fi
 
 mkdir -p dist
 DMG="dist/Ochre-$VERSION.dmg"
-STAGING="$(mktemp -d)"
+STAGING="$(mktemp -d)"; TMP_DIRS+=("$STAGING")
 cp -R "$APP" "$STAGING/"
 ln -s /Applications "$STAGING/Applications"
 rm -f "$DMG"
 hdiutil create -volname "Ochre $VERSION" -srcfolder "$STAGING" -fs HFS+ -format UDZO -ov "$DMG" >/dev/null
-rm -rf "$STAGING"
 
 if ! $UNSIGNED; then
     codesign --force --timestamp --sign "$SIGN_IDENTITY" "$DMG"
