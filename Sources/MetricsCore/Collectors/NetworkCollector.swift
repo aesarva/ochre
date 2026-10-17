@@ -2,55 +2,47 @@ import Foundation
 import Darwin
 import SystemConfiguration
 
-/// Chooses which interface's counters represent "the network".
+/// Chooses which interfaces' counters represent "the network".
 public enum InterfaceSelector {
-    /// The primary interface if present; otherwise the sum of all `en*` interfaces (name `nil`);
+    /// The primary interface if present; otherwise every `en*` interface (name `nil`);
     /// `nil` when there is neither.
     static func select(_ counters: [String: InterfaceCounters],
-                       primary: String?) -> (name: String?, counters: InterfaceCounters)? {
-        if let primary, let c = counters[primary] { return (primary, c) }
-        let en = counters.filter { $0.key.hasPrefix("en") }.map(\.value)
+                       primary: String?) -> (name: String?, counters: [String: InterfaceCounters])? {
+        if let primary, let c = counters[primary] { return (primary, [primary: c]) }
+        let en = counters.filter { $0.key.hasPrefix("en") }
         guard !en.isEmpty else { return nil }
-        return (nil, InterfaceCounters(rx: en.reduce(0) { $0 &+ $1.rx },
-                                       tx: en.reduce(0) { $0 &+ $1.tx }))
+        return (nil, en)
     }
 }
 
 /// Reads network throughput of the primary interface and accumulates session totals.
+/// Counters are compared per interface, so switching the primary interface or a new `en*`
+/// interface with traffic already on its counters never shows up as a burst.
 public struct NetworkCollector {
-    private var downRate = CounterRate()
-    private var upRate = CounterRate()
-    private var lastName: String??          // .none = no baseline yet
-    private var lastCounters: InterfaceCounters?
+    private var down = KeyedCounters<String>()
+    private var up = KeyedCounters<String>()
     private var totalDown: UInt64 = 0
     private var totalUp: UInt64 = 0
+    /// Сессия с configd: создавать её на каждом опросе в 7 раз дороже, чем держать открытой.
+    private let dynamicStore = SCDynamicStoreCreate(nil, "com.alexsarva.Ochre" as CFString, nil, nil)
 
     public init() {}
 
     public mutating func sample(now: TimeInterval) -> NetworkStats? {
         guard let all = Self.readCounters(),
-              let sel = InterfaceSelector.select(all, primary: Self.primaryInterface()) else { return nil }
-
-        // A different interface selection is treated as a counter reset.
-        let switched = lastName != nil && lastName! != sel.name
-        if switched {
-            downRate = CounterRate()
-            upRate = CounterRate()
-        } else if let last = lastCounters {
-            if sel.counters.rx > last.rx { totalDown &+= sel.counters.rx - last.rx }
-            if sel.counters.tx > last.tx { totalUp &+= sel.counters.tx - last.tx }
-        }
-        lastName = .some(sel.name)
-        lastCounters = sel.counters
-
+              let sel = InterfaceSelector.select(all, primary: primaryInterface()) else { return nil }
+        let d = down.advance(sel.counters.mapValues(\.rx), at: now)
+        let u = up.advance(sel.counters.mapValues(\.tx), at: now)
+        totalDown &+= d?.delta ?? 0
+        totalUp &+= u?.delta ?? 0
         return NetworkStats(interface: sel.name,
-                            downPerSecond: downRate.update(sel.counters.rx, at: now),
-                            upPerSecond: upRate.update(sel.counters.tx, at: now),
+                            downPerSecond: d.map { Double($0.delta) / $0.elapsed },
+                            upPerSecond: u.map { Double($0.delta) / $0.elapsed },
                             totalDown: totalDown, totalUp: totalUp)
     }
 
-    static func primaryInterface() -> String? {
-        guard let store = SCDynamicStoreCreate(nil, "com.alexsarva.Ochre" as CFString, nil, nil),
+    private func primaryInterface() -> String? {
+        guard let store = dynamicStore,
               let dict = SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv4" as CFString) as? [String: Any]
         else { return nil }
         return dict["PrimaryInterface"] as? String

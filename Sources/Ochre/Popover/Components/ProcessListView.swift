@@ -26,9 +26,9 @@ struct ProcessListView: View {
                         .buttonStyle(.plain)
                         .help(Text(verbatim: "Скопировать PID \(row.pid)"))
                         .accessibilityHint(Text(verbatim: "Копирует PID \(row.pid)"))
-                        .onHover { inside in
-                            if inside { NSCursor.pointingHand.push() } else { NSCursor.pop() }
-                        }
+                        // Декларативный курсор: push/pop по onHover разбалансируется, когда строки
+                        // пересортировываются под мышью или панель закрывается.
+                        .pointerStyle(.link)
                 } else {
                     rowView(row)
                 }

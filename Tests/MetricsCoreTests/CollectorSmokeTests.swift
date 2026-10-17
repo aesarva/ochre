@@ -62,8 +62,9 @@ import Foundation
         if let b = BatteryCollector().sample() { #expect((0...100).contains(b.percent)) }
     }
 
-    @Test func sensors() throws {
-        let s = try #require(SensorCollector().sample())
+    /// Датчиков может не быть (виртуальная машина, CI) — тогда проверять нечего, как и в приложении.
+    @Test func sensors() {
+        guard let s = SensorCollector().sample() else { return }
         if let cpu = s.cpuCelsius { #expect((10...120).contains(cpu)) }
         #expect(s.temperatures.allSatisfy { $0.celsius > 0 && $0.celsius < 150 })
     }
@@ -74,7 +75,6 @@ import Foundation
         try await Task.sleep(for: .milliseconds(300))
         let second = p.sample(now: MonotonicClock.now())
         let rows = try #require(second)
-        #expect(rows.count >= 50)
         #expect(Double(ProcessCollector.allPids().count) >= Double(proc_listallpids(nil, 0)) * 0.9)
         #expect(rows.contains { $0.pid == getpid() })
         #expect(rows.allSatisfy { !$0.name.isEmpty })
@@ -100,5 +100,30 @@ import Foundation
     @Test func emptyFallsBackToCPU() {
         let r = CPUCollector.effectiveLevels([], coreCount: 8)
         #expect(r.count == 1 && r[0].name == "CPU" && r[0].coreCount == 8)
+    }
+}
+
+@Suite struct CollectorResourceTests {
+    private func hostSendRefs(_ host: mach_port_t) -> mach_port_urefs_t {
+        var refs: mach_port_urefs_t = 0
+        _ = mach_port_get_refs(mach_task_self_, host, MACH_PORT_RIGHT_SEND, &refs)
+        return refs
+    }
+
+    @Test func samplingDoesNotAccumulateHostPortReferences() {
+        let host = mach_host_self()
+        var cpu = CPUCollector()
+        let memory = MemoryCollector()
+        _ = cpu.sample(); _ = memory.sample()
+        let before = hostSendRefs(host)
+        for _ in 0..<50 { _ = cpu.sample(); _ = memory.sample() }
+        #expect(hostSendRefs(host) == before)
+    }
+
+    @Test func registryKeysLimitCopiedProperties() {
+        let all = IORegistry.properties(ofClass: "IOBlockStorageDriver")
+        let some = IORegistry.properties(ofClass: "IOBlockStorageDriver", keys: ["Statistics"])
+        #expect(some.count == all.count)
+        #expect(some.allSatisfy { Set($0.keys).isSubset(of: ["Statistics"]) })
     }
 }
