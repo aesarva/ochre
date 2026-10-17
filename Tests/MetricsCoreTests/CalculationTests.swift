@@ -2,22 +2,6 @@ import Testing
 @testable import MetricsCore
 
 @Suite struct CalculationTests {
-    @Test func firstUpdateIsNil() {
-        var r = CounterRate()
-        #expect(r.update(1000, at: 10) == nil)
-        #expect(r.update(3000, at: 12) == 1000)
-    }
-    @Test func counterDecreaseGivesNil() {
-        var r = CounterRate()
-        _ = r.update(5000, at: 0)
-        #expect(r.update(100, at: 1) == nil)      // сброс интерфейса
-        #expect(r.update(1100, at: 2) == 1000)    // новая база
-    }
-    @Test func longGapGivesAverageRate() {
-        var r = CounterRate()
-        _ = r.update(0, at: 0)
-        #expect(r.update(28_800, at: 28_800) == 1) // 8 часов сна
-    }
     @Test func cpuPercent() {
         let a = CPUTicks(user: 100, system: 50, idle: 800, nice: 50)
         let b = CPUTicks(user: 200, system: 100, idle: 1100, nice: 100)

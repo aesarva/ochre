@@ -28,6 +28,12 @@ import Testing
         let step = k.advance(["a": 300], at: 4)
         #expect(step?.delta == 200); #expect(step?.elapsed == 4)
     }
+    @Test func longGapGivesAverageRate() {
+        var k = KeyedCounters<String>()
+        _ = k.advance(["a": 0], at: 0)
+        let step = k.advance(["a": 28_800], at: 28_800)               // 8 часов сна
+        #expect(step.map { Double($0.delta) / $0.elapsed } == 1)
+    }
     @Test func nonAdvancingClockGivesNoStep() {
         var k = KeyedCounters<String>()
         _ = k.advance(["a": 1], at: 5)
