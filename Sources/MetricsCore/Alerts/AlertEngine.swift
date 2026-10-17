@@ -6,7 +6,8 @@ public struct AlertEngine: Sendable {
     private var lastEvaluation: TimeInterval?
     private var since: [AlertKind: TimeInterval] = [:]
     private var lastNotified: [AlertKind: TimeInterval] = [:]
-    private var wasActive: Set<AlertKind> = []
+    /// Порог, при котором копится `since`: при его смене прежнее время превышения уже ничего не значит.
+    private var thresholds: [AlertKind: Double] = [:]
 
     public init(cooldown: TimeInterval = 600, maxGap: TimeInterval = 15) {
         self.cooldown = cooldown
@@ -24,21 +25,23 @@ public struct AlertEngine: Sendable {
         var events: [AlertEvent] = []
         for kind in AlertKind.allCases {
             let rule = config.rule(kind)
+            if thresholds[kind] != rule.threshold {
+                thresholds[kind] = rule.threshold
+                since[kind] = nil
+            }
             if rule.enabled && Self.conditionHolds(kind, snapshot, rule) {
                 since[kind] = since[kind] ?? now
             } else {
                 since[kind] = nil
-                lastNotified[kind] = nil
             }
             guard rule.enabled, let start = since[kind], now - start >= rule.duration else { continue }
             active.insert(kind)
-            let cooledDown = lastNotified[kind].map { now - $0 >= cooldown } ?? true
-            if !wasActive.contains(kind) || cooledDown {
+            // Cooldown действует и между эпизодами: значение, скачущее через порог, не шлёт уведомление на каждый скачок.
+            if lastNotified[kind].map({ now - $0 >= cooldown }) ?? true {
                 lastNotified[kind] = now
                 events.append(Self.event(kind, snapshot, rule))
             }
         }
-        wasActive = active
         return (active, events)
     }
 
