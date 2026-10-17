@@ -8,7 +8,7 @@ public final class SensorCollector {
     private var smcConnection: UInt32 = 0
     private let smcOpen: Bool
     private var lastTemperatures: [TemperatureReading] = []
-    private var temperaturesReadAt: TimeInterval = -.infinity
+    private var temperatureState = TemperatureReadState()
 
     public init() {
         if let client = IOHIDEventSystemClientCreate(kCFAllocatorDefault) {
@@ -35,12 +35,13 @@ public final class SensorCollector {
     }
 
     /// `maxTemperatureAge` — сколько секунд можно переиспользовать прошлые температуры:
-    /// опрос ~77 HID-датчиков стоит ~80 мс, а температуры меняются медленно.
-    public func sample(maxTemperatureAge: TimeInterval = 0) -> SensorStats? {
+    /// чтение HID-датчика стоит ~1 мс, а температуры меняются медленно.
+    /// `cpuOnly` — читать только датчики CPU (закрытой панели нужна лишь температура CPU).
+    public func sample(maxTemperatureAge: TimeInterval = 0, cpuOnly: Bool = false) -> SensorStats? {
         let now = MonotonicClock.now()
-        if now - temperaturesReadAt >= maxTemperatureAge {
-            lastTemperatures = readTemperatures()
-            temperaturesReadAt = now
+        if temperatureState.needsRead(now: now, maxAge: maxTemperatureAge, full: !cpuOnly) {
+            lastTemperatures = readTemperatures(cpuOnly: cpuOnly)
+            temperatureState.didRead(at: now, full: !cpuOnly)
         }
         let agg = SensorAggregator.aggregate(lastTemperatures)
         let fanCount = Self.fanCount(from: smcValue("FNum"))
@@ -66,7 +67,15 @@ public final class SensorCollector {
     }
 
     /// Служебные HID-сервисы с именами; список дорог в получении, поэтому кэшируется.
-    private var cachedServices: [(name: String, service: IOHIDServiceClient)] = []
+    /// `plausible == false` — датчик отдал мусор (на M5 Pro таких 25 из 77, и они дороже половины опроса):
+    /// его пропускаем до следующего обновления списка.
+    private struct Service {
+        let name: String
+        let client: IOHIDServiceClient
+        let isCPU: Bool
+        var plausible = true
+    }
+    private var cachedServices: [Service] = []
     private var servicesRefreshedAt: TimeInterval = -.infinity
     private static let servicesRefreshInterval: TimeInterval = 60
 
@@ -77,33 +86,39 @@ public final class SensorCollector {
             guard let raw = CFArrayGetValueAtIndex(services, i) else { continue }
             let service = unsafeBitCast(raw, to: IOHIDServiceClient.self)
             if let name = IOHIDServiceClientCopyProperty(service, "Product" as CFString) as? String {
-                cachedServices.append((name, service))
+                cachedServices.append(Service(name: name, client: service, isCPU: SensorAggregator.isCPU(name)))
             }
         }
     }
 
-    private func readEvents() -> [TemperatureReading] {
+    private func readEvents(cpuOnly: Bool) -> [TemperatureReading] {
+        // Без датчиков с именами CPU (другая модель Mac) краткое чтение бессмысленно — читаем все.
+        let cpuOnly = cpuOnly && cachedServices.contains { $0.isCPU && $0.plausible }
         var result: [TemperatureReading] = []
-        for (name, service) in cachedServices {
-            guard let event = IOHIDServiceClientCopyEvent(service, 15, 0, 0) else { continue }
+        for i in cachedServices.indices where cachedServices[i].plausible && (!cpuOnly || cachedServices[i].isCPU) {
+            guard let event = IOHIDServiceClientCopyEvent(cachedServices[i].client, 15, 0, 0) else { continue }
             let value = IOHIDEventGetFloatValue(event, 15 << 16)
-            if value.isFinite { result.append(TemperatureReading(name: name, celsius: value)) }
+            if SensorAggregator.isPlausible(value) {
+                result.append(TemperatureReading(name: cachedServices[i].name, celsius: value))
+            } else {
+                cachedServices[i].plausible = false
+            }
         }
         return result
     }
 
-    private func readTemperatures() -> [TemperatureReading] {
+    private func readTemperatures(cpuOnly: Bool) -> [TemperatureReading] {
         let now = MonotonicClock.now()
         if cachedServices.isEmpty || now - servicesRefreshedAt > Self.servicesRefreshInterval {
             refreshServices()
             servicesRefreshedAt = now
         }
-        let readings = readEvents()
+        let readings = readEvents(cpuOnly: cpuOnly)
         if readings.isEmpty && !cachedServices.isEmpty {
             // Сервисы могли устареть — один раз обновляем и читаем заново.
             refreshServices()
             servicesRefreshedAt = now
-            return readEvents()
+            return readEvents(cpuOnly: cpuOnly)
         }
         return readings
     }
