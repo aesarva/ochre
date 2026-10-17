@@ -5,7 +5,7 @@ public struct GPUCollector {
 
     /// Максимальная загрузка среди всех `IOAccelerator`.
     public func sample() -> GPUStats? {
-        Self.parse(IORegistry.properties(ofClass: "IOAccelerator"))
+        Self.parse(IORegistry.properties(ofClass: "IOAccelerator", keys: ["PerformanceStatistics", "gpu-core-count"]))
     }
 
     /// Чистая часть: загрузка (`PerformanceStatistics["Device Utilization %"]`) и число ядер (`gpu-core-count`).
