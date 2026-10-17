@@ -2,9 +2,17 @@ import Testing
 import Foundation
 @testable import MetricsCore
 
-@Suite struct SettingsMigrationTests {
+@Suite final class SettingsMigrationTests {
+    private var suiteNames: [String] = []
+
+    /// Удаляет созданные тестом домены: иначе каждый прогон оставляет plist в ~/Library/Preferences.
+    deinit {
+        for name in suiteNames { UserDefaults.standard.removePersistentDomain(forName: name) }
+    }
+
     private func makeDefaults() -> UserDefaults {
         let name = "test.migration.\(UUID().uuidString)"
+        suiteNames.append(name)
         let d = UserDefaults(suiteName: name)!
         d.removePersistentDomain(forName: name)
         return d

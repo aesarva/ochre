@@ -24,12 +24,14 @@ public struct NetworkCollector {
     private var lastCounters: InterfaceCounters?
     private var totalDown: UInt64 = 0
     private var totalUp: UInt64 = 0
+    /// Сессия с configd: создавать её на каждом опросе в 7 раз дороже, чем держать открытой.
+    private let dynamicStore = SCDynamicStoreCreate(nil, "com.alexsarva.Ochre" as CFString, nil, nil)
 
     public init() {}
 
     public mutating func sample(now: TimeInterval) -> NetworkStats? {
         guard let all = Self.readCounters(),
-              let sel = InterfaceSelector.select(all, primary: Self.primaryInterface()) else { return nil }
+              let sel = InterfaceSelector.select(all, primary: primaryInterface()) else { return nil }
 
         // A different interface selection is treated as a counter reset.
         let switched = lastName != nil && lastName! != sel.name
@@ -49,8 +51,8 @@ public struct NetworkCollector {
                             totalDown: totalDown, totalUp: totalUp)
     }
 
-    static func primaryInterface() -> String? {
-        guard let store = SCDynamicStoreCreate(nil, "com.alexsarva.Ochre" as CFString, nil, nil),
+    private func primaryInterface() -> String? {
+        guard let store = dynamicStore,
               let dict = SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv4" as CFString) as? [String: Any]
         else { return nil }
         return dict["PrimaryInterface"] as? String
