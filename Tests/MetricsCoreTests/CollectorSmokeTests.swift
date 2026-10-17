@@ -102,3 +102,28 @@ import Foundation
         #expect(r.count == 1 && r[0].name == "CPU" && r[0].coreCount == 8)
     }
 }
+
+@Suite struct CollectorResourceTests {
+    private func hostSendRefs(_ host: mach_port_t) -> mach_port_urefs_t {
+        var refs: mach_port_urefs_t = 0
+        _ = mach_port_get_refs(mach_task_self_, host, MACH_PORT_RIGHT_SEND, &refs)
+        return refs
+    }
+
+    @Test func samplingDoesNotAccumulateHostPortReferences() {
+        let host = mach_host_self()
+        var cpu = CPUCollector()
+        let memory = MemoryCollector()
+        _ = cpu.sample(); _ = memory.sample()
+        let before = hostSendRefs(host)
+        for _ in 0..<50 { _ = cpu.sample(); _ = memory.sample() }
+        #expect(hostSendRefs(host) == before)
+    }
+
+    @Test func registryKeysLimitCopiedProperties() {
+        let all = IORegistry.properties(ofClass: "IOBlockStorageDriver")
+        let some = IORegistry.properties(ofClass: "IOBlockStorageDriver", keys: ["Statistics"])
+        #expect(some.count == all.count)
+        #expect(some.allSatisfy { Set($0.keys).isSubset(of: ["Statistics"]) })
+    }
+}

@@ -25,7 +25,8 @@ public actor Sampler {
         var snapshot = Snapshot(uptime: now)
         snapshot.cpu = track("CPU", firstCallMayBeNil: true, cpu.sample())
         snapshot.memory = track("память", memory.sample())
-        snapshot.sensors = track("датчики", sensors.sample(maxTemperatureAge: includeProcesses ? 2 : 15))
+        snapshot.sensors = track("датчики", sensors.sample(maxTemperatureAge: includeProcesses ? 2 : 15,
+                                                                      cpuOnly: !includeProcesses))
         snapshot.gpu = track("GPU", gpu.sample())
         snapshot.network = track("сеть", firstCallMayBeNil: true, network.sample(now: now))
         snapshot.disk = track("диск", firstCallMayBeNil: true, disk.sample(now: now))
