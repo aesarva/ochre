@@ -56,7 +56,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let legacies = SettingsMigration.legacyBundleIdentifiers
             .filter { $0 != Bundle.main.bundleIdentifier }
             .compactMap(UserDefaults.init(suiteName:))
-        SettingsMigration.migrate(key: SettingsStore.defaultsKey, fromFirstOf: legacies, to: .standard)
+        SettingsMigration.migrate(key: SettingsStore.defaultsKey, fromFirstOf: legacies, to: UserDefaults.standard)
     }
 
     private static func flag(_ value: Any?) -> Bool {
