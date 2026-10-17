@@ -10,13 +10,15 @@ import Foundation
         for name in suiteNames { UserDefaults.standard.removePersistentDomain(forName: name) }
     }
 
-    private func makeDefaults() -> UserDefaults {
-        let name = "test.migration.\(UUID().uuidString)"
-        suiteNames.append(name)
-        let d = UserDefaults(suiteName: name)!
-        d.removePersistentDomain(forName: name)
-        return d
+    /// Хранилище в памяти: тесты не пишут в настоящие UserDefaults.
+    private final class MemoryStorage: SettingsStorage {
+        private var values: [String: Any] = [:]
+        func object(forKey key: String) -> Any? { values[key] }
+        func set(_ value: Any?, forKey key: String) { values[key] = value }
+        func data(forKey key: String) -> Data? { values[key] as? Data }
     }
+
+    private func makeDefaults() -> MemoryStorage { MemoryStorage() }
 
     @Test func copiesLegacySettingsWhenCurrentHasNone() {
         let legacy = makeDefaults(), current = makeDefaults()
