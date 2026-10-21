@@ -16,6 +16,24 @@ import Foundation
         #expect(SensorAggregator.aggregate([.init(name: "PMU tdie1", celsius: 50)]).gpu == nil)
         #expect(SensorAggregator.aggregate([.init(name: "GPU MTR Temp Sensor1", celsius: 61)]).gpu == 61)
     }
+    @Test func sensorClassification() {
+        #expect(SensorAggregator.isCPU("PMU tdie3") && SensorAggregator.isCPU("pACC MTR Temp Sensor2")
+                && SensorAggregator.isCPU("eACC MTR Temp Sensor0"))
+        #expect(!SensorAggregator.isCPU("NAND CH0 temp") && !SensorAggregator.isCPU("GPU MTR Temp Sensor1"))
+        #expect(SensorAggregator.isPlausible(45) && !SensorAggregator.isPlausible(-9201.1)
+                && !SensorAggregator.isPlausible(0) && !SensorAggregator.isPlausible(150) && !SensorAggregator.isPlausible(.nan))
+    }
+    @Test func temperatureRefreshPolicy() {
+        var c = TemperatureReadState()
+        #expect(c.needsRead(now: 0, maxAge: 15, full: false))       // ещё не читали
+        c.didRead(at: 0, full: false)
+        #expect(!c.needsRead(now: 10, maxAge: 15, full: false))
+        #expect(c.needsRead(now: 1, maxAge: 2, full: true))         // панель открылась: нужны все датчики сразу
+        c.didRead(at: 1, full: true)
+        #expect(!c.needsRead(now: 2, maxAge: 2, full: true))
+        #expect(!c.needsRead(now: 2, maxAge: 15, full: false))      // полное чтение годится и для краткого
+        #expect(c.needsRead(now: 3, maxAge: 2, full: true))
+    }
     @Test func smcDecode() {
         #expect(SMCDecoder.decode(type: "flt ", bytes: [0x00, 0xb0, 0x10, 0x45]) == 2315)
         #expect(SMCDecoder.decode(type: "ui8 ", bytes: [0x02]) == 2)

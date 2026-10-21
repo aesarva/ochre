@@ -161,6 +161,8 @@ Debug launch arguments:
 - `-PopoverTab <tab>` chooses the starting tab.
 - `-SnapshotDir <path>` saves PNGs of the menu bar item, every tab and the settings, without needing Screen Recording permission.
 
+Branching: `main` holds releases, `develop` is the integration branch, and every change goes through its own branch merged into `develop`. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ### Releasing
 
 `scripts/release.sh <version>` builds a universal app, signs it with a Developer ID certificate, notarizes and staples both the app and the DMG, and checks the result with Gatekeeper. The output is `dist/Ochre-<version>.dmg`.

@@ -35,7 +35,10 @@ struct PopoverView: View {
         VStack(spacing: 12) {
             GlassTabBar(selection: $tab)
 
-            content
+            CappedHeight(limit: Self.maxContentHeight) {
+                ScrollView(.vertical) { content }
+                    .scrollBounceBehavior(.basedOnSize)
+            }
 
             Divider().opacity(0.5)
             HStack {
@@ -54,6 +57,11 @@ struct PopoverView: View {
         // Содержимое прибито к верху, пока окно догоняет новую высоту. minHeight: 0 обязателен: без него
         // рамка растёт до высоты содержимого, и NSHostingView центрирует переполнение — вкладки прыгают вверх.
         .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
+    }
+
+    /// Сколько содержимому вкладки можно занять: видимая высота экрана минус вкладки, подвал, отступы и стрелка.
+    private static var maxContentHeight: CGFloat {
+        max(240, (NSScreen.main?.visibleFrame.height ?? 800) - 150)
     }
 
     @ViewBuilder

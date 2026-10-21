@@ -58,6 +58,35 @@ import Foundation
         #expect(r.events.map(\.kind) == [.memoryPressure, .diskSpace])
         #expect(r.events[1].body == "Свободно \(Format.bytes(5 * 1_073_741_824)) на системном томе")
     }
+    @Test func flappingConditionRespectsCooldown() {
+        func mem(_ pressure: MemoryPressure, at t: TimeInterval) -> Snapshot {
+            var s = Snapshot(uptime: t)
+            s.memory = MemoryStats(total: 1, used: 1, app: 1, wired: 0, compressed: 0, cached: 0,
+                                   swapUsed: 0, swapTotal: 0, pressure: pressure)
+            return s
+        }
+        var e = AlertEngine(); var events = 0
+        for (i, t) in stride(from: 0.0, to: 600, by: 2).enumerated() {
+            let r = e.evaluate(mem(i.isMultiple(of: 2) ? .critical : .warning, at: t), config: .default, now: t)
+            events += r.events.count
+        }
+        #expect(events == 1)   // давление прыгает critical/warning каждые 2 с — одно уведомление за 10 минут
+        #expect(e.evaluate(mem(.critical, at: 600), config: .default, now: 600).events.count == 1)
+    }
+    @Test func raisingThresholdRestartsSustainedTimer() {
+        var e = AlertEngine(); var cfg = AlertConfig.default
+        for t in stride(from: 0.0, through: 50, by: 2) { _ = e.evaluate(cpu(92, at: t), config: cfg, now: t) }
+        cfg.rules[.cpuLoad]?.threshold = 95
+        for t in stride(from: 52.0, through: 70, by: 2) {
+            #expect(e.evaluate(cpu(99, at: t), config: cfg, now: t).active.isEmpty)   // 99 > 95 всего 18 с
+        }
+    }
+    @Test func changingDurationKeepsSustainedTimer() {
+        var e = AlertEngine(); var cfg = AlertConfig.default
+        for t in stride(from: 0.0, through: 40, by: 2) { _ = e.evaluate(cpu(95, at: t), config: cfg, now: t) }
+        cfg.rules[.cpuLoad]?.duration = 30
+        #expect(e.evaluate(cpu(95, at: 42), config: cfg, now: 42).active == [.cpuLoad])
+    }
     @Test func configEncodesRulesAsJSONObject() throws {
         let data = try JSONEncoder().encode(AlertConfig.default)
         let obj = try JSONSerialization.jsonObject(with: data) as? [String: Any]
