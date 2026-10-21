@@ -5,16 +5,16 @@
 <h1 align="center">Ochre</h1>
 
 <p align="center">
-  <b>A menu bar system monitor for macOS that shows you the chip, not just numbers.</b><br>
-  Every CPU core and the GPU on a split-flap die map. The tiles heat up with the load.
+  <b>See your Mac's chip at work, right from the menu bar.</b><br>
+  Every CPU core and GPU core on a live die map that heats up with the load.
 </p>
 
 <p align="center">
-  <img alt="macOS 26+" src="https://img.shields.io/badge/macOS-26%2B-2b2b2b?logo=apple&logoColor=white">
-  <img alt="Swift 6.2" src="https://img.shields.io/badge/Swift-6.2-CC8F25?logo=swift&logoColor=white">
-  <img alt="Apple Silicon and Intel" src="https://img.shields.io/badge/Apple%20Silicon%20%2B%20Intel-universal-E3BF5C">
-  <a href="../../releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/aesarva/ochre?color=CC8F25&label=download"></a>
-  <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-B4462A"></a>
+  <a href="https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg"><img alt="Download for macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=Download%20for%20macOS&color=CC8F25"></a>
+</p>
+
+<p align="center">
+  macOS 26 Tahoe or later · Apple Silicon and Intel · signed and notarized · free and open source
 </p>
 
 <p align="center">
@@ -22,97 +22,102 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/hero.jpg" alt="Ochre's popover open under its menu bar item: the die map shows six Super cores at 100% in hot red and twelve Performance cores in graphite, with CPU, memory, network and disk sparklines below" width="820">
+  <img src="docs/images/hero.jpg" alt="Ochre's panel open under its menu bar item: the die map shows six Super cores at 100% in hot red and twelve Performance cores in graphite, with CPU, memory, network and disk sparklines below" width="820">
 </p>
 
-## Why Ochre
+## Highlights
 
-- **The chip, not an average.** Most monitors give you one CPU percentage. Ochre draws the processor as it is built: cores grouped by cluster (Super and Performance on M5, Performance and Efficiency on M1–M4), each with its own load, plus a strip of GPU cores. A single runaway thread stands out right away.
-- **Colour means heat and nothing else.** The interface is graphite and paper. Colour appears only where something is working hard: amber, then ember, then hot red. You can read it at a glance from across the desk.
-- **Light on the system.** Measured on an M5 Pro: about 0.7% of one core and 13 MB of memory with the panel closed. Temperatures are read every 15 s in the background and every 2 s while the panel is open.
-- **Native.** Swift, SwiftUI and AppKit with Liquid Glass. No Electron, no helper daemon, no root password, no kernel extension.
-- **Private.** No network requests, no analytics, no account. All data comes from local system interfaces and never leaves your Mac.
-- **Alerts that wait before firing.** A threshold has to hold for a set time before you are notified, so a five-second spike doesn't ping you.
+- **The real chip, not an average.** Cores are drawn the way your processor is built: grouped by cluster (Super and Performance on M5, Performance and Efficiency on M1–M4), each with its own load, plus a strip of GPU cores. One runaway thread is obvious at a glance.
+- **Colour means heat.** The interface is graphite and paper. Colour shows up only where something is working hard: amber, then ember, then red.
+- **Light on your Mac.** About 0.7% of one core and 13 MB of memory with the panel closed (measured on an M5 Pro). Ochre slows its sampling down when you aren't looking.
+- **Native.** Swift, SwiftUI and AppKit with Liquid Glass. No Electron, no helper daemon, no administrator password, no kernel extension.
+- **Private.** No network requests, no analytics, no account. Your data never leaves your Mac.
+- **Alerts that wait.** A threshold has to hold for as long as you choose before you get a notification, so short spikes stay quiet.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="50%" valign="top"><img src="docs/images/tab-cpu.jpg" alt="CPU tab: die map and load history for all cores, Super cores and Performance cores"><br><b>CPU</b>: die map, clusters and load history</td>
+    <td width="50%" valign="top"><img src="docs/images/tab-sensors.jpg" alt="Sensors tab: grouped temperatures, fan speeds, GPU load, system power and battery health"><br><b>Sensors</b>: temperatures, fans, power and battery</td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td width="33%" valign="top"><img src="docs/images/tab-memory.jpg" alt="Memory tab: composition bar, usage history, pressure and swap"><br><b>Memory</b></td>
+    <td width="33%" valign="top"><img src="docs/images/tab-network.jpg" alt="Network tab: download and upload rates with peaks, active interface and totals"><br><b>Network</b></td>
+    <td width="33%" valign="top"><img src="docs/images/tab-disk.jpg" alt="Disk tab: free space on the startup volume and read and write speed"><br><b>Disk</b></td>
+  </tr>
+</table>
 
 ## Features
 
-### Menu bar
+**Menu bar.** Build the item from the segments you need: mini die map, CPU graph, CPU %, memory %, temperature and network speed. Segments keep a fixed width, so the menu bar doesn't jitter, and a segment turns red while its alert is active.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/menubar-dark.png">
   <img src="docs/images/menubar-light.png" width="180" alt="Menu bar item: a mini die map, CPU 37%, RAM 62%, 67°">
 </picture>
 
-Choose any mix of segments: **mini die map**, **CPU graph**, **CPU %**, **memory %**, **temperature** and **network speed**. Each segment has a fixed width, so the menu bar doesn't jump when numbers change. A segment turns red while its alert is active, and VoiceOver reads the whole item as one sentence.
+**CPU and GPU.** One split-flap tile per core that flips when its load changes. Each cluster shows its temperature, and the whole CPU and every cluster have their own load history. GPU cores sit in a strip below.
 
-### Die map and CPU
+**Memory.** App, wired, compressed and cached memory on one bar, plus usage history, memory pressure and swap.
 
-<img src="docs/images/tab-cpu.jpg" align="right" width="300" alt="CPU tab: the die map and load history for all cores, Super cores and Performance cores">
+**Network and disk.** Download and upload speed with peaks and history, the active interface and traffic since launch. Free space on the startup disk and read/write speed.
 
-- One split-flap tile per core with its load in percent. The tile flips when the value changes.
-- Cores are grouped by performance level as macOS reports them, and each cluster shows its temperature.
-- A GPU strip with one cell per GPU core, lit by utilization.
-- Load history for the whole CPU and for each cluster.
-- The **Overview** tab also shows CPU, memory, network and disk sparklines and the three busiest processes.
+**Sensors.** Every temperature sensor grouped by part (CPU, SSD, battery, power), fan speeds, GPU load, total system power, and battery charge, cycles and health.
 
-<br clear="right">
+**Processes.** The busiest processes by CPU or memory. Click a row to copy its PID.
 
-### Memory
+**Alerts.** CPU temperature, CPU load, memory pressure and low disk space. Pick a threshold and how long it has to hold, for example 95 °C for 30 seconds.
 
-<img src="docs/images/tab-memory.jpg" align="right" width="300" alt="Memory tab: composition bar with app, wired, compressed and cached memory, usage history, pressure and swap">
-
-- A composition bar: app memory, wired, compressed and cached.
-- Used memory with history.
-- Memory pressure as macOS reports it, plus swap usage.
-
-<br clear="right">
-
-### Network and disk
-
-<img src="docs/images/tab-network.jpg" align="right" width="300" alt="Network tab: download and upload rates with peaks and history, active interface and totals since launch">
-
-- Download and upload rates with history and peak values.
-- The active interface and the traffic total since launch.
-- The disk tab shows free space on the startup volume and read/write speed with peaks.
-
-<br clear="right">
-
-### Sensors
-
-<img src="docs/images/tab-sensors.jpg" align="right" width="300" alt="Sensors tab: grouped temperatures, fan speeds, GPU load, system power and battery health">
-
-- Temperatures, grouped: CPU (every die sensor, expandable), SSD, battery, power controller.
-- Fan speeds, GPU load and total system power in watts.
-- Battery: charge, cycle count, health, power draw and charging state.
-
-<br clear="right">
-
-### Processes and alerts
-
-- The **Processes** tab lists the top processes by CPU or by memory. Click a row to copy its PID.
-- Alerts for **CPU temperature**, **CPU load**, **memory pressure** and **low disk space**. You set the threshold and how long it must hold, for example 95 °C for 30 s. When an alert fires, you get a system notification and the menu bar segment turns red.
-- Refresh interval of 1, 2 or 5 seconds, and an option to launch at login.
+**Settings.** Refresh every 1, 2 or 5 seconds, and launch at login.
 
 ## Install
 
-**[Download Ochre 1.0.0](https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg)** (DMG, 7 MB, Apple Silicon and Intel). Open it and drag Ochre to Applications. The app is signed with Developer ID and notarized by Apple, so it opens without Gatekeeper warnings. Every version is on the [Releases](../../releases) page.
+1. [Download the DMG](https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg) (7 MB). Older versions are on the [Releases](../../releases) page.
+2. Open it and drag **Ochre** to **Applications**.
+3. Launch Ochre. It appears in the menu bar only, with no Dock icon. Click it to open the panel. Settings and Quit are at the bottom.
 
-### Build from source
+If you turn alerts on, macOS asks once for permission to show notifications. Ochre needs no other permissions.
 
-Requirements: macOS 26 or later and Xcode 26 (Swift 6.2).
+> [!NOTE]
+> The interface is in Russian for now.
 
-```sh
-git clone https://github.com/aesarva/ochre.git
-cd ochre
-scripts/build-app.sh              # universal build/Ochre.app (arm64 + x86_64)
-# ARCHS=arm64 scripts/build-app.sh  # Apple Silicon only, faster
-cp -R build/Ochre.app /Applications/
-open /Applications/Ochre.app
-```
+**Uninstall:** turn off *Launch at login* in Settings, quit Ochre, and move it to the Trash. To remove its settings too, run `defaults delete com.alexsarva.Ochre`.
 
-Ochre lives only in the menu bar (no Dock icon). Settings are under **Settings** at the bottom of the panel. Allow notifications when asked if you want alerts.
+## FAQ
 
-If `xcode-select` points to the Command Line Tools, set `export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` before running `swift` commands. The build scripts do this themselves.
+<details>
+<summary><b>Why isn't Ochre on the Mac App Store?</b></summary>
+
+Temperatures, fans and power come from IOHID and the SMC. These are private macOS interfaces, and the App Store sandbox doesn't allow them. Ochre is distributed directly, signed with a Developer ID certificate and notarized by Apple.
+</details>
+
+<details>
+<summary><b>Does it work on Intel Macs?</b></summary>
+
+Yes, the app is universal. Intel Macs have no HID temperature sensors, so CPU temperatures aren't shown there. Fans and power are still read from the SMC.
+</details>
+
+<details>
+<summary><b>Will it drain my battery?</b></summary>
+
+No. With the panel closed Ochre samples at your chosen interval and reads temperatures every 15 seconds. Faster sampling (temperatures every 2 seconds, plus the process list) runs only while the panel is open.
+</details>
+
+<details>
+<summary><b>Why are some processes missing?</b></summary>
+
+Processes owned by root or other users can't be inspected without elevated rights, and Ochre never asks for them.
+</details>
+
+<details>
+<summary><b>A sensor shows a strange name or is missing.</b></summary>
+
+Sensor names and availability vary between Mac models, and macOS updates can change them. Please [open an issue](../../issues) with your Mac model and a screenshot of the Sensors tab.
+</details>
 
 ## How it works
 
@@ -120,7 +125,7 @@ If `xcode-select` points to the Command Line Tools, set `export DEVELOPER_DIR=/A
 | --- | --- |
 | Per-core CPU load | `host_processor_info` |
 | Core clusters | `hw.nperflevels`, `hw.perflevel*` sysctls |
-| GPU load and core count | IORegistry `IOAccelerator` performance statistics |
+| GPU load and core count | IORegistry `IOAccelerator` statistics |
 | Memory, pressure, swap | `host_statistics64`, `kern.memorystatus_vm_pressure_level`, `vm.swapusage` |
 | Network | `NET_RT_IFLIST2` interface counters |
 | Disk | `IOBlockStorageDriver` statistics, volume capacity |
@@ -129,65 +134,34 @@ If `xcode-select` points to the Command Line Tools, set `export DEVELOPER_DIR=/A
 | Battery | `AppleSmartBattery` |
 | Processes | `proc_pid_rusage`, `proc_pidpath` |
 
-The code is split into two parts. **MetricsCore** holds the collectors, sampling, history, alert engine and presentation logic, and is covered by unit tests. **Ochre** is the SwiftUI/AppKit app on top of it. Temperature sensors and the SMC are reached through a small C shim (`CPrivateAPI`).
-
 ```
 Sources/
   CPrivateAPI/   C declarations for IOHID and SMC
-  MetricsCore/   collectors, sampling, alerts, presentation (testable)
-  Ochre/         menu bar item, popover, settings, notifications
+  MetricsCore/   collectors, sampling, history, alerts, presentation (unit-tested)
+  Ochre/         menu bar item, panel, settings, notifications
 Tests/           MetricsCoreTests
-Resources/       Info.plist, Icon Composer icon
 scripts/         build-app.sh, release.sh
-site/            static landing page (RU/EN)
+site/            landing page (EN/RU)
 ```
 
-## Limitations
+## Build from source
 
-- Sensors are read through private macOS interfaces (IOHID and SMC). Their names and availability vary between Mac models, and a future macOS update can change them. That is also why Ochre is not in the Mac App Store.
-- On Intel Macs CPU temperatures are not available, because there are no HID sensors. Fans and power are still read from the SMC.
-- Processes owned by other users and by root can't be inspected without elevated rights, so they are left out.
-- The interface is currently in Russian only.
-
-## Development
+You need macOS 26 and Xcode 26 (Swift 6.2).
 
 ```sh
-swift test                         # unit tests for MetricsCore
-ARCHS=arm64 scripts/build-app.sh   # quick local build
+git clone https://github.com/aesarva/ochre.git
+cd ochre
+scripts/build-app.sh                # universal build/Ochre.app
+ARCHS=arm64 scripts/build-app.sh    # Apple Silicon only, faster
+open build/Ochre.app
 ```
 
-Debug launch arguments:
+Run the tests with `swift test`. If `xcode-select` points to the Command Line Tools, prefix it with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`.
 
-- `-OpenPopoverOnLaunch YES` opens the panel on start.
-- `-PopoverTab <tab>` chooses the starting tab.
-- `-SnapshotDir <path>` saves PNGs of the menu bar item, every tab and the settings, without needing Screen Recording permission.
+## Contributing
 
-Branching: `main` holds releases, `develop` is the integration branch, and every change goes through its own branch merged into `develop`. See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-### Releasing
-
-`scripts/release.sh <version>` builds a universal app, signs it with a Developer ID certificate, notarizes and staples both the app and the DMG, and checks the result with Gatekeeper. The output is `dist/Ochre-<version>.dmg`.
-
-One-time setup:
-
-1. Join the [Apple Developer Program](https://developer.apple.com/programs/).
-2. Create a **Developer ID Application** certificate in Xcode → Settings → Accounts → Manage Certificates.
-3. Store notarization credentials:
-   ```sh
-   xcrun notarytool store-credentials Ochre --apple-id <apple-id> --team-id <TEAMID> --password <app-specific-password>
-   ```
-
-If you have several signing identities, choose one with `SIGN_IDENTITY="Developer ID Application: …"`. `scripts/release.sh <version> --unsigned` runs every step except signing and notarization.
-
-After publishing a release, update the download link under **Install** in both READMEs.
-
-Builds that used the old bundle identifiers (`com.alexsarva.StatusApp`, `local.statusapp.StatusApp`) have their settings moved over on first launch.
-
-### Landing page
-
-`site/` is a static page with no build step. Preview it with `cd site && python3 -m http.server`. Before publishing, put `dist/Ochre.dmg` next to `site/index.html`, because the download buttons link to it.
+Bug reports and pull requests are welcome. Branching, commit style, debug options and the release process are described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE) © 2026 Alex Sarva.
-The landing page bundles Golos Text and Fira Sans Condensed under the SIL Open Font License; the license texts are in [`site/fonts`](site/fonts).
+[MIT](LICENSE) © 2026 Alex Sarva. The landing page bundles Golos Text and Fira Sans Condensed under the SIL Open Font License ([`site/fonts`](site/fonts)).
