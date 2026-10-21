@@ -13,6 +13,7 @@
   <img alt="macOS 26+" src="https://img.shields.io/badge/macOS-26%2B-2b2b2b?logo=apple&logoColor=white">
   <img alt="Swift 6.2" src="https://img.shields.io/badge/Swift-6.2-CC8F25?logo=swift&logoColor=white">
   <img alt="Apple Silicon and Intel" src="https://img.shields.io/badge/Apple%20Silicon%20%2B%20Intel-universal-E3BF5C">
+  <a href="../../releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/aesarva/ochre?color=CC8F25&label=download"></a>
   <a href="LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-B4462A"></a>
 </p>
 
@@ -94,7 +95,7 @@ Choose any mix of segments: **mini die map**, **CPU graph**, **CPU %**, **memory
 
 ## Install
 
-A signed and notarized DMG will be published on the [Releases](../../releases) page. Until then, build it from source; it takes about a minute.
+**[Download Ochre 1.0.0](https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg)** (DMG, 7 MB, Apple Silicon and Intel). Open it and drag Ochre to Applications. The app is signed with Developer ID and notarized by Apple, so it opens without Gatekeeper warnings. Every version is on the [Releases](../../releases) page.
 
 ### Build from source
 
@@ -177,6 +178,8 @@ One-time setup:
    ```
 
 If you have several signing identities, choose one with `SIGN_IDENTITY="Developer ID Application: …"`. `scripts/release.sh <version> --unsigned` runs every step except signing and notarization.
+
+After publishing a release, update the download link under **Install** in both READMEs.
 
 Builds that used the old bundle identifiers (`com.alexsarva.StatusApp`, `local.statusapp.StatusApp`) have their settings moved over on first launch.
 

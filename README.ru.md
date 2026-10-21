@@ -13,6 +13,7 @@
   <img alt="macOS 26+" src="https://img.shields.io/badge/macOS-26%2B-2b2b2b?logo=apple&logoColor=white">
   <img alt="Swift 6.2" src="https://img.shields.io/badge/Swift-6.2-CC8F25?logo=swift&logoColor=white">
   <img alt="Apple Silicon и Intel" src="https://img.shields.io/badge/Apple%20Silicon%20%2B%20Intel-universal-E3BF5C">
+  <a href="../../releases/latest"><img alt="Последний релиз" src="https://img.shields.io/github/v/release/aesarva/ochre?color=CC8F25&label=download"></a>
   <a href="LICENSE"><img alt="Лицензия MIT" src="https://img.shields.io/badge/license-MIT-B4462A"></a>
 </p>
 
@@ -94,7 +95,7 @@
 
 ## Установка
 
-Подписанный и нотаризованный DMG появится на странице [Releases](../../releases). Пока приложение собирается из исходников, это занимает около минуты.
+**[Скачать Ochre 1.0.0](https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg)** (DMG, 7 МБ, Apple Silicon и Intel). Откройте его и перетащите Ochre в «Программы». Приложение подписано сертификатом Developer ID и нотаризовано Apple, поэтому открывается без предупреждений Gatekeeper. Все версии — на странице [Releases](../../releases).
 
 ### Сборка из исходников
 
@@ -177,6 +178,8 @@ ARCHS=arm64 scripts/build-app.sh   # быстрая локальная сбор�
    ```
 
 Если сертификатов несколько, нужный выбирается через `SIGN_IDENTITY="Developer ID Application: …"`. `scripts/release.sh <версия> --unsigned` выполняет все шаги, кроме подписи и нотаризации.
+
+После публикации релиза обновите ссылку на скачивание в разделе **Установка** обоих README.
 
 Настройки сборок со старыми идентификаторами (`com.alexsarva.StatusApp`, `local.statusapp.StatusApp`) переносятся при первом запуске.
 
