@@ -29,11 +29,11 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>SUEnableAutomaticChecks</key>
-	<false/>
+	<true/>
 	<key>SUFeedURL</key>
-	<string>https://github.com/aesarva/ochre/releases/latest/download/appcast.xml  </string>
+	<string>https://github.com/aesarva/ochre/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
-	<string>N5a94gL7Qke4jBvCbm+pRbIl45QCXAqxzLr9NvdGwu4=  </string>
+	<string>N5a94gL7Qke4jBvCbm+pRbIl45QCXAqxzLr9NvdGwu4=</string>
 	<key>SUScheduledCheckInterval</key>
 	<integer>86400</integer>
 </dict>
