@@ -54,7 +54,7 @@ public enum UpdateState: Equatable, Sendable {
 - `downloadStarted`, `expectedLength(UInt64)`, `received(UInt64)` → `downloading` с долей `received / expected`, ограниченной 0…1; без известной длины доля `nil`;
 - `extracting`, `readyToInstall`, `installing` → `installing`;
 - `error(message:userInitiated:)` → `failed` при ручной проверке или во время скачивания и установки; при фоновой проверке → `idle`;
-- `dismissed` → `idle`, если не `available`.
+- `dismissed` → `idle` из `checking`, `downloading` и `installing`; `available`, `failed` и `upToDate` сохраняются (Sparkle вызывает `dismissUpdateInstallation` сразу после подтверждения ошибки, и строка «Не удалось обновить» не должна пропасть).
 
 Счётчики байтов хранятся рядом с состоянием (`UpdateProgress`), чтобы `reduce` оставался чистым.
 
