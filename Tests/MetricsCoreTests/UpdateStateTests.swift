@@ -118,4 +118,9 @@ import Testing
             == .available(version: "1.1", notesURL: nil))
         #expect(model(.locationUnsupported, .backgroundCheckSucceeded).state == .needsMove)
     }
+
+    @Test func progressMovesInWholePercents() {
+        let m = model(.found(version: "1.1", notesURL: nil), .downloadStarted, .expectedLength(300), .received(100))
+        #expect(m.state == .downloading(version: "1.1", progress: 0.33))
+    }
 }

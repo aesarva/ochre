@@ -76,8 +76,15 @@ fi
 # Лента обновлений: подписывается уже окончательный DMG (после скрепления билета нотаризации).
 echo "==> Лента обновлений"
 BUILD_NUMBER="$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$APP/Contents/Info.plist")"
-scripts/make-appcast.sh "$DMG" "$VERSION" "$BUILD_NUMBER" > dist/appcast.xml
-xmllint --noout dist/appcast.xml
+if scripts/make-appcast.sh "$DMG" "$VERSION" "$BUILD_NUMBER" > dist/appcast.xml; then
+    xmllint --noout dist/appcast.xml
+elif $UNSIGNED; then
+    # Без ключа EdDSA в связке ключей пробная сборка всё равно полезна — просто без ленты.
+    rm -f dist/appcast.xml
+    echo "    Лента пропущена: нет ключа подписи обновлений (generate_keys)." >&2
+else
+    exit 1
+fi
 
 # Копия без версии — на неё ведут кнопки «Скачать» на сайте (site/), кладётся рядом с index.html.
 cp "$DMG" dist/Ochre.dmg
