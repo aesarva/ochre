@@ -8,13 +8,15 @@ public enum MenuBarSegment: Equatable, Sendable {
     /// чтобы значок не менял ширину на переходах вроде 9 → 10 (иначе открытая панель сдвигается за ним).
     /// Редкие трёхзначные значения просто чуть шире шаблона.
     case text(String, highlighted: Bool, widthTemplate: String? = nil)
+    /// Точка «доступно обновление» — всегда последней.
+    case updateDot
 }
 
 public enum MenuBarContent {
     static let graphSamples = 10
 
     public static func segments(items: Set<MenuBarItem>, snapshot: Snapshot?, cpuHistory: [Double],
-                                active: Set<AlertKind>) -> [MenuBarSegment] {
+                                active: Set<AlertKind>, updateAvailable: Bool = false) -> [MenuBarSegment] {
         var result: [MenuBarSegment] = []
         var highlightedKinds: Set<AlertKind> = []
 
@@ -45,13 +47,19 @@ public enum MenuBarContent {
         if !active.isSubset(of: highlightedKinds) {
             result.append(.text("⚠", highlighted: true))
         }
+        if updateAvailable { result.append(.updateDot) }
         return result
     }
 
     /// Подпись значка для VoiceOver: текст сегментов рисуется картинками фиксированной ширины.
     public static func spokenLabel(_ segments: [MenuBarSegment]) -> String {
-        (["Ochre"] + segments.compactMap { if case let .text(text, _, _) = $0 { text } else { nil } })
-            .joined(separator: ", ")
+        (["Ochre"] + segments.compactMap {
+            switch $0 {
+            case .text(let text, _, _): text
+            case .updateDot: "доступно обновление"
+            default: nil
+            }
+        }).joined(separator: ", ")
     }
 
     private static func miniDie(_ snapshot: Snapshot?) -> MenuBarSegment {

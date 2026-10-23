@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var popoverController: PopoverController?
     private var statusItemController: StatusItemController?
     private var settingsWindow: SettingsWindowController?
+    private var updateController: UpdateController?
     private let notifier = UserNotificationNotifier()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -17,21 +18,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Debug args come only from the command line (argument domain), never from persisted defaults.
         let defaults = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
         let tab = (defaults["PopoverTab"] as? String).flatMap(PopoverTab.init(rawValue:)) ?? .overview
-        let settingsWindow = SettingsWindowController(settings: settings, store: store)
         weak var popoverRef: PopoverController?
-        let popover = PopoverController(store: store, initialTab: tab) {
+        weak var statusItemRef: StatusItemController?
+        let updates = UpdateController(feedOverride: defaults["UpdateFeedURL"] as? String) {
+            if let popover = popoverRef, !popover.isShown, let button = statusItemRef?.button {
+                popover.toggle(relativeTo: button)
+            }
+        }
+        let settingsWindow = SettingsWindowController(settings: settings, store: store, updates: updates)
+        let popover = PopoverController(store: store, updates: updates, initialTab: tab) {
             popoverRef?.close()
             settingsWindow.show()
         }
         popoverRef = popover
         self.settingsWindow = settingsWindow
-        let statusItem = StatusItemController(store: store, settings: settings) { [popover] button in
+        let statusItem = StatusItemController(store: store, settings: settings, updates: updates) { [popover] button in
             popover.toggle(relativeTo: button)
         }
+        statusItemRef = statusItem
         settingsStore = settings
         metricsStore = store
         popoverController = popover
         statusItemController = statusItem
+        updateController = updates
+        updates.start()
         store.onAlertEvents = { [notifier] events in events.forEach(notifier.notify) }
         requestAuthorizationWhileAlertsEnabled(settings)
         store.start()
@@ -45,7 +55,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             store.isPopoverOpen = true // sample processes and 2 s sensors before rendering
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(8))
-                SnapshotExporter.export(to: dir, store: store, settings: settings)
+                SnapshotExporter.export(to: dir, store: store, settings: settings, updates: updates)
                 store.isPopoverOpen = false
             }
         }

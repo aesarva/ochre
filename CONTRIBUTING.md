@@ -34,13 +34,14 @@ Launch arguments for `build/Ochre.app/Contents/MacOS/Ochre`:
 - `-OpenPopoverOnLaunch YES` opens the panel on start.
 - `-PopoverTab <tab>` chooses the starting tab (`overview`, `cpu`, `memory`, `network`, `disk`, `sensors`, `processes`).
 - `-SnapshotDir <path>` saves PNGs of the menu bar item, every tab and the settings, without Screen Recording permission.
+- `-UpdateFeedURL <url>` checks a different appcast, for example one served from `http://127.0.0.1` to test an update end to end. Sparkle compares `CFBundleVersion`, so give the installed copy a lower build number.
 
 ## Releasing
 
 1. Merge `develop` into `main` with `--no-ff` and tag the merge `v<version>`.
 2. On `main`, run `scripts/release.sh <version>`. It builds a universal app, signs it with Developer ID, notarizes and staples the app and the DMG, and checks both with Gatekeeper. The result is `dist/Ochre-<version>.dmg`.
 3. Push `main` and the tag, then fast-forward `develop` to `main`.
-4. Create a GitHub release for the tag and attach the DMG in the **Attach binaries** area.
+4. Create a GitHub release for the tag and attach both `dist/Ochre-<version>.dmg` and `dist/appcast.xml` in the **Attach binaries** area. Installed copies find the update through `releases/latest/download/appcast.xml` as soon as the release is published.
 5. Update the download links (button and Install section) in `README.md` and `README.ru.md`.
 
 One-time setup:
@@ -51,6 +52,7 @@ One-time setup:
    ```sh
    xcrun notarytool store-credentials Ochre --apple-id <apple-id> --team-id <TEAMID> --password <app-specific-password>
    ```
+4. Create the update signing key: `.build/artifacts/sparkle/Sparkle/bin/generate_keys` (after `swift package resolve`). The private key stays in the login keychain; the public key is `SUPublicEDKey` in `Resources/Info.plist`. Back it up with `generate_keys -x <file>` and keep the file off this Mac: without it, installed copies reject every future update.
 
 With several signing identities, choose one with `SIGN_IDENTITY="Developer ID Application: …"`. `scripts/release.sh <version> --unsigned` runs every step except signing and notarization.
 
