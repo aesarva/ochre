@@ -34,7 +34,7 @@ final class StatusItemController {
             _ = store.latest
             _ = store.activeAlerts
             _ = settings.settings.menuBarItems
-            _ = updates.model.showsBadge
+            _ = updates.showsBadge
         } onChange: { [weak self] in
             Task { @MainActor in
                 self?.render()
@@ -50,7 +50,7 @@ final class StatusItemController {
             snapshot: store.latest,
             cpuHistory: cpu,
             active: store.activeAlerts,
-            updateAvailable: updates.model.showsBadge
+            updateAvailable: updates.showsBadge
         )
         statusItem.button?.attributedTitle = MenuBarRenderer.attributedTitle(segments)
         statusItem.button?.setAccessibilityLabel(MenuBarContent.spokenLabel(segments))
