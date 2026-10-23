@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg"><img alt="Скачать для macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20%D0%B4%D0%BB%D1%8F%20macOS&color=CC8F25"></a>
+  <a href="https://github.com/aesarva/ochre/releases/download/v1.1.0/Ochre-1.1.0.dmg"><img alt="Скачать для macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20%D0%B4%D0%BB%D1%8F%20macOS&color=CC8F25"></a>
 </p>
 
 <p align="center">
@@ -29,7 +29,7 @@
 
 - **Настоящий чип, а не среднее значение.** Ядра нарисованы так, как устроен процессор: по кластерам (Super и Performance на M5, Performance и Efficiency на M1–M4), у каждого своя загрузка, ниже полоса ядер GPU. Один зависший поток виден сразу.
 - **Цвет — это нагрев.** Интерфейс графитовый и бумажный. Цвет появляется только там, где идёт работа: янтарь, потом жар, потом красный.
-- **Почти не нагружает Mac.** Около 0,7% одного ядра и 13 МБ памяти при закрытой панели (замер на M5 Pro). Когда вы не смотрите, Ochre опрашивает систему реже.
+- **Почти не нагружает Mac.** Около 0,5% одного ядра и 14 МБ памяти при закрытой панели (замер на M5 Pro). Когда вы не смотрите, Ochre опрашивает систему реже.
 - **Нативное.** Swift, SwiftUI и AppKit с Liquid Glass. Без Electron, фоновых демонов, пароля администратора и расширений ядра.
 - **Приватное.** Никакой аналитики и аккаунтов. Единственный сетевой запрос — проверка обновлений на GitHub раз в сутки: никаких данных о системе, отключается в настройках.
 - **Оповещения, которые ждут.** Порог должен продержаться заданное время, прежде чем придёт уведомление, поэтому короткие всплески не беспокоят.
@@ -78,7 +78,7 @@
 
 ## Установка
 
-1. [Скачайте DMG](https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg) (7 МБ). Предыдущие версии — на странице [Releases](../../releases).
+1. [Скачайте DMG](https://github.com/aesarva/ochre/releases/download/v1.1.0/Ochre-1.1.0.dmg) (7 МБ). Предыдущие версии — на странице [Releases](../../releases).
 2. Откройте его и перетащите **Ochre** в **Программы**.
 3. Запустите Ochre. Он появится только в строке меню, без значка в Dock. Нажмите на него, чтобы открыть панель. Настройки (шестерёнка) и выход (кнопка питания) — внизу панели.
 
