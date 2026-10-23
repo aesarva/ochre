@@ -60,8 +60,17 @@ struct GeneralSettingsTab: View {
                     get: { updates.automaticallyChecks },
                     set: { updates.automaticallyChecks = $0 }))
                 LabeledContent("Версия \(updates.currentVersion) (\(updates.currentBuild))") {
-                    Button("Проверить сейчас") { updates.checkNow() }
-                        .disabled(isBusy || !updates.canCheckNow)
+                    // Найденную версию ставим прямо отсюда, не закрывая настройки.
+                    if case .available = updates.state {
+                        Button { updates.install() } label: {
+                            Text("Установить и перезапустить").foregroundStyle(BoardPalette.inkOnWarm)
+                        }
+                        .buttonStyle(.glassProminent)
+                        .tint(UpdateRow.accent)
+                    } else {
+                        Button("Проверить сейчас") { updates.checkNow() }
+                            .disabled(isBusy || !updates.canCheckNow)
+                    }
                 }
                 if let status = updateStatus {
                     Text(status).font(.caption).foregroundStyle(.secondary)
@@ -86,7 +95,10 @@ struct GeneralSettingsTab: View {
         case .available(let version, _): "Доступна версия \(version)"
         case .failed(let message): "Не удалось обновить: \(message)"
         case .needsMove: "Перенесите Ochre в «Программы», чтобы получать обновления"
-        case .idle, .downloading, .installing: nil
+        case .downloading(let version, let progress):
+            "Скачивание \(version)…" + (progress.map { " \(Int($0 * 100))%" } ?? "")
+        case .installing: "Установка…"
+        case .idle: nil
         }
     }
 }
