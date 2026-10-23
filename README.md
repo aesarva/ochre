@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg"><img alt="Download for macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=Download%20for%20macOS&color=CC8F25"></a>
+  <a href="https://github.com/aesarva/ochre/releases/download/v1.1.0/Ochre-1.1.0.dmg"><img alt="Download for macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=Download%20for%20macOS&color=CC8F25"></a>
 </p>
 
 <p align="center">
@@ -29,7 +29,7 @@
 
 - **The real chip, not an average.** Cores are drawn the way your processor is built: grouped by cluster (Super and Performance on M5, Performance and Efficiency on M1–M4), each with its own load, plus a strip of GPU cores. One runaway thread is obvious at a glance.
 - **Colour means heat.** The interface is graphite and paper. Colour shows up only where something is working hard: amber, then ember, then red.
-- **Light on your Mac.** About 0.7% of one core and 13 MB of memory with the panel closed (measured on an M5 Pro). Ochre slows its sampling down when you aren't looking.
+- **Light on your Mac.** About 0.5% of one core and 14 MB of memory with the panel closed (measured on an M5 Pro). Ochre slows its sampling down when you aren't looking.
 - **Native.** Swift, SwiftUI and AppKit with Liquid Glass. No Electron, no helper daemon, no administrator password, no kernel extension.
 - **Private.** No analytics, no account. The only network request is a daily update check against GitHub; it sends no system data and can be turned off in Settings.
 - **Alerts that wait.** A threshold has to hold for as long as you choose before you get a notification, so short spikes stay quiet.
@@ -78,7 +78,7 @@
 
 ## Install
 
-1. [Download the DMG](https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg) (7 MB). Older versions are on the [Releases](../../releases) page.
+1. [Download the DMG](https://github.com/aesarva/ochre/releases/download/v1.1.0/Ochre-1.1.0.dmg) (7 MB). Older versions are on the [Releases](../../releases) page.
 2. Open it and drag **Ochre** to **Applications**.
 3. Launch Ochre. It appears in the menu bar only, with no Dock icon. Click it to open the panel. Settings (gear) and Quit (power) are at the bottom.
 
