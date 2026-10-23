@@ -20,13 +20,15 @@ enum PopoverTab: String, CaseIterable {
 
 struct PopoverView: View {
     let store: MetricsStore
+    let updates: UpdateController
     let onOpenSettings: () -> Void
     /// Сообщает естественный размер содержимого — контроллер сам ставит его панели.
     var onSizeChange: (CGSize) -> Void = { _ in }
     @State private var tab: PopoverTab
 
-    init(store: MetricsStore, initialTab: PopoverTab, onOpenSettings: @escaping () -> Void) {
+    init(store: MetricsStore, updates: UpdateController, initialTab: PopoverTab, onOpenSettings: @escaping () -> Void) {
         self.store = store
+        self.updates = updates
         self.onOpenSettings = onOpenSettings
         _tab = State(initialValue: initialTab)
     }
@@ -41,6 +43,8 @@ struct PopoverView: View {
             }
 
             Divider().opacity(0.5)
+            UpdateRow(updates: updates)
+                .font(.system(size: 12))
             HStack {
                 Button("Настройки", action: onOpenSettings)
                 Spacer()

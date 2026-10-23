@@ -4,10 +4,11 @@ import SwiftUI
 struct SettingsView: View {
     let settings: SettingsStore
     let store: MetricsStore?
+    let updates: UpdateController
 
     var body: some View {
         TabView {
-            GeneralSettingsTab(settings: settings)
+            GeneralSettingsTab(settings: settings, updates: updates)
                 .fittedForm()
                 .tabItem { Text("Общие") }
             MenuBarSettingsTab(settings: settings, store: store)
@@ -30,6 +31,7 @@ extension View {
 
 struct GeneralSettingsTab: View {
     let settings: SettingsStore
+    let updates: UpdateController
     @State private var launchAtLogin = LaunchAtLogin.isEnabled
     @State private var launchError: String?
 
@@ -53,8 +55,37 @@ struct GeneralSettingsTab: View {
             if let launchError {
                 Label(launchError, systemImage: "exclamationmark.triangle").font(.caption).foregroundStyle(.secondary)
             }
+            Section("Обновления") {
+                Toggle("Проверять обновления автоматически", isOn: Binding(
+                    get: { updates.automaticallyChecks },
+                    set: { updates.automaticallyChecks = $0 }))
+                LabeledContent("Версия \(updates.currentVersion) (\(updates.currentBuild))") {
+                    Button("Проверить сейчас") { updates.checkNow() }
+                        .disabled(isBusy)
+                }
+                if let status = updateStatus {
+                    Text(status).font(.caption).foregroundStyle(.secondary)
+                }
+            }
         }
         .formStyle(.grouped)
+    }
+
+    private var isBusy: Bool {
+        switch updates.model.state {
+        case .checking, .downloading, .installing: true
+        default: false
+        }
+    }
+
+    private var updateStatus: String? {
+        switch updates.model.state {
+        case .checking: "Проверка обновлений…"
+        case .upToDate: "Установлена последняя версия"
+        case .available(let version, _): "Доступна версия \(version)"
+        case .failed(let message): "Не удалось обновить: \(message)"
+        case .idle, .downloading, .installing: nil
+        }
     }
 }
 

@@ -5,17 +5,19 @@ import SwiftUI
 final class SettingsWindowController: NSObject, NSWindowDelegate {
     private let settings: SettingsStore
     private let store: MetricsStore
+    private let updates: UpdateController
     private var window: NSWindow?
 
-    init(settings: SettingsStore, store: MetricsStore) {
+    init(settings: SettingsStore, store: MetricsStore, updates: UpdateController) {
         self.settings = settings
         self.store = store
+        self.updates = updates
         super.init()
     }
 
     func show() {
         if window == nil {
-            let host = NSHostingController(rootView: SettingsView(settings: settings, store: store))
+            let host = NSHostingController(rootView: SettingsView(settings: settings, store: store, updates: updates))
             host.sizingOptions = [.preferredContentSize]
             let window = NSWindow(contentViewController: host)
             window.title = "Настройки Ochre"

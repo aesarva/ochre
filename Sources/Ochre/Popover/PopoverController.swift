@@ -4,14 +4,17 @@ import SwiftUI
 @MainActor
 final class PopoverController: NSObject, NSPopoverDelegate {
     private let store: MetricsStore
+    private let updates: UpdateController
     private let initialTab: PopoverTab
     private let onOpenSettings: () -> Void
     private var popover: NSPopover?
     private var clickMonitor: Any?
     private var resignObserver: (any NSObjectProtocol)?
 
-    init(store: MetricsStore, initialTab: PopoverTab = .overview, onOpenSettings: @escaping () -> Void = {}) {
+    init(store: MetricsStore, updates: UpdateController, initialTab: PopoverTab = .overview,
+         onOpenSettings: @escaping () -> Void = {}) {
         self.store = store
+        self.updates = updates
         self.initialTab = initialTab
         self.onOpenSettings = onOpenSettings
         super.init()
@@ -37,7 +40,7 @@ final class PopoverController: NSObject, NSPopoverDelegate {
             let popover = NSPopover()
             popover.behavior = .transient
             popover.delegate = self
-            var view = PopoverView(store: store, initialTab: initialTab, onOpenSettings: onOpenSettings)
+            var view = PopoverView(store: store, updates: updates, initialTab: initialTab, onOpenSettings: onOpenSettings)
             // Размер панели задаём сами через contentSize: так NSPopover меняет его, держась за стрелку у значка.
             // Автоматический режим (preferredContentSize) сначала растит окно от нижнего края, а потом
             // сдвигает его обратно — панель с вкладками прыгает; без размера окно ставится под 320×320.

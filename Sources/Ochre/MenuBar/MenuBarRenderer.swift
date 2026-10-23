@@ -29,6 +29,13 @@ enum MenuBarRenderer {
                 let attachment = NSTextAttachment()
                 attachment.image = graphImage(values)
                 result.append(NSAttributedString(attachment: attachment))
+            case .updateDot:
+                let attachment = NSTextAttachment()
+                let image = updateDotImage()
+                attachment.image = image
+                attachment.bounds = NSRect(x: 0, y: (font.capHeight - image.size.height) / 2,
+                                           width: image.size.width, height: image.size.height)
+                result.append(NSAttributedString(attachment: attachment))
             case .text(let text, let highlighted, let template):
                 let color: NSColor = highlighted ? heatHot : .labelColor
                 let attributes: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: color]
@@ -84,6 +91,16 @@ enum MenuBarRenderer {
                                   width: cell, height: cell)
                 NSBezierPath(roundedRect: rect, xRadius: 1, yRadius: 1).fill()
             }
+            return true
+        }
+    }
+
+    /// Точка «доступно обновление» — системным акцентным цветом: цвета шкалы нагрева значат только нагрузку.
+    @MainActor
+    private static func updateDotImage() -> NSImage {
+        NSImage(size: NSSize(width: 6, height: 6), flipped: false) { rect in
+            NSColor.controlAccentColor.setFill()
+            NSBezierPath(ovalIn: rect).fill()
             return true
         }
     }

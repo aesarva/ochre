@@ -62,4 +62,20 @@ import Foundation
                                       .text("91°", highlighted: true, widthTemplate: "00°")]
         #expect(MenuBarContent.spokenLabel(segs) == "Ochre, CPU 23%, 91°")
     }
+
+    @Test func updateDotIsLast() {
+        let segs = MenuBarContent.segments(items: [.cpuPercent], snapshot: snap(), cpuHistory: [], active: [.diskSpace],
+                                           updateAvailable: true)
+        #expect(segs.last == .updateDot)
+        #expect(segs.dropLast().last == .text("⚠", highlighted: true))
+    }
+    @Test func noDotByDefault() {
+        let segs = MenuBarContent.segments(items: [.cpuPercent], snapshot: snap(), cpuHistory: [], active: [])
+        #expect(!segs.contains(.updateDot))
+    }
+    @Test func spokenLabelMentionsUpdate() {
+        let segs = MenuBarContent.segments(items: [.cpuPercent], snapshot: snap(), cpuHistory: [], active: [],
+                                           updateAvailable: true)
+        #expect(MenuBarContent.spokenLabel(segs).hasSuffix(", доступно обновление"))
+    }
 }
