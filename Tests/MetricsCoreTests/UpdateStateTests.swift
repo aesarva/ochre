@@ -98,4 +98,11 @@ import Testing
     @Test func dismissKeepsNeedsMove() {
         #expect(model(.locationUnsupported, .dismissed).state == .needsMove)
     }
+
+    @Test func updatableLocations() {
+        #expect(UpdateLocation.canUpdate(bundlePath: "/Applications/Ochre.app", volumeIsReadOnly: false))
+        #expect(!UpdateLocation.canUpdate(bundlePath: "/Volumes/Ochre 1.1.0/Ochre.app", volumeIsReadOnly: true))
+        #expect(!UpdateLocation.canUpdate(
+            bundlePath: "/private/var/folders/x/AppTranslocation/1A2B/d/Ochre.app", volumeIsReadOnly: false))
+    }
 }

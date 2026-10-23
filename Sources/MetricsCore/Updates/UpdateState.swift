@@ -100,3 +100,11 @@ public struct UpdateModel: Equatable, Sendable {
         }
     }
 }
+
+/// Можно ли обновлять приложение там, где оно лежит. Из образа DMG (том только для чтения) и после
+/// App Translocation Sparkle молча отказывается даже проверять обновления — об этом говорим сами.
+public enum UpdateLocation {
+    public static func canUpdate(bundlePath: String, volumeIsReadOnly: Bool) -> Bool {
+        !volumeIsReadOnly && !bundlePath.contains("/AppTranslocation/")
+    }
+}

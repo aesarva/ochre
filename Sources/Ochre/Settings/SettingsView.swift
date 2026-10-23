@@ -71,9 +71,10 @@ struct GeneralSettingsTab: View {
         .formStyle(.grouped)
     }
 
+    /// «Проверить сейчас» недоступна, пока идёт обновление и когда Ochre открыт из образа DMG.
     private var isBusy: Bool {
         switch updates.model.state {
-        case .checking, .downloading, .installing: true
+        case .checking, .downloading, .installing, .needsMove: true
         default: false
         }
     }

@@ -1,5 +1,6 @@
 import Foundation
 import MetricsCore
+import OSLog
 import Sparkle
 
 /// Интерфейс Sparkle без окон: переводит его вызовы в события `UpdateEvent`, а показ остаётся панели и значку.
@@ -13,6 +14,7 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
     private var pendingChoice: ((SPUUserUpdateChoice) -> Void)?
     /// Ручная проверка: её результат и ошибки показываются, фоновой — нет.
     private var userInitiated = false
+    private let logger = Logger(subsystem: "com.alexsarva.Ochre", category: "updates")
 
     init(onEvent: @escaping (UpdateEvent) -> Void, onShowPanel: @escaping () -> Void) {
         self.onEvent = onEvent
@@ -50,12 +52,15 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
     func showUpdateReleaseNotesFailedToDownloadWithError(_ error: any Error) {}
 
     func showUpdateNotFoundWithError(_ error: any Error, acknowledgement: @escaping () -> Void) {
+        logger.info("No update: \((error as NSError).code)")
         onEvent(.notFound(userInitiated: userInitiated))
         userInitiated = false
         acknowledgement()
     }
 
     func showUpdaterError(_ error: any Error, acknowledgement: @escaping () -> Void) {
+        let ns = error as NSError
+        logger.error("Updater error \(ns.domain, privacy: .public) \(ns.code): \(ns.localizedDescription, privacy: .public)")
         onEvent(Self.event(for: error, userInitiated: userInitiated))
         userInitiated = false
         acknowledgement()

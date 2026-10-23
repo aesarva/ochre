@@ -1,6 +1,7 @@
 import Foundation
 import MetricsCore
 import Observation
+import OSLog
 import Sparkle
 
 /// Владеет обновлятелем Sparkle и публикует состояние обновления для панели, значка и настроек.
@@ -36,9 +37,18 @@ final class UpdateController: NSObject, SPUUpdaterDelegate {
     }
 
     func start() {
+        let bundle = Bundle.main.bundleURL
+        let readOnly = (try? bundle.resourceValues(forKeys: [.volumeIsReadOnlyKey]))?.volumeIsReadOnly ?? false
+        guard UpdateLocation.canUpdate(bundlePath: bundle.path, volumeIsReadOnly: readOnly) else {
+            model.apply(.locationUnsupported)
+            return
+        }
         do {
             try updater.start()
         } catch {
+            let ns = error as NSError
+            Logger(subsystem: "com.alexsarva.Ochre", category: "updates")
+                .error("Updater failed to start \(ns.domain, privacy: .public) \(ns.code): \(ns.localizedDescription, privacy: .public)")
             model.apply(PanelUserDriver.event(for: error, userInitiated: true))
         }
     }

@@ -56,6 +56,7 @@ struct UpdateRow: View {
             Text("Перенесите Ochre в «Программы», чтобы получать обновления")
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
         case .idle, .upToDate:
             EmptyView()
         }
