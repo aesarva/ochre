@@ -42,7 +42,7 @@ Launch arguments for `build/Ochre.app/Contents/MacOS/Ochre`:
 2. On `main`, run `scripts/release.sh <version>`. It builds a universal app, signs it with Developer ID, notarizes and staples the app and the DMG, and checks both with Gatekeeper. The result is `dist/Ochre-<version>.dmg`.
 3. Push `main` and the tag, then fast-forward `develop` to `main`.
 4. Create a GitHub release for the tag and attach both `dist/Ochre-<version>.dmg` and `dist/appcast.xml` in the **Attach binaries** area. Installed copies find the update through `releases/latest/download/appcast.xml` as soon as the release is published.
-5. Update the download links (button and Install section) in `README.md` and `README.ru.md`.
+5. Update the download links (button and Install section) in `README.md` and `README.ru.md`, and add the release to `CHANGELOG.md`. The product page at utils.cyber-tech.online reads the version and DMG link from the latest GitHub release, so keep the tag `v<version>` and the asset name `Ochre-<version>.dmg`, and don't mark the release as draft or prerelease.
 
 One-time setup:
 
