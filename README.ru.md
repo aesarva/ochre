@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aesarva/ochre/releases/download/v1.1.3/Ochre-1.1.3.dmg"><img alt="Скачать для macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20%D0%B4%D0%BB%D1%8F%20macOS&color=CC8F25"></a>
+  <a href="https://github.com/aesarva/ochre/releases/download/v1.1.4/Ochre-1.1.4.dmg"><img alt="Скачать для macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20%D0%B4%D0%BB%D1%8F%20macOS&color=CC8F25"></a>
 </p>
 
 <p align="center">
@@ -78,7 +78,7 @@
 
 ## Установка
 
-1. [Скачайте DMG](https://github.com/aesarva/ochre/releases/download/v1.1.3/Ochre-1.1.3.dmg) (7 МБ). Предыдущие версии — на странице [Releases](../../releases).
+1. [Скачайте DMG](https://github.com/aesarva/ochre/releases/download/v1.1.4/Ochre-1.1.4.dmg) (7 МБ). Предыдущие версии — на странице [Releases](../../releases).
 2. Откройте его и перетащите **Ochre** в **Программы**.
 3. Запустите Ochre. Он появится только в строке меню, без значка в Dock. Нажмите на него, чтобы открыть панель. Настройки (шестерёнка) и выход (кнопка питания) — внизу панели.
 
