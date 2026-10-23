@@ -1,24 +1,33 @@
 import MetricsCore
 import SwiftUI
 
-struct SettingsView: View {
-    let settings: SettingsStore
-    let store: MetricsStore?
-    let updates: UpdateController
+/// Вкладки окна настроек: заголовок, значок SF Symbols и содержимое.
+enum SettingsTab: CaseIterable {
+    case general, menuBar, alerts
 
-    var body: some View {
-        TabView {
-            GeneralSettingsTab(settings: settings, updates: updates)
-                .fittedForm()
-                .tabItem { Text("Общие") }
-            MenuBarSettingsTab(settings: settings, store: store)
-                .fittedForm()
-                .tabItem { Text("Строка меню") }
-            AlertSettingsTab(settings: settings)
-                .fittedForm()
-                .tabItem { Text("Оповещения") }
+    var title: String {
+        switch self {
+        case .general: "Общие"
+        case .menuBar: "Строка меню"
+        case .alerts: "Оповещения"
         }
-        .frame(width: 420)
+    }
+
+    var symbol: String {
+        switch self {
+        case .general: "gearshape"
+        case .menuBar: "menubar.rectangle"
+        case .alerts: "bell.badge"
+        }
+    }
+
+    @MainActor @ViewBuilder
+    func content(settings: SettingsStore, store: MetricsStore?, updates: UpdateController) -> some View {
+        switch self {
+        case .general: GeneralSettingsTab(settings: settings, updates: updates)
+        case .menuBar: MenuBarSettingsTab(settings: settings, store: store)
+        case .alerts: AlertSettingsTab(settings: settings)
+        }
     }
 }
 
