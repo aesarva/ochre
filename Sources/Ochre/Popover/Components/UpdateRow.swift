@@ -68,5 +68,5 @@ struct UpdateRow: View {
     }
 
     /// Цвет шкалы на 25 % — тот же янтарь, что у плитки ядра под четвертью нагрузки.
-    private static let accent = HeatScale.color(forLoad: 25).swiftUIColor
+    static let accent = HeatScale.color(forLoad: 25).swiftUIColor
 }
