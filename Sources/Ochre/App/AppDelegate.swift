@@ -20,7 +20,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let tab = (defaults["PopoverTab"] as? String).flatMap(PopoverTab.init(rawValue:)) ?? .overview
         weak var popoverRef: PopoverController?
         weak var statusItemRef: StatusItemController?
-        let updates = UpdateController(feedOverride: defaults["UpdateFeedURL"] as? String) {
+        let offerLifetime = (defaults["UpdateOfferLifetime"] as? String).flatMap(Double.init).map { Duration.seconds($0) }
+        let updates = UpdateController(feedOverride: defaults["UpdateFeedURL"] as? String,
+                                       offerLifetime: offerLifetime ?? .seconds(24 * 60 * 60)) {
             if let popover = popoverRef, !popover.isShown, let button = statusItemRef?.button {
                 popover.toggle(relativeTo: button)
             }

@@ -21,18 +21,22 @@ final class UpdateController: NSObject, SPUUpdaterDelegate {
     @ObservationIgnored private var driver: PanelUserDriver!
     @ObservationIgnored private var updater: SPUUpdater!
     @ObservationIgnored private var canCheckObservation: NSKeyValueObservation?
+    /// Снятое по сроку предложение проверяем заново, как только Sparkle закроет его сессию.
+    @ObservationIgnored private var recheckAfterCycle = false
     @ObservationIgnored private let logger = Logger(subsystem: "com.alexsarva.Ochre", category: "updates")
 
-    /// `feedOverride` — лента вместо `SUFeedURL` (отладочный параметр `-UpdateFeedURL`).
-    init(feedOverride: String?, onShowPanel: @escaping () -> Void) {
+    /// `feedOverride` — лента вместо `SUFeedURL` (отладочный параметр `-UpdateFeedURL`);
+    /// `offerLifetime` — срок неустановленного предложения (отладочный параметр `-UpdateOfferLifetime <секунды>`).
+    init(feedOverride: String?, offerLifetime: Duration = .seconds(24 * 60 * 60), onShowPanel: @escaping () -> Void) {
         self.feedOverride = feedOverride
         let info = Bundle.main.infoDictionary ?? [:]
         currentVersion = info["CFBundleShortVersionString"] as? String ?? "?"
         currentBuild = info["CFBundleVersion"] as? String ?? "?"
         super.init()
-        driver = PanelUserDriver(onEvent: { [weak self] in self?.apply($0) },
+        driver = PanelUserDriver(offerLifetime: offerLifetime,
+                                 onEvent: { [weak self] in self?.apply($0) },
                                  onShowPanel: onShowPanel,
-                                 onOfferExpired: { [weak self] in self?.updater.checkForUpdatesInBackground() })
+                                 onOfferExpired: { [weak self] in self?.recheckAfterCycle = true })
         updater = SPUUpdater(hostBundle: .main, applicationBundle: .main, userDriver: driver, delegate: self)
         // Sparkle меняет canCheckForUpdates только в главном потоке.
         canCheckObservation = updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { [weak self] updater, _ in
@@ -83,6 +87,12 @@ final class UpdateController: NSObject, SPUUpdaterDelegate {
 
     /// Конец любой проверки. Фоновая проверка без обновления сама интерфейс не зовёт — узнаём о ней только здесь.
     func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: (any Error)?) {
+        // Здесь Sparkle уже закрыл сессию и разрешает начать новую.
+        if recheckAfterCycle {
+            recheckAfterCycle = false
+            updater.checkForUpdatesInBackground()
+            return
+        }
         switch UpdateErrors.cycleOutcome(failed: error != nil, sparkleCode: Self.sparkleCode(of: error)) {
         case .succeeded:
             if updateCheck == .updatesInBackground { apply(.backgroundCheckSucceeded) }

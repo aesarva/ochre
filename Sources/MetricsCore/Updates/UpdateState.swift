@@ -32,6 +32,9 @@ public enum UpdateEvent: Equatable, Sendable {
     /// Фоновая проверка прошла без ошибок. Без обновления Sparkle не зовёт интерфейс, поэтому старый
     /// результат ручной проверки («ошибка», «последняя версия») иначе висел бы до следующего релиза.
     case backgroundCheckSucceeded
+    /// Предложение провисело сутки и снято: Sparkle закроет сессию и проверит заново. Пока он не нашёл версию
+    /// снова, кнопка «Установить» не работала бы — поэтому убираем её сразу.
+    case offerExpired
     /// Sparkle закрыл сессию обновления.
     case dismissed
 }
@@ -76,6 +79,8 @@ public struct UpdateModel: Equatable, Sendable {
             state = userInitiated || isInstalling ? .failed(message: message) : .idle
         case .locationUnsupported:
             state = .needsMove
+        case .offerExpired:
+            if case .available = state { state = .idle }
         case .backgroundCheckSucceeded:
             switch state {
             case .failed, .upToDate: state = .idle
