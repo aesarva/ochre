@@ -56,6 +56,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             Task { @MainActor in
                 try? await Task.sleep(for: .seconds(8))
                 SnapshotExporter.export(to: dir, store: store, settings: settings, updates: updates)
+                await settingsWindow.exportSnapshots(to: URL(fileURLWithPath: dir, isDirectory: true))
                 store.isPopoverOpen = false
             }
         }
