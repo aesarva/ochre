@@ -10,21 +10,34 @@ import Sparkle
 final class PanelUserDriver: NSObject, SPUUserDriver {
     private let onEvent: (UpdateEvent) -> Void
     private let onShowPanel: () -> Void
+    private let onOfferExpired: () -> Void
     /// Ответ Sparkle на найденное обновление; вызывается ровно один раз.
     private var pendingChoice: ((SPUUserUpdateChoice) -> Void)?
+    /// Пока ответ не дан, Sparkle не проверяет обновления. Через сутки предложение снимается и проверяется заново,
+    /// чтобы Ochre, работающий неделями, не предлагал 1.1, когда уже вышла 1.2.
+    private var offerExpiry: Task<Void, Never>?
+    private static let offerLifetime: Duration = .seconds(24 * 60 * 60)
     /// Ручная проверка: её результат и ошибки показываются, фоновой — нет.
     private var userInitiated = false
     private let logger = Logger(subsystem: "com.alexsarva.Ochre", category: "updates")
 
-    init(onEvent: @escaping (UpdateEvent) -> Void, onShowPanel: @escaping () -> Void) {
+    init(onEvent: @escaping (UpdateEvent) -> Void, onShowPanel: @escaping () -> Void,
+         onOfferExpired: @escaping () -> Void) {
         self.onEvent = onEvent
         self.onShowPanel = onShowPanel
+        self.onOfferExpired = onOfferExpired
     }
 
     func install() {
+        reply(.install)
+    }
+
+    private func reply(_ choice: SPUUserUpdateChoice) {
+        offerExpiry?.cancel()
+        offerExpiry = nil
         guard let reply = pendingChoice else { return }
         pendingChoice = nil
-        reply(.install)
+        reply(choice)
     }
 
     // MARK: Проверка
@@ -43,6 +56,13 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
                          reply: @escaping (SPUUserUpdateChoice) -> Void) {
         userInitiated = false
         pendingChoice = reply
+        offerExpiry?.cancel()
+        offerExpiry = Task { [weak self] in
+            try? await Task.sleep(for: Self.offerLifetime, clock: .continuous)
+            guard !Task.isCancelled, let self, self.pendingChoice != nil else { return }
+            self.reply(.dismiss)
+            self.onOfferExpired()
+        }
         onEvent(.found(version: appcastItem.displayVersionString,
                        notesURL: appcastItem.releaseNotesURL ?? appcastItem.infoURL))
     }
@@ -61,17 +81,9 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
     func showUpdaterError(_ error: any Error, acknowledgement: @escaping () -> Void) {
         let ns = error as NSError
         logger.error("Updater error \(ns.domain, privacy: .public) \(ns.code): \(ns.localizedDescription, privacy: .public)")
-        onEvent(Self.event(for: error, userInitiated: userInitiated))
+        onEvent(UpdateController.event(for: error, userInitiated: userInitiated))
         userInitiated = false
         acknowledgement()
-    }
-
-    /// Запуск из образа DMG или после App Translocation — не сбой, а повод перенести приложение.
-    static func event(for error: any Error, userInitiated: Bool) -> UpdateEvent {
-        let error = error as NSError
-        let locationCodes = [SUError.runningFromDiskImageError, SUError.runningTranslocated].map { Int($0.rawValue) }
-        if error.domain == SUSparkleErrorDomain, locationCodes.contains(error.code) { return .locationUnsupported }
-        return .error(message: error.localizedDescription, userInitiated: userInitiated)
     }
 
     // MARK: Скачивание и установка
@@ -102,6 +114,12 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
     func showInstallingUpdate(withApplicationTerminated applicationTerminated: Bool,
                               retryTerminatingApplication: @escaping () -> Void) {
         onEvent(.installing)
+        // Ochre сам закрытию не мешает, но если что-то его задержало, просим ещё раз, а не висим на «Установка…».
+        guard !applicationTerminated else { return }
+        Task {
+            try? await Task.sleep(for: .seconds(5))
+            retryTerminatingApplication()
+        }
     }
 
     func showUpdateInstalledAndRelaunched(_ relaunched: Bool, acknowledgement: @escaping () -> Void) {
@@ -113,7 +131,10 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
     }
 
     func dismissUpdateInstallation() {
+        offerExpiry?.cancel()
+        offerExpiry = nil
         pendingChoice = nil
+        userInitiated = false
         onEvent(.dismissed)
     }
 }

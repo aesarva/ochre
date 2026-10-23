@@ -98,7 +98,8 @@ public struct UpdateModel: Equatable, Sendable {
 
     private var progress: Double? {
         guard let expected, expected > 0 else { return nil }
-        return min(1, Double(received) / Double(expected))
+        // Целыми процентами: состояние меняется не чаще сотни раз, а не на каждый пришедший кусок.
+        return (min(1, Double(received) / Double(expected)) * 100).rounded(.down) / 100
     }
 
     private var isInstalling: Bool {

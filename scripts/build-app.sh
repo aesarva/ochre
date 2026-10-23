@@ -28,6 +28,10 @@ cp Resources/Info.plist "$APP/Contents/Info.plist"
 # Sparkle (автообновления): ditto сохраняет симлинки Versions/Current внутри фреймворка.
 mkdir -p "$APP/Contents/Frameworks"
 ditto "$BIN_DIR/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
+# XPC-сервисы Sparkle нужны только приложениям в песочнице (SUEnableDownloaderService,
+# SUEnableInstallerLauncherService); Ochre без песочницы, и без них бандл меньше и проще подписывается.
+rm -rf "$APP/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices" \
+       "$APP/Contents/Frameworks/Sparkle.framework/XPCServices"
 
 PLIST="$APP/Contents/Info.plist"
 if [ -n "${VERSION:-}" ]; then
@@ -51,8 +55,6 @@ SIGN_FLAGS=(--force --sign "$SIGN_IDENTITY")
 if [ "$SIGN_IDENTITY" != "-" ]; then SIGN_FLAGS+=(--options runtime --timestamp); fi
 # Вложенный код Sparkle переподписывается нашим сертификатом изнутри наружу (порядок из документации Sparkle).
 SPARKLE="$APP/Contents/Frameworks/Sparkle.framework"
-codesign "${SIGN_FLAGS[@]}" "$SPARKLE/Versions/B/XPCServices/Installer.xpc"
-codesign "${SIGN_FLAGS[@]}" --preserve-metadata=entitlements "$SPARKLE/Versions/B/XPCServices/Downloader.xpc"
 codesign "${SIGN_FLAGS[@]}" "$SPARKLE/Versions/B/Autoupdate"
 codesign "${SIGN_FLAGS[@]}" "$SPARKLE/Versions/B/Updater.app"
 codesign "${SIGN_FLAGS[@]}" "$SPARKLE"

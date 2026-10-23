@@ -6,7 +6,7 @@ struct UpdateRow: View {
     let updates: UpdateController
 
     var body: some View {
-        switch updates.model.state {
+        switch updates.state {
         case .available(let version, let notesURL):
             VStack(spacing: 8) {
                 HStack(spacing: 6) {
@@ -50,6 +50,7 @@ struct UpdateRow: View {
                 Spacer()
                 Button("Повторить") { updates.checkNow() }
                     .buttonStyle(.plain)
+                    .disabled(!updates.canCheckNow)
                     .foregroundStyle(.secondary)
             }
         case .needsMove:

@@ -29,7 +29,7 @@ enum SnapshotExporter {
         let cpu = store.latest.map { store.history.points(.cpuTotal, now: $0.uptime).map(\.value) } ?? []
         let segments = MenuBarContent.segments(items: settings.settings.menuBarItems, snapshot: store.latest,
                                                cpuHistory: cpu, active: store.activeAlerts,
-                                               updateAvailable: updates.model.showsBadge)
+                                               updateAvailable: updates.showsBadge)
         let icon = MenuBarRenderer.image(segments)
         let image = NSImage(size: NSSize(width: icon.size.width + 16, height: 28), flipped: false) { rect in
             NSColor.windowBackgroundColor.setFill()

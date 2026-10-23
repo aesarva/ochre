@@ -54,7 +54,7 @@ One-time setup:
    ```
 4. Create the update signing key: `.build/artifacts/sparkle/Sparkle/bin/generate_keys` (after `swift package resolve`). The private key stays in the login keychain; the public key is `SUPublicEDKey` in `Resources/Info.plist`. Back it up with `generate_keys -x <file>` and keep the file off this Mac: without it, installed copies reject every future update.
 
-With several signing identities, choose one with `SIGN_IDENTITY="Developer ID Application: …"`. `scripts/release.sh <version> --unsigned` runs every step except signing and notarization.
+With several signing identities, choose one with `SIGN_IDENTITY="Developer ID Application: …"`. `scripts/release.sh <version> --unsigned` runs every step except signing and notarization; without the update signing key it also skips `appcast.xml`.
 
 ## Landing page
 

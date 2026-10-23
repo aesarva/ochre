@@ -61,7 +61,7 @@ struct GeneralSettingsTab: View {
                     set: { updates.automaticallyChecks = $0 }))
                 LabeledContent("Версия \(updates.currentVersion) (\(updates.currentBuild))") {
                     Button("Проверить сейчас") { updates.checkNow() }
-                        .disabled(isBusy)
+                        .disabled(isBusy || !updates.canCheckNow)
                 }
                 if let status = updateStatus {
                     Text(status).font(.caption).foregroundStyle(.secondary)
@@ -73,14 +73,14 @@ struct GeneralSettingsTab: View {
 
     /// «Проверить сейчас» недоступна, пока идёт обновление и когда Ochre открыт из образа DMG.
     private var isBusy: Bool {
-        switch updates.model.state {
+        switch updates.state {
         case .checking, .downloading, .installing, .needsMove: true
         default: false
         }
     }
 
     private var updateStatus: String? {
-        switch updates.model.state {
+        switch updates.state {
         case .checking: "Проверка обновлений…"
         case .upToDate: "Установлена последняя версия"
         case .available(let version, _): "Доступна версия \(version)"
