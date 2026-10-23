@@ -1,0 +1,91 @@
+import Foundation
+import Testing
+@testable import MetricsCore
+
+@Suite struct UpdateStateTests {
+    let notes = URL(string: "https://github.com/aesarva/ochre/releases/tag/v1.1")!
+
+    func model(_ events: UpdateEvent...) -> UpdateModel {
+        var model = UpdateModel()
+        events.forEach { model.apply($0) }
+        return model
+    }
+
+    @Test func backgroundCheckDoesNotShowChecking() {
+        #expect(model(.checkStarted(userInitiated: false)).state == .idle)
+    }
+
+    @Test func manualCheckShowsChecking() {
+        #expect(model(.checkStarted(userInitiated: true)).state == .checking)
+    }
+
+    @Test func foundShowsAvailable() {
+        let m = model(.found(version: "1.1", notesURL: notes))
+        #expect(m.state == .available(version: "1.1", notesURL: notes))
+        #expect(m.showsBadge)
+    }
+
+    @Test func manualNotFoundIsUpToDate() {
+        #expect(model(.checkStarted(userInitiated: true), .notFound(userInitiated: true)).state == .upToDate)
+    }
+
+    @Test func backgroundNotFoundIsIdle() {
+        #expect(model(.checkStarted(userInitiated: false), .notFound(userInitiated: false)).state == .idle)
+    }
+
+    @Test func downloadProgress() {
+        let m = model(.found(version: "1.1", notesURL: nil), .downloadStarted, .expectedLength(200),
+                      .received(50), .received(50))
+        #expect(m.state == .downloading(version: "1.1", progress: 0.5))
+        #expect(m.showsBadge)
+    }
+
+    @Test func progressIsClamped() {
+        let m = model(.found(version: "1.1", notesURL: nil), .downloadStarted, .expectedLength(100), .received(150))
+        #expect(m.state == .downloading(version: "1.1", progress: 1.0))
+    }
+
+    @Test func unknownLengthHasNilProgress() {
+        let m = model(.found(version: "1.1", notesURL: nil), .downloadStarted, .received(10))
+        #expect(m.state == .downloading(version: "1.1", progress: nil))
+    }
+
+    @Test func installingKeepsVersion() {
+        let m = model(.found(version: "1.1", notesURL: nil), .downloadStarted, .installing)
+        #expect(m.state == .installing(version: "1.1"))
+        #expect(m.showsBadge)
+    }
+
+    @Test func backgroundErrorIsSilent() {
+        let m = model(.error(message: "x", userInitiated: false))
+        #expect(m.state == .idle)
+        #expect(!m.showsBadge)
+    }
+
+    @Test func manualErrorFails() {
+        let m = model(.checkStarted(userInitiated: true), .error(message: "x", userInitiated: true))
+        #expect(m.state == .failed(message: "x"))
+        #expect(!m.showsBadge)
+    }
+
+    @Test func downloadErrorFails() {
+        let m = model(.found(version: "1.1", notesURL: nil), .downloadStarted, .error(message: "x", userInitiated: false))
+        #expect(m.state == .failed(message: "x"))
+    }
+
+    @Test func dismissKeepsAvailableAndFailed() {
+        #expect(model(.found(version: "1.1", notesURL: nil), .dismissed).state == .available(version: "1.1", notesURL: nil))
+        #expect(model(.checkStarted(userInitiated: true), .error(message: "x", userInitiated: true), .dismissed).state
+            == .failed(message: "x"))
+    }
+
+    @Test func dismissClearsInProgress() {
+        #expect(model(.found(version: "1.1", notesURL: nil), .downloadStarted, .dismissed).state == .idle)
+    }
+
+    @Test func newDownloadResetsCounters() {
+        let m = model(.found(version: "1.1", notesURL: nil), .downloadStarted, .expectedLength(100), .received(100),
+                      .found(version: "1.2", notesURL: nil), .downloadStarted, .received(10))
+        #expect(m.state == .downloading(version: "1.2", progress: nil))
+    }
+}
