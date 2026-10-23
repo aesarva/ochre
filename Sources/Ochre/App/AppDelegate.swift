@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var popoverController: PopoverController?
     private var statusItemController: StatusItemController?
     private var settingsWindow: SettingsWindowController?
+    private var updateController: UpdateController?
     private let notifier = UserNotificationNotifier()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -32,6 +33,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         metricsStore = store
         popoverController = popover
         statusItemController = statusItem
+        let updates = UpdateController(feedOverride: defaults["UpdateFeedURL"] as? String) { [popover, statusItem] in
+            if !popover.isShown, let button = statusItem.button { popover.toggle(relativeTo: button) }
+        }
+        updateController = updates
+        updates.start()
         store.onAlertEvents = { [notifier] events in events.forEach(notifier.notify) }
         requestAuthorizationWhileAlertsEnabled(settings)
         store.start()

@@ -69,6 +69,8 @@ final class PopoverController: NSObject, NSPopoverDelegate {
         popover?.performClose(nil)
     }
 
+    var isShown: Bool { popover?.isShown == true }
+
     func popoverDidClose(_ notification: Notification) {
         let closed = notification.object as? NSPopover
         closed?.contentViewController = nil
