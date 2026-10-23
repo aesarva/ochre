@@ -31,7 +31,7 @@
 - **Colour means heat.** The interface is graphite and paper. Colour shows up only where something is working hard: amber, then ember, then red.
 - **Light on your Mac.** About 0.7% of one core and 13 MB of memory with the panel closed (measured on an M5 Pro). Ochre slows its sampling down when you aren't looking.
 - **Native.** Swift, SwiftUI and AppKit with Liquid Glass. No Electron, no helper daemon, no administrator password, no kernel extension.
-- **Private.** No network requests, no analytics, no account. Your data never leaves your Mac.
+- **Private.** No analytics, no account. The only network request is a daily update check against GitHub; it sends no system data and can be turned off in Settings.
 - **Alerts that wait.** A threshold has to hold for as long as you choose before you get a notification, so short spikes stay quiet.
 
 ## Screenshots
@@ -72,13 +72,15 @@
 
 **Alerts.** CPU temperature, CPU load, memory pressure and low disk space. Pick a threshold and how long it has to hold, for example 95 °C for 30 seconds.
 
-**Settings.** Refresh every 1, 2 or 5 seconds, and launch at login.
+**Updates.** Ochre checks for a new version once a day. When one is out, a dot appears on the menu bar item and the panel offers **Install and Relaunch**: one click downloads it, verifies its signature, replaces the app and starts the new version.
+
+**Settings.** Refresh every 1, 2 or 5 seconds, launch at login, and automatic update checks.
 
 ## Install
 
 1. [Download the DMG](https://github.com/aesarva/ochre/releases/download/v1.0.0/Ochre-1.0.0.dmg) (7 MB). Older versions are on the [Releases](../../releases) page.
 2. Open it and drag **Ochre** to **Applications**.
-3. Launch Ochre. It appears in the menu bar only, with no Dock icon. Click it to open the panel. Settings and Quit are at the bottom.
+3. Launch Ochre. It appears in the menu bar only, with no Dock icon. Click it to open the panel. Settings (gear) and Quit (power) are at the bottom.
 
 If you turn alerts on, macOS asks once for permission to show notifications. Ochre needs no other permissions.
 
@@ -105,6 +107,12 @@ Yes, the app is universal. Intel Macs have no HID temperature sensors, so CPU te
 <summary><b>Will it drain my battery?</b></summary>
 
 No. With the panel closed Ochre samples at your chosen interval and reads temperatures every 15 seconds. Faster sampling (temperatures every 2 seconds, plus the process list) runs only while the panel is open.
+</details>
+
+<details>
+<summary><b>How do I update?</b></summary>
+
+Ochre checks once a day and shows the update in its panel; click **Install and Relaunch**. You can also check now in Settings → General. Version 1.0.0 has no updater yet, so update it once by downloading the new DMG. Run Ochre from Applications: when it is opened straight from the disk image, it can't update itself and says so.
 </details>
 
 <details>

@@ -25,6 +25,9 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN_DIR/Ochre" "$APP/Contents/MacOS/Ochre"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+# Sparkle (автообновления): ditto сохраняет симлинки Versions/Current внутри фреймворка.
+mkdir -p "$APP/Contents/Frameworks"
+ditto "$BIN_DIR/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 
 PLIST="$APP/Contents/Info.plist"
 if [ -n "${VERSION:-}" ]; then
@@ -42,10 +45,17 @@ xcrun actool Resources/AppIcon.icon --compile "$APP/Contents/Resources" --platfo
     --minimum-deployment-target 26.0 --app-icon AppIcon \
     --output-partial-info-plist "$ICON_TMP/partial.plist" >/dev/null
 
-# Hardened runtime обязателен для нотаризации; включаем его и в ad-hoc сборке,
-# чтобы локально проверять то же поведение, что получат пользователи.
-SIGN_FLAGS=(--force --options runtime --sign "$SIGN_IDENTITY")
-if [ "$SIGN_IDENTITY" != "-" ]; then SIGN_FLAGS+=(--timestamp); fi
+# Hardened runtime обязателен для нотаризации. В ad-hoc сборке его нет: у ad-hoc подписи нет Team ID,
+# и library validation не даёт загрузить Sparkle.framework («different Team IDs»).
+SIGN_FLAGS=(--force --sign "$SIGN_IDENTITY")
+if [ "$SIGN_IDENTITY" != "-" ]; then SIGN_FLAGS+=(--options runtime --timestamp); fi
+# Вложенный код Sparkle переподписывается нашим сертификатом изнутри наружу (порядок из документации Sparkle).
+SPARKLE="$APP/Contents/Frameworks/Sparkle.framework"
+codesign "${SIGN_FLAGS[@]}" "$SPARKLE/Versions/B/XPCServices/Installer.xpc"
+codesign "${SIGN_FLAGS[@]}" --preserve-metadata=entitlements "$SPARKLE/Versions/B/XPCServices/Downloader.xpc"
+codesign "${SIGN_FLAGS[@]}" "$SPARKLE/Versions/B/Autoupdate"
+codesign "${SIGN_FLAGS[@]}" "$SPARKLE/Versions/B/Updater.app"
+codesign "${SIGN_FLAGS[@]}" "$SPARKLE"
 codesign "${SIGN_FLAGS[@]}" "$APP"
-codesign --verify --strict "$APP"
+codesign --verify --deep --strict "$APP"
 echo "$(pwd)/$APP"

@@ -6,13 +6,16 @@ import MetricsCore
 final class StatusItemController {
     private let store: MetricsStore
     private let settings: SettingsStore
+    private let updates: UpdateController
     private let onClick: (NSStatusBarButton) -> Void
     private let statusItem: NSStatusItem
     var button: NSStatusBarButton? { statusItem.button }
 
-    init(store: MetricsStore, settings: SettingsStore, onClick: @escaping (NSStatusBarButton) -> Void) {
+    init(store: MetricsStore, settings: SettingsStore, updates: UpdateController,
+         onClick: @escaping (NSStatusBarButton) -> Void) {
         self.store = store
         self.settings = settings
+        self.updates = updates
         self.onClick = onClick
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.button?.target = self
@@ -31,6 +34,7 @@ final class StatusItemController {
             _ = store.latest
             _ = store.activeAlerts
             _ = settings.settings.menuBarItems
+            _ = updates.model.showsBadge
         } onChange: { [weak self] in
             Task { @MainActor in
                 self?.render()
@@ -45,7 +49,8 @@ final class StatusItemController {
             items: settings.settings.menuBarItems,
             snapshot: store.latest,
             cpuHistory: cpu,
-            active: store.activeAlerts
+            active: store.activeAlerts,
+            updateAvailable: updates.model.showsBadge
         )
         statusItem.button?.attributedTitle = MenuBarRenderer.attributedTitle(segments)
         statusItem.button?.setAccessibilityLabel(MenuBarContent.spokenLabel(segments))

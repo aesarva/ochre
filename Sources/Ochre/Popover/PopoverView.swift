@@ -20,13 +20,15 @@ enum PopoverTab: String, CaseIterable {
 
 struct PopoverView: View {
     let store: MetricsStore
+    let updates: UpdateController
     let onOpenSettings: () -> Void
     /// Сообщает естественный размер содержимого — контроллер сам ставит его панели.
     var onSizeChange: (CGSize) -> Void = { _ in }
     @State private var tab: PopoverTab
 
-    init(store: MetricsStore, initialTab: PopoverTab, onOpenSettings: @escaping () -> Void) {
+    init(store: MetricsStore, updates: UpdateController, initialTab: PopoverTab, onOpenSettings: @escaping () -> Void) {
         self.store = store
+        self.updates = updates
         self.onOpenSettings = onOpenSettings
         _tab = State(initialValue: initialTab)
     }
@@ -41,14 +43,14 @@ struct PopoverView: View {
             }
 
             Divider().opacity(0.5)
+            UpdateRow(updates: updates)
+                .font(.system(size: 12))
             HStack {
-                Button("Настройки", action: onOpenSettings)
+                footerButton("gearshape", label: "Настройки", action: onOpenSettings)
                 Spacer()
-                Button("Выход") { NSApp.terminate(nil) }
+                footerButton("power", label: "Выход") { NSApp.terminate(nil) }
             }
-            .buttonStyle(.plain)
-            .font(.system(size: 12))
-            .foregroundStyle(.secondary)
+            .padding(.top, -4)
         }
         .padding(14)
         .frame(width: 340)
@@ -57,6 +59,19 @@ struct PopoverView: View {
         // Содержимое прибито к верху, пока окно догоняет новую высоту. minHeight: 0 обязателен: без него
         // рамка растёт до высоты содержимого, и NSHostingView центрирует переполнение — вкладки прыгают вверх.
         .frame(minHeight: 0, maxHeight: .infinity, alignment: .top)
+    }
+
+    private func footerButton(_ symbol: String, label: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.secondary)
+                .frame(width: 28, height: 24)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .help(label)
+        .accessibilityLabel(label)
     }
 
     /// Сколько содержимому вкладки можно занять: видимая высота экрана минус вкладки, подвал, отступы и стрелка.
