@@ -66,4 +66,14 @@ final class UpdateController: NSObject, SPUUpdaterDelegate {
     func feedURLString(for updater: SPUUpdater) -> String? {
         feedOverride
     }
+
+    /// Фоновая проверка без обновления сама интерфейс не зовёт — узнаём о ней только здесь.
+    /// «Обновлений нет» Sparkle сообщает ошибкой `SUNoUpdateError`, это тоже успешная проверка.
+    func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: (any Error)?) {
+        guard updateCheck == .updatesInBackground else { return }
+        let noUpdate = (error as NSError?).map {
+            $0.domain == SUSparkleErrorDomain && $0.code == Int(SUError.noUpdateError.rawValue)
+        }
+        if noUpdate ?? true { model.apply(.backgroundCheckSucceeded) }
+    }
 }

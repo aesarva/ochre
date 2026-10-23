@@ -29,6 +29,9 @@ public enum UpdateEvent: Equatable, Sendable {
     case error(message: String, userInitiated: Bool)
     /// Sparkle отказался работать из-за расположения приложения (образ DMG, App Translocation).
     case locationUnsupported
+    /// Фоновая проверка прошла без ошибок. Без обновления Sparkle не зовёт интерфейс, поэтому старый
+    /// результат ручной проверки («ошибка», «последняя версия») иначе висел бы до следующего релиза.
+    case backgroundCheckSucceeded
     /// Sparkle закрыл сессию обновления.
     case dismissed
 }
@@ -73,6 +76,11 @@ public struct UpdateModel: Equatable, Sendable {
             state = userInitiated || isInstalling ? .failed(message: message) : .idle
         case .locationUnsupported:
             state = .needsMove
+        case .backgroundCheckSucceeded:
+            switch state {
+            case .failed, .upToDate: state = .idle
+            default: break
+            }
         case .dismissed:
             switch state {
             case .checking, .downloading, .installing: state = .idle

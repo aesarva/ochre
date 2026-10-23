@@ -105,4 +105,17 @@ import Testing
         #expect(!UpdateLocation.canUpdate(
             bundlePath: "/private/var/folders/x/AppTranslocation/1A2B/d/Ochre.app", volumeIsReadOnly: false))
     }
+
+    @Test func backgroundSuccessClearsStaleResults() {
+        #expect(model(.checkStarted(userInitiated: true), .error(message: "x", userInitiated: true),
+                      .backgroundCheckSucceeded).state == .idle)
+        #expect(model(.checkStarted(userInitiated: true), .notFound(userInitiated: true),
+                      .backgroundCheckSucceeded).state == .idle)
+    }
+
+    @Test func backgroundSuccessKeepsOfferAndHint() {
+        #expect(model(.found(version: "1.1", notesURL: nil), .backgroundCheckSucceeded).state
+            == .available(version: "1.1", notesURL: nil))
+        #expect(model(.locationUnsupported, .backgroundCheckSucceeded).state == .needsMove)
+    }
 }
