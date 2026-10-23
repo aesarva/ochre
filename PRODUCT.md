@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-delegated: plain static HTML/CSS/JS with no build step, in `site/` of this repo. All URLs are relative so the folder can sit under its own path (for example `/statusapp/`) on a shared host the author will also use for other apps. Hosting provider is not chosen yet; the app is closed-source, so the site must not depend on this repo being public (Cloudflare Pages, or a separate public GitHub Pages repo, both fit).
+delegated: the public product page is built in the separate `utils-landing` repo and served at https://utils.cyber-tech.online/ochre/ (Russian) and /en/ochre/ (English). It takes content and images from this repo (README, CHANGELOG, DESIGN.md, `docs/images/`, `site/img/`) and the version and DMG link from the latest GitHub release. `site/` in this repo is the earlier static landing and serves only as a content source until that page replaces it.
 
 ## Users
 
@@ -24,13 +24,14 @@ The signature is the die map: the user's own chip drawn as its core clusters (e.
 
 ## Operating Context
 
-Lives only in the menu bar (no Dock icon). Popover tabs: Overview, CPU, Memory, Network, Disk, plus Sensors and Processes under "More". Alerts (CPU temperature, CPU load, memory pressure, free disk space) raise a system notification and turn the value heat-red. Settings window chooses menu-bar items (mini die, CPU %, RAM %, temperature, network, sparkline) and refresh interval; launch at login.
+Lives only in the menu bar (no Dock icon). Popover tabs: Overview, CPU, Memory, Network, Disk, plus Sensors and Processes under "More". Alerts (CPU temperature, CPU load, memory pressure, free disk space) raise a system notification and turn the value heat-red. Settings window (standard macOS toolbar tabs: General, Menu Bar, Alerts) chooses menu-bar items (mini die, CPU %, RAM %, temperature, network, sparkline), refresh interval, launch at login and automatic update checks. Updates: once a day Ochre checks GitHub (Sparkle); a found version shows a dot on the menu bar item and an Install and Relaunch button in the panel and in Settings, one click downloads, verifies the signature, replaces the app and relaunches it.
 
 ## Capabilities and Constraints
 
 - Requires macOS 26 or later (Liquid Glass UI). Universal build (Apple Silicon and Intel); on Intel Macs temperatures are unavailable, fans and power still read via SMC.
 - Reads sensors through private APIs (SMC, IOHID), so it is distributed outside the Mac App Store as a Developer ID–signed, Apple-notarized DMG.
-- Measured on an M5 Pro with the popover closed: about 0.7% CPU and about 13 MB of memory (phys_footprint). Temperatures refresh every 15 s while closed, 2 s while open.
+- Measured on an M5 Pro with the popover closed (version 1.1.0, with the updater): about 0.5% of one core and about 14 MB of memory (phys_footprint). Temperatures refresh every 15 s while closed, 2 s while open.
+- The only network request is the daily update check against GitHub; it sends no system data and can be turned off in Settings. No analytics, no account.
 - Processes of other users and root are not readable and are skipped. Sensor names vary between Mac models.
 - Interface language of the app: Russian.
 
@@ -38,7 +39,7 @@ Lives only in the menu bar (no Dock icon). Popover tabs: Overview, CPU, Memory, 
 
 - Name: Ochre (renamed from StatusApp on 2026-10-16; the name is the colour of the heat palette). Bundle id `com.alexsarva.Ochre`.
 - App icon: `Resources/AppIcon.icon` (die map with heat-lit cores on graphite).
-- Price: free. Source code is closed: no GitHub/source links on public surfaces.
+- Price: free. Open source under the MIT license: https://github.com/aesarva/ochre. Linking to the repository and its Releases page is fine.
 - The landing page is bilingual, Russian and English, with a switcher.
 
 ## Evidence on Hand
@@ -46,7 +47,8 @@ Lives only in the menu bar (no Dock icon). Popover tabs: Overview, CPU, Memory, 
 - Real UI renders of every popover tab, the menu bar item and settings, produced by the app's `-SnapshotDir` debug export.
 - App icon artwork: `Resources/AppIcon.icon/Assets/die.png`.
 - The measured resource figures above (single machine, M5 Pro).
-- Absent, must not be fabricated: testimonials, press, download or user counts, ratings, benchmarks against other apps, a published download URL (the notarized DMG is not released yet).
+- Published releases on GitHub (tag `vX.Y.Z`, asset `Ochre-X.Y.Z.dmg`, signed and notarized); the latest is always at https://github.com/aesarva/ochre/releases/latest. Release history is in `CHANGELOG.md`.
+- Absent, must not be fabricated: testimonials, press, download or user counts, ratings, benchmarks against other apps.
 
 ## Product Principles
 
