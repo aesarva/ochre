@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/aesarva/ochre/releases/download/v1.1.3/Ochre-1.1.3.dmg"><img alt="Download for macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=Download%20for%20macOS&color=CC8F25"></a>
+  <a href="https://github.com/aesarva/ochre/releases/download/v1.1.4/Ochre-1.1.4.dmg"><img alt="Download for macOS" src="https://img.shields.io/github/v/release/aesarva/ochre?style=for-the-badge&logo=apple&logoColor=white&label=Download%20for%20macOS&color=CC8F25"></a>
 </p>
 
 <p align="center">
@@ -78,7 +78,7 @@
 
 ## Install
 
-1. [Download the DMG](https://github.com/aesarva/ochre/releases/download/v1.1.3/Ochre-1.1.3.dmg) (7 MB). Older versions are on the [Releases](../../releases) page.
+1. [Download the DMG](https://github.com/aesarva/ochre/releases/download/v1.1.4/Ochre-1.1.4.dmg) (7 MB). Older versions are on the [Releases](../../releases) page.
 2. Open it and drag **Ochre** to **Applications**.
 3. Launch Ochre. It appears in the menu bar only, with no Dock icon. Click it to open the panel. Settings (gear) and Quit (power) are at the bottom.
 

@@ -34,6 +34,7 @@ Launch arguments for `build/Ochre.app/Contents/MacOS/Ochre`:
 - `-OpenPopoverOnLaunch YES` opens the panel on start.
 - `-PopoverTab <tab>` chooses the starting tab (`overview`, `cpu`, `memory`, `network`, `disk`, `sensors`, `processes`).
 - `-SnapshotDir <path>` saves PNGs of the menu bar item, every tab and the settings, without Screen Recording permission.
+- `-UpdateOfferLifetime <seconds>` drops an uninstalled offer and rechecks after that many seconds instead of a day.
 - `-UpdateFeedURL <url>` checks a different appcast, for example one served from `http://127.0.0.1` to test an update end to end. Sparkle compares `CFBundleVersion`, so give the installed copy a lower build number.
 
 ## Releasing
