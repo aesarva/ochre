@@ -16,13 +16,15 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
     /// Пока ответ не дан, Sparkle не проверяет обновления. Через сутки предложение снимается и проверяется заново,
     /// чтобы Ochre, работающий неделями, не предлагал 1.1, когда уже вышла 1.2.
     private var offerExpiry: Task<Void, Never>?
-    private static let offerLifetime: Duration = .seconds(24 * 60 * 60)
+    private let offerLifetime: Duration
     /// Ручная проверка: её результат и ошибки показываются, фоновой — нет.
     private var userInitiated = false
     private let logger = Logger(subsystem: "com.alexsarva.Ochre", category: "updates")
 
-    init(onEvent: @escaping (UpdateEvent) -> Void, onShowPanel: @escaping () -> Void,
+    /// `offerLifetime` — сколько держать неустановленное предложение (сутки; меньше — только для отладки).
+    init(offerLifetime: Duration, onEvent: @escaping (UpdateEvent) -> Void, onShowPanel: @escaping () -> Void,
          onOfferExpired: @escaping () -> Void) {
+        self.offerLifetime = offerLifetime
         self.onEvent = onEvent
         self.onShowPanel = onShowPanel
         self.onOfferExpired = onOfferExpired
@@ -58,10 +60,14 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
         pendingChoice = reply
         offerExpiry?.cancel()
         offerExpiry = Task { [weak self] in
-            try? await Task.sleep(for: Self.offerLifetime, clock: .continuous)
+            guard let lifetime = self?.offerLifetime else { return }
+            try? await Task.sleep(for: lifetime, clock: .continuous)
             guard !Task.isCancelled, let self, self.pendingChoice != nil else { return }
-            self.reply(.dismiss)
+            // Sparkle обрабатывает ответ асинхронно, и сессия ещё открыта: новую проверку контроллер запустит,
+            // когда Sparkle сообщит о конце цикла.
+            self.onEvent(.offerExpired)
             self.onOfferExpired()
+            self.reply(.dismiss)
         }
         onEvent(.found(version: appcastItem.displayVersionString,
                        notesURL: appcastItem.releaseNotesURL ?? appcastItem.infoURL))
