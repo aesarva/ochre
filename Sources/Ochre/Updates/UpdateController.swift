@@ -39,7 +39,7 @@ final class UpdateController: NSObject, SPUUpdaterDelegate {
         do {
             try updater.start()
         } catch {
-            model.apply(.error(message: error.localizedDescription, userInitiated: true))
+            model.apply(PanelUserDriver.event(for: error, userInitiated: true))
         }
     }
 

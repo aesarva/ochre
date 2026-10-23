@@ -8,17 +8,25 @@ struct UpdateRow: View {
     var body: some View {
         switch updates.model.state {
         case .available(let version, let notesURL):
-            HStack(spacing: 6) {
-                dot
-                Text("Доступна версия \(version)")
-                if let notesURL {
-                    Link("Что нового", destination: notesURL)
-                        .foregroundStyle(.secondary)
+            VStack(spacing: 8) {
+                HStack(spacing: 6) {
+                    dot
+                    Text("Доступна версия \(version)").lineLimit(1)
+                    Spacer(minLength: 8)
+                    if let notesURL {
+                        Link("Что нового", destination: notesURL)
+                            .foregroundStyle(.secondary)
+                            .pointerStyle(.link)
+                    }
                 }
-                Spacer(minLength: 4)
-                Button("Установить и перезапустить") { updates.install() }
-                    .buttonStyle(.glassProminent)
-                    .controlSize(.small)
+                Button { updates.install() } label: {
+                    Text("Установить и перезапустить")
+                        .foregroundStyle(BoardPalette.inkOnWarm)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.glassProminent)
+                .tint(Self.accent)
+                .controlSize(.large)
             }
         case .downloading(let version, let progress):
             VStack(alignment: .leading, spacing: 4) {
@@ -44,12 +52,19 @@ struct UpdateRow: View {
                     .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
             }
+        case .needsMove:
+            Text("Перенесите Ochre в «Программы», чтобы получать обновления")
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         case .idle, .upToDate:
             EmptyView()
         }
     }
 
     private var dot: some View {
-        Circle().fill(Color.accentColor).frame(width: 6, height: 6)
+        Circle().fill(Self.accent).frame(width: 6, height: 6)
     }
+
+    /// Цвет шкалы на 25 % — тот же янтарь, что у плитки ядра под четвертью нагрузки.
+    private static let accent = HeatScale.color(forLoad: 25).swiftUIColor
 }

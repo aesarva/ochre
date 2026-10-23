@@ -12,6 +12,8 @@ public enum UpdateState: Equatable, Sendable {
     case downloading(version: String, progress: Double?)
     case installing(version: String)
     case failed(message: String)
+    /// Ochre запущен из образа DMG или из временной папки: Sparkle отсюда не обновляет.
+    case needsMove
 }
 
 /// События обновлятеля (Sparkle), переведённые в наши термины.
@@ -25,6 +27,8 @@ public enum UpdateEvent: Equatable, Sendable {
     /// Распаковка, готовность к установке и сама установка — для пользователя это один шаг.
     case installing
     case error(message: String, userInitiated: Bool)
+    /// Sparkle отказался работать из-за расположения приложения (образ DMG, App Translocation).
+    case locationUnsupported
     /// Sparkle закрыл сессию обновления.
     case dismissed
 }
@@ -67,6 +71,8 @@ public struct UpdateModel: Equatable, Sendable {
             state = .installing(version: version)
         case .error(let message, let userInitiated):
             state = userInitiated || isInstalling ? .failed(message: message) : .idle
+        case .locationUnsupported:
+            state = .needsMove
         case .dismissed:
             switch state {
             case .checking, .downloading, .installing: state = .idle

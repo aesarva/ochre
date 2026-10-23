@@ -88,4 +88,14 @@ import Testing
                       .found(version: "1.2", notesURL: nil), .downloadStarted, .received(10))
         #expect(m.state == .downloading(version: "1.2", progress: nil))
     }
+
+    @Test func unsupportedLocationAsksToMove() {
+        let m = model(.checkStarted(userInitiated: false), .locationUnsupported)
+        #expect(m.state == .needsMove)
+        #expect(!m.showsBadge)
+    }
+
+    @Test func dismissKeepsNeedsMove() {
+        #expect(model(.locationUnsupported, .dismissed).state == .needsMove)
+    }
 }

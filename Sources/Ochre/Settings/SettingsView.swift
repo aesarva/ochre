@@ -84,6 +84,7 @@ struct GeneralSettingsTab: View {
         case .upToDate: "Установлена последняя версия"
         case .available(let version, _): "Доступна версия \(version)"
         case .failed(let message): "Не удалось обновить: \(message)"
+        case .needsMove: "Перенесите Ochre в «Программы», чтобы получать обновления"
         case .idle, .downloading, .installing: nil
         }
     }

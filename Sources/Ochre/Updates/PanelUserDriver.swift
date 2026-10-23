@@ -56,9 +56,17 @@ final class PanelUserDriver: NSObject, SPUUserDriver {
     }
 
     func showUpdaterError(_ error: any Error, acknowledgement: @escaping () -> Void) {
-        onEvent(.error(message: error.localizedDescription, userInitiated: userInitiated))
+        onEvent(Self.event(for: error, userInitiated: userInitiated))
         userInitiated = false
         acknowledgement()
+    }
+
+    /// Запуск из образа DMG или после App Translocation — не сбой, а повод перенести приложение.
+    static func event(for error: any Error, userInitiated: Bool) -> UpdateEvent {
+        let error = error as NSError
+        let locationCodes = [SUError.runningFromDiskImageError, SUError.runningTranslocated].map { Int($0.rawValue) }
+        if error.domain == SUSparkleErrorDomain, locationCodes.contains(error.code) { return .locationUnsupported }
+        return .error(message: error.localizedDescription, userInitiated: userInitiated)
     }
 
     // MARK: Скачивание и установка
